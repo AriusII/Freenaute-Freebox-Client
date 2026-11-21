@@ -6,8 +6,8 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiWpsStartRequest
 {
-    [JsonPropertyName("bssid")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Bssid { get; init; }
+	[JsonPropertyName("bssid")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Bssid { get; init; }
 }

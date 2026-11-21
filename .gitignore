@@ -1,5 +1,5 @@
 # .NET build, test and package outputs
-artifacts/
+.artifacts/
 **/bin/
 **/obj/
 TestResults/
@@ -15,6 +15,9 @@ TestResults/
 *.rsuser
 *.sln.docstates
 *.userosscache
+
+# Plan / AI working files
+.ia/
 
 # Temporary and OS files
 *.tmp

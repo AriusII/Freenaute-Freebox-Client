@@ -7,15 +7,12 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<LcdLedAnimation>))]
 public readonly record struct LcdLedAnimation(string Value) : ISystemHomeWireToken<LcdLedAnimation>
 {
-    public static LcdLedAnimation FromWire(string value)
-    {
-        ArgumentNullException.ThrowIfNull(value);
-        return new LcdLedAnimation(value);
-    }
+	public static LcdLedAnimation FromWire(string value)
+	{
+		ArgumentNullException.ThrowIfNull(value);
+		return new LcdLedAnimation(value);
+	}
 
-    // Supported animation values are advertised dynamically by the device.
-    public override string ToString()
-    {
-        return Value ?? string.Empty;
-    }
+	// Supported animation values are advertised dynamically by the device.
+	public override string ToString() => Value ?? string.Empty;
 }

@@ -6,5 +6,5 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record SetDownloadThrottlingRequest
 {
-    [JsonPropertyName("throttling")] public required DownloadThrottlingMode Throttling { get; init; }
+	[JsonPropertyName("throttling")] public required DownloadThrottlingMode Throttling { get; init; }
 }

@@ -6,18 +6,18 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class TemporaryWifiDisableRequest
 {
-    /// <summary>temporary disable duration</summary>
-    [JsonPropertyName("duration")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> Duration { get; init; }
+	/// <summary>temporary disable duration</summary>
+	[JsonPropertyName("duration")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> Duration { get; init; }
 
-    /// <summary>
-    ///     specify a wifi band to keep active keep Description 2d4g keep only 2,4Ghz band active 5g keep only 5GHz bands
-    ///     active 6g keep only 6GHz band active
-    /// </summary>
-    [JsonPropertyName("keep")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Keep { get; init; }
+	/// <summary>
+	///     specify a wifi band to keep active keep Description 2d4g keep only 2,4Ghz band active 5g keep only 5GHz bands
+	///     active 6g keep only 6GHz band active
+	/// </summary>
+	[JsonPropertyName("keep")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Keep { get; init; }
 }

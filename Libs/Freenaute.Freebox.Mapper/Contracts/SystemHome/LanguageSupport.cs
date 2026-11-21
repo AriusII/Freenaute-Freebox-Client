@@ -6,6 +6,6 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome;
 /// </summary>
 public sealed record LanguageSupport
 {
-    [JsonPropertyName("lang")] public string? Lang { get; init; }
-    [JsonPropertyName("avalaible")] public ImmutableArray<string>? AvailableLanguages { get; init; }
+	[JsonPropertyName("lang")] public string? Lang { get; init; }
+	[JsonPropertyName("avalaible")] public ImmutableArray<string>? AvailableLanguages { get; init; }
 }

@@ -9,7 +9,7 @@ namespace Freenaute.Freebox.Mapper.ClientSide.WebSocket;
 /// </param>
 /// <param name="Action">The action of the request.</param>
 public sealed record WebSocketRequest(
-    [property: JsonPropertyName("request_id")]
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    int? RequestId,
-    [property: JsonPropertyName("action")] string Action);
+	[property: JsonPropertyName("request_id")]
+	[property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+	int? RequestId,
+	[property: JsonPropertyName("action")] string Action);

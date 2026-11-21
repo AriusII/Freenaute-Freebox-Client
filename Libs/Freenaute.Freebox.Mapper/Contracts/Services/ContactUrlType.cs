@@ -5,13 +5,10 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 [JsonConverter(typeof(ContactUrlTypeJsonConverter))]
 public readonly record struct ContactUrlType(string Value)
 {
-    public static ContactUrlType Profile => new("profile");
-    public static ContactUrlType Blog => new("blog");
-    public static ContactUrlType Site => new("site");
-    public static ContactUrlType Other => new("other");
+	public static ContactUrlType Profile => new("profile");
+	public static ContactUrlType Blog => new("blog");
+	public static ContactUrlType Site => new("site");
+	public static ContactUrlType Other => new("other");
 
-    public override string ToString()
-    {
-        return Value ?? string.Empty;
-    }
+	public override string ToString() => Value ?? string.Empty;
 }

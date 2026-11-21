@@ -4,48 +4,37 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 [JsonConverter(typeof(StringOrBooleanJsonConverter))]
 public readonly struct StringOrBoolean
 {
-    private readonly string? _string;
-    private readonly bool _boolean;
+	private readonly string? _string;
+	private readonly bool _boolean;
 
-    private StringOrBoolean(string value)
-    {
-        Kind = StringOrBooleanKind.String;
-        _string = value;
-    }
+	private StringOrBoolean(string value)
+	{
+		Kind = StringOrBooleanKind.String;
+		_string = value;
+	}
 
-    private StringOrBoolean(bool value)
-    {
-        Kind = StringOrBooleanKind.Boolean;
-        _boolean = value;
-    }
+	private StringOrBoolean(bool value)
+	{
+		Kind = StringOrBooleanKind.Boolean;
+		_boolean = value;
+	}
 
-    public StringOrBooleanKind Kind { get; }
+	public StringOrBooleanKind Kind { get; }
 
-    public string String => Kind == StringOrBooleanKind.String
-        ? _string!
-        : throw new InvalidOperationException("This value is not a string.");
+	public string String => Kind is StringOrBooleanKind.String
+		? _string!
+		: throw new InvalidOperationException("This value is not a string.");
 
-    public bool Boolean => Kind == StringOrBooleanKind.Boolean
-        ? _boolean
-        : throw new InvalidOperationException("This value is not a boolean.");
+	public bool Boolean => Kind is StringOrBooleanKind.Boolean
+		? _boolean
+		: throw new InvalidOperationException("This value is not a boolean.");
 
-    public static StringOrBoolean FromString(string value)
-    {
-        return new StringOrBoolean(value ?? throw new ArgumentNullException(nameof(value)));
-    }
+	public static StringOrBoolean FromString(string value) =>
+		new(value ?? throw new ArgumentNullException(nameof(value)));
 
-    public static StringOrBoolean FromBoolean(bool value)
-    {
-        return new StringOrBoolean(value);
-    }
+	public static StringOrBoolean FromBoolean(bool value) => new(value);
 
-    public static implicit operator StringOrBoolean(string value)
-    {
-        return FromString(value);
-    }
+	public static implicit operator StringOrBoolean(string value) => FromString(value);
 
-    public static implicit operator StringOrBoolean(bool value)
-    {
-        return FromBoolean(value);
-    }
+	public static implicit operator StringOrBoolean(bool value) => FromBoolean(value);
 }

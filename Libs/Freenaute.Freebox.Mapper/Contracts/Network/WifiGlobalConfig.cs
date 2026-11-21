@@ -6,14 +6,14 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiGlobalConfig
 {
-    /// <summary>is wifi enabled</summary>
-    [JsonPropertyName("enabled")]
-    public bool? Enabled { get; init; }
+	/// <summary>is wifi enabled</summary>
+	[JsonPropertyName("enabled")]
+	public bool? Enabled { get; init; }
 
-    /// <summary>
-    ///     mac_filter_state Description disabled mac filter is disabled whitelist mac filter is enabled, using a
-    ///     whitelist blacklist mac filter is enabled, using a blacklist
-    /// </summary>
-    [JsonPropertyName("mac_filter_state")]
-    public string? MacFilterState { get; init; }
+	/// <summary>
+	///     mac_filter_state Description disabled mac filter is disabled whitelist mac filter is enabled, using a
+	///     whitelist blacklist mac filter is enabled, using a blacklist
+	/// </summary>
+	[JsonPropertyName("mac_filter_state")]
+	public string? MacFilterState { get; init; }
 }

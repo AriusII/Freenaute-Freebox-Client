@@ -4,10 +4,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 /// <seealso href="http://mafreebox.freebox.fr/doc/index.html#get--api-v10-call-account" />
 public sealed record CallAccount
 {
-    [JsonPropertyName("phone_number")] public string? PhoneNumber { get; init; }
+	[JsonPropertyName("phone_number")] public string? PhoneNumber { get; init; }
 
-    public override string ToString()
-    {
-        return nameof(CallAccount);
-    }
+	public override string ToString() => nameof(CallAccount);
 }

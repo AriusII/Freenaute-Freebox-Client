@@ -1,12 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <IsAotCompatible>true</IsAotCompatible>
+        <!-- Direct Microsoft.Extensions package references are intentional public package dependencies. -->
+        <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+        <PackageId>Freenaute.Freebox.Client</PackageId>
         <Description>Fluent Freebox Server HTTP client with dependency injection and NativeAOT-compatible contracts.</Description>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>freebox;http;dotnet;nativeaot</PackageTags>
+        <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+        <!-- MA0015 flags required validation of nested wire-model members, not just API method parameters. -->
+        <!-- MA0051 is intentionally scoped out: protocol state machines and multipart/WebSocket loops are clearer as cohesive units. -->
+        <NoWarn>$(NoWarn);MA0015;MA0051</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder"/>
         <PackageReference Include="Microsoft.Extensions.Http"/>
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
+        <PackageReference Include="Microsoft.Extensions.Options"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
         <None Include="../../README.md" Pack="true" PackagePath="/"/>
     </ItemGroup>
 </Project>

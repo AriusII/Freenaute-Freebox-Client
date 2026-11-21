@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LanBrowserInterface
 {
-    [JsonPropertyName("name")] public string? Name { get; init; }
+	[JsonPropertyName("name")] public string? Name { get; init; }
 
-    [JsonPropertyName("host_count")] public long? HostCount { get; init; }
+	[JsonPropertyName("host_count")] public long? HostCount { get; init; }
 }

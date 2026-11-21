@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record ArchiveFilesRequest
 {
-    [JsonPropertyName("files")] public required EncodedFreeboxPath[] Files { get; init; }
+	[JsonPropertyName("files")] public required EncodedFreeboxPath[] Files { get; init; }
 
-    [JsonPropertyName("dst")] public required EncodedFreeboxPath Dst { get; init; }
+	[JsonPropertyName("dst")] public required EncodedFreeboxPath Dst { get; init; }
 }

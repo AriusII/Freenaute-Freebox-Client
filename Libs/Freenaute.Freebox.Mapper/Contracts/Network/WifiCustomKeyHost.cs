@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiCustomKeyHost
 {
-    /// <summary>host name</summary>
-    [JsonPropertyName("hostname")]
-    public string? Hostname { get; init; }
+	/// <summary>host name</summary>
+	[JsonPropertyName("hostname")]
+	public string? Hostname { get; init; }
 
-    /// <summary>optional host information from Lan Browser (if available)</summary>
-    [JsonPropertyName("host")]
-    public LanHost? Host { get; init; }
+	/// <summary>optional host information from Lan Browser (if available)</summary>
+	[JsonPropertyName("host")]
+	public LanHost? Host { get; init; }
 }

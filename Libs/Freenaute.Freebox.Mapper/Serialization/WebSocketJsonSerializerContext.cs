@@ -2,7 +2,7 @@ namespace Freenaute.Freebox.Mapper.Serialization;
 
 /// <summary>Source-generated control-message metadata; file content remains binary.</summary>
 [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+	DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(RegisterEventsRequest))]
 [JsonSerializable(typeof(FreeboxWebSocketMessage))]
 [JsonSerializable(typeof(FileUploadStartRequest))]

@@ -6,6 +6,6 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome;
 /// </summary>
 public sealed record LedstripStatus
 {
-    [JsonPropertyName("use_planning")] public bool? UsePlanning { get; init; }
-    [JsonPropertyName("next_change")] public long? NextChange { get; init; }
+	[JsonPropertyName("use_planning")] public bool? UsePlanning { get; init; }
+	[JsonPropertyName("next_change")] public long? NextChange { get; init; }
 }

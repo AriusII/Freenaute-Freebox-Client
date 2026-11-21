@@ -6,9 +6,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiCustomKeyConfigurationPatch
 {
-    /// <summary>The name of the dedicated wifi network</summary>
-    [JsonPropertyName("ssid")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Ssid { get; init; }
+	/// <summary>The name of the dedicated wifi network</summary>
+	[JsonPropertyName("ssid")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Ssid { get; init; }
 }

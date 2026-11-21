@@ -6,5 +6,5 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record DownloadFilePriorityRequest
 {
-    [JsonPropertyName("priority")] public required DownloadFilePriority Priority { get; init; }
+	[JsonPropertyName("priority")] public required DownloadFilePriority Priority { get; init; }
 }

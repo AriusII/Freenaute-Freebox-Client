@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record HashFileRequest
 {
-    [JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
+	[JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
 
-    [JsonPropertyName("hash_type")] public required string HashType { get; init; }
+	[JsonPropertyName("hash_type")] public required string HashType { get; init; }
 }

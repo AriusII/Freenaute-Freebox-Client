@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record CreateDirectoryRequest
 {
-    [JsonPropertyName("parent")] public required EncodedFreeboxPath Parent { get; init; }
+	[JsonPropertyName("parent")] public required EncodedFreeboxPath Parent { get; init; }
 
-    [JsonPropertyName("dirname")] public required string Dirname { get; init; }
+	[JsonPropertyName("dirname")] public required string Dirname { get; init; }
 }

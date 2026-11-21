@@ -8,10 +8,10 @@ namespace Freenaute.Freebox.Mapper.ServerSide.Authentication.Login;
 /// <param name="PermissionsModel">The permissions associated with the session.</param>
 /// <seealso cref="SessionPermissionModel" />
 public sealed record SessionResponse(
-    [property: JsonPropertyName("session_token")]
-    string SessionToken,
-    [property: JsonPropertyName("challenge")]
-    string Challenge,
-    [property: JsonPropertyName("permissions")]
-    SessionPermissionModel PermissionsModel
+	[property: JsonPropertyName("session_token")]
+	string SessionToken,
+	[property: JsonPropertyName("challenge")]
+	string Challenge,
+	[property: JsonPropertyName("permissions")]
+	SessionPermissionModel PermissionsModel
 );

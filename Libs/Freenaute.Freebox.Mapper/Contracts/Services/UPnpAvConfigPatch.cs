@@ -4,21 +4,18 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 /// <seealso href="http://mafreebox.freebox.fr/doc/index.html#UPnPAVConfig" />
 public sealed record UPnpAvConfigPatch
 {
-    [JsonPropertyName("enabled")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> Enabled { get; init; }
+	[JsonPropertyName("enabled")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> Enabled { get; init; }
 
-    public void Validate()
-    {
-        if (Enabled.IsNull)
-        {
-            throw new ArgumentException("Explicit null is not documented for UPnPAVConfig.Enabled.", nameof(Enabled));
-        }
-    }
+	public void Validate()
+	{
+		if (Enabled.IsNull)
+		{
+			throw new ArgumentException("Explicit null is not documented for UPnPAVConfig.Enabled.", nameof(Enabled));
+		}
+	}
 
-    public override string ToString()
-    {
-        return nameof(UPnpAvConfigPatch);
-    }
+	public override string ToString() => nameof(UPnpAvConfigPatch);
 }

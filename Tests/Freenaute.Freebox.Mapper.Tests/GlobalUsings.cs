@@ -1,0 +1,15 @@
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Text.Json.Serialization.Metadata;
+global using Freenaute.Freebox.Mapper;
+global using Freenaute.Freebox.Mapper.Adapter;
+global using Freenaute.Freebox.Mapper.Contracts.Files;
+global using Freenaute.Freebox.Mapper.Contracts.Network;
+global using Freenaute.Freebox.Mapper.Contracts.Primitives;
+global using Freenaute.Freebox.Mapper.Contracts.Protocol;
+global using Freenaute.Freebox.Mapper.Contracts.Services;
+global using Freenaute.Freebox.Mapper.Contracts.SystemHome;
+global using Freenaute.Freebox.Mapper.Contracts.WebSockets;
+global using Freenaute.Freebox.Mapper.Serialization;
+global using Freenaute.Freebox.Mapper.ServerSide.General;
+global using Xunit;

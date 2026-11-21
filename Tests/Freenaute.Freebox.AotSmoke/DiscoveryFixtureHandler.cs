@@ -1,0 +1,35 @@
+namespace Freenaute.Freebox.AotSmoke;
+
+internal sealed class DiscoveryFixtureHandler : HttpMessageHandler
+{
+	private readonly bool _fail;
+
+	public DiscoveryFixtureHandler(bool fail = false)
+	{
+		_fail = fail;
+	}
+
+	public int RequestCount { get; private set; }
+
+	public static DiscoveryFixtureHandler FailingIfCalled() => new(true);
+
+	protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+		CancellationToken cancellationToken)
+	{
+		RequestCount++;
+		if (_fail)
+		{
+			throw new InvalidOperationException("HTTP discovery should not run after a valid mDNS result.");
+		}
+
+		const string Json = """
+		                    {"uid":"fixture-http-uid","device_name":"Server","box_model":"fixture","box_model_name":"Fixture",
+		                     "api_version":"4.0","api_domain":"fixture.example","api_base_url":"/api/",
+		                     "https_available":true,"https_port":443}
+		                    """;
+		return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+		{
+			Content = new StringContent(Json, Encoding.UTF8, "application/json")
+		});
+	}
+}

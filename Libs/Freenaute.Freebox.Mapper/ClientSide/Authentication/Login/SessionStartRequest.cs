@@ -7,10 +7,10 @@ namespace Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
 /// <param name="Password">The password computed using the challenge and the app_token.</param>
 /// <param name="AppVersion">The optional application version supplied by the client.</param>
 public sealed record SessionStartRequest(
-    [property: JsonPropertyName("app_id")] string AppId,
-    [property: JsonPropertyName("password")]
-    string Password,
-    [property: JsonPropertyName("app_version")]
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    string? AppVersion = null
+	[property: JsonPropertyName("app_id")] string AppId,
+	[property: JsonPropertyName("password")]
+	string Password,
+	[property: JsonPropertyName("app_version")]
+	[property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+	string? AppVersion = null
 );

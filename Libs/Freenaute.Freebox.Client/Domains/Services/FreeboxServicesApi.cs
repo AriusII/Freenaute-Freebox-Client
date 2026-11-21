@@ -6,30 +6,24 @@ namespace Freenaute.Freebox.Client.Domains.Services;
 /// </summary>
 public sealed class FreeboxServicesApi : IFreeboxServicesApi
 {
-    public FreeboxServicesApi(IFreeboxTransport transport)
-    {
-        ArgumentNullException.ThrowIfNull(transport);
-        var binary = transport as IFreeboxBinaryTransport;
-        Call = new FreeboxCallApi(transport, binary);
-        Contacts = new FreeboxContactsApi(transport);
-        Ftp = new FreeboxFtpApi(transport);
-        Tftp = new FreeboxTftpApi(transport);
-        NetworkShare = new FreeboxNetworkShareApi(transport);
-        UPnpAv = new FreeboxUPnpAvApi(transport);
-        Vpn = new FreeboxVpnApi(transport, binary);
-        VpnClient = new FreeboxVpnClientApi(transport);
-        Player = new FreeboxPlayerApi(transport);
-        Pvr = new FreeboxPvrApi(transport);
-    }
+	public FreeboxServicesApi(IFreeboxTransport transport)
+	{
+		ArgumentNullException.ThrowIfNull(transport);
+		var binary = transport as IFreeboxBinaryTransport;
+		Call = new FreeboxCallApi(transport, binary);
+		Contacts = new FreeboxContactsApi(transport);
+		Ftp = new FreeboxFtpApi(transport);
+		Tftp = new FreeboxTftpApi(transport);
+		NetworkShare = new FreeboxNetworkShareApi(transport);
+		UPnpAv = new FreeboxUPnpAvApi(transport);
+		Player = new FreeboxPlayerApi(transport);
+	}
 
-    public FreeboxCallApi Call { get; }
-    public FreeboxContactsApi Contacts { get; }
-    public FreeboxFtpApi Ftp { get; }
-    public FreeboxTftpApi Tftp { get; }
-    public FreeboxNetworkShareApi NetworkShare { get; }
-    public FreeboxUPnpAvApi UPnpAv { get; }
-    public FreeboxVpnApi Vpn { get; }
-    public FreeboxVpnClientApi VpnClient { get; }
-    public FreeboxPlayerApi Player { get; }
-    public FreeboxPvrApi Pvr { get; }
+	public FreeboxCallApi Call { get; }
+	public FreeboxContactsApi Contacts { get; }
+	public FreeboxFtpApi Ftp { get; }
+	public FreeboxTftpApi Tftp { get; }
+	public FreeboxNetworkShareApi NetworkShare { get; }
+	public FreeboxUPnpAvApi UPnpAv { get; }
+	public FreeboxPlayerApi Player { get; }
 }

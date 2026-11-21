@@ -6,9 +6,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record FileTransferRequest
 {
-    [JsonPropertyName("files")] public required EncodedFreeboxPath[] Files { get; init; }
+	[JsonPropertyName("files")] public required EncodedFreeboxPath[] Files { get; init; }
 
-    [JsonPropertyName("dst")] public required EncodedFreeboxPath Dst { get; init; }
+	[JsonPropertyName("dst")] public required EncodedFreeboxPath Dst { get; init; }
 
-    [JsonPropertyName("mode")] public required FileConflictMode Mode { get; init; }
+	[JsonPropertyName("mode")] public required FileConflictMode Mode { get; init; }
 }

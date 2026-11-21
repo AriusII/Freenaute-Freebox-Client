@@ -2,23 +2,20 @@ namespace Freenaute.Freebox.Client.Domains.WebSockets;
 
 public sealed class FreeboxUploadDirectory
 {
-    private readonly EncodedFreeboxPath _directory;
-    private readonly IFreeboxWebSocketTransport _transport;
+	private readonly EncodedFreeboxPath _directory;
+	private readonly IFreeboxWebSocketTransport _transport;
 
-    public FreeboxUploadDirectory(IFreeboxWebSocketTransport transport, EncodedFreeboxPath directory)
-    {
-        ArgumentNullException.ThrowIfNull(transport);
-        if (!directory.IsInitialized)
-        {
-            throw new ArgumentException("A destination requires an encoded Freebox path.", nameof(directory));
-        }
+	public FreeboxUploadDirectory(IFreeboxWebSocketTransport transport, EncodedFreeboxPath directory)
+	{
+		ArgumentNullException.ThrowIfNull(transport);
+		if (!directory.IsInitialized)
+		{
+			throw new ArgumentException("A destination requires an encoded Freebox path.", nameof(directory));
+		}
 
-        _transport = transport;
-        _directory = directory;
-    }
+		_transport = transport;
+		_directory = directory;
+	}
 
-    public FreeboxUploadCommand File(string filename)
-    {
-        return new FreeboxUploadCommand(_transport, _directory, filename);
-    }
+	public FreeboxUploadCommand File(string filename) => new(_transport, _directory, filename);
 }

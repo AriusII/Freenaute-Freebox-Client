@@ -14,94 +14,94 @@ namespace Freenaute.Freebox.Mapper.ServerSide.General;
 /// <param name="ApiVersion">The current API version on the Freebox.</param>
 [method: JsonConstructor]
 public sealed record ApiVersionResponse(
-    [property: JsonPropertyName("uid")] string? Uid,
-    [property: JsonPropertyName("device_name")]
-    string? DeviceName,
-    [property: JsonPropertyName("box_model")]
-    string? BoxModel,
-    [property: JsonPropertyName("box_model_name")]
-    string? BoxModelName,
-    [property: JsonPropertyName("api_version")]
-    string ApiVersion,
-    [property: JsonPropertyName("api_domain")]
-    string? ApiDomain,
-    [property: JsonPropertyName("api_base_url")]
-    string ApiBaseUrl,
-    [property: JsonPropertyName("https_available")]
-    bool? HttpsAvailable,
-    [property: JsonPropertyName("https_port")]
-    int? HttpsPort
+	[property: JsonPropertyName("uid")] string? Uid,
+	[property: JsonPropertyName("device_name")]
+	string? DeviceName,
+	[property: JsonPropertyName("box_model")]
+	string? BoxModel,
+	[property: JsonPropertyName("box_model_name")]
+	string? BoxModelName,
+	[property: JsonPropertyName("api_version")]
+	string ApiVersion,
+	[property: JsonPropertyName("api_domain")]
+	string? ApiDomain,
+	[property: JsonPropertyName("api_base_url")]
+	string ApiBaseUrl,
+	[property: JsonPropertyName("https_available")]
+	bool? HttpsAvailable,
+	[property: JsonPropertyName("https_port")]
+	int? HttpsPort
 )
 {
-    /// <summary>Creates discovery metadata from a known model identifier.</summary>
-    public ApiVersionResponse(string? Uid, string? DeviceName, BoxModels BoxModel, string? BoxModelName,
-        string ApiVersion, string? ApiDomain, string ApiBaseUrl, bool HttpsAvailable, int HttpsPort)
-        : this(Uid, DeviceName, BoxModel.GetWireName(), BoxModelName, ApiVersion, ApiDomain, ApiBaseUrl,
-            HttpsAvailable, HttpsPort)
-    {
-    }
+	/// <summary>Creates discovery metadata from a known model identifier.</summary>
+	public ApiVersionResponse(string? Uid, string? DeviceName, BoxModels BoxModel, string? BoxModelName,
+		string ApiVersion, string? ApiDomain, string ApiBaseUrl, bool HttpsAvailable, int HttpsPort)
+		: this(Uid, DeviceName, BoxModel.GetWireName(), BoxModelName, ApiVersion, ApiDomain, ApiBaseUrl,
+			HttpsAvailable, HttpsPort)
+	{
+	}
 
-    /// <summary>The known model classification, or null for an absent or unrecognized identifier.</summary>
-    [JsonIgnore]
-    public BoxModels? KnownBoxModel => BoxModelNames.Classify(BoxModel);
+	/// <summary>The known model classification, or null for an absent or unrecognized identifier.</summary>
+	[JsonIgnore]
+	public BoxModels? KnownBoxModel => BoxModelNames.Classify(BoxModel);
 
-    /// <summary>
-    ///     Gets the absolute Freebox API URL, with a normalized base path and a trailing slash.
-    /// </summary>
-    /// <remarks>
-    ///     Constructs the URL using the following components:
-    ///     <para>
-    ///         The trailing slash allows relative request paths to retain the API version segment.
-    ///         HTTPS uses the advertised port; URI formatting omits a default port.
-    ///     </para>
-    /// </remarks>
-    /// <example>
-    ///     If HttpsAvailable is true, ApiDomain is "example.com", HttpsPort is 443, ApiBaseUrl is "/api", and ApiVersion is
-    ///     "1.0", <br />
-    ///     the resulting URL will be "https://example.com/api/v1/".
-    /// </example>
-    [JsonIgnore]
-    public string ApiUrl => ApiUri.AbsoluteUri;
+	/// <summary>
+	///     Gets the absolute Freebox API URL, with a normalized base path and a trailing slash.
+	/// </summary>
+	/// <remarks>
+	///     Constructs the URL using the following components:
+	///     <para>
+	///         The trailing slash allows relative request paths to retain the API version segment.
+	///         HTTPS uses the advertised port; URI formatting omits a default port.
+	///     </para>
+	/// </remarks>
+	/// <example>
+	///     If HttpsAvailable is true, ApiDomain is "example.com", HttpsPort is 443, ApiBaseUrl is "/api", and ApiVersion is
+	///     "4.0", <br />
+	///     the resulting URL will be "https://example.com/api/v4/".
+	/// </example>
+	[JsonIgnore]
+	public string ApiUrl => ApiUri.AbsoluteUri;
 
-    /// <summary>
-    ///     Gets the advertised API base address for use by an HTTP client.
-    /// </summary>
-    [JsonIgnore]
-    public Uri ApiUri
-    {
-        get
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(ApiDomain);
-            ArgumentException.ThrowIfNullOrWhiteSpace(ApiVersion);
-            ArgumentNullException.ThrowIfNull(ApiBaseUrl);
+	/// <summary>
+	///     Gets the advertised API base address for use by an HTTP client.
+	/// </summary>
+	[JsonIgnore]
+	public Uri ApiUri
+	{
+		get
+		{
+			ArgumentException.ThrowIfNullOrWhiteSpace(ApiDomain);
+			ArgumentException.ThrowIfNullOrWhiteSpace(ApiVersion);
+			ArgumentNullException.ThrowIfNull(ApiBaseUrl);
 
-            if (HttpsAvailable is null)
-            {
-                throw new InvalidOperationException("Discovery did not advertise whether HTTPS is available.");
-            }
+			if (HttpsAvailable is null)
+			{
+				throw new InvalidOperationException("Discovery did not advertise whether HTTPS is available.");
+			}
 
-            int versionSeparator = ApiVersion.IndexOf('.');
-            var majorVersion = versionSeparator < 0 ? ApiVersion.AsSpan() : ApiVersion.AsSpan(0, versionSeparator);
-            if (!int.TryParse(majorVersion, NumberStyles.None,
-                    CultureInfo.InvariantCulture, out int major) || major <= 0)
-            {
-                throw new FormatException("The advertised API version must have a positive integer major version.");
-            }
+			int versionSeparator = ApiVersion.IndexOf('.', StringComparison.OrdinalIgnoreCase);
+			var majorVersion = versionSeparator < 0 ? ApiVersion.AsSpan() : ApiVersion.AsSpan(0, versionSeparator);
+			if (!int.TryParse(majorVersion, NumberStyles.None,
+				    CultureInfo.InvariantCulture, out int major) || major <= 0)
+			{
+				throw new FormatException("The advertised API version must have a positive integer major version.");
+			}
 
-            if (HttpsAvailable == true && HttpsPort is null or < 1 or > 65535)
-            {
-                throw new ArgumentOutOfRangeException(nameof(HttpsPort), "The advertised HTTPS port is invalid.");
-            }
+			if (HttpsAvailable is true && HttpsPort is null or < 1 or > 65535)
+			{
+				throw new ArgumentOutOfRangeException(nameof(HttpsPort), "The advertised HTTPS port is invalid.");
+			}
 
-            string basePath = string.Join('/', ApiBaseUrl.Split('/', StringSplitOptions.RemoveEmptyEntries));
-            string path = basePath.Length == 0 ? $"/v{major}/" : $"/{basePath}/v{major}/";
-            return new UriBuilder
-            {
-                Scheme = HttpsAvailable == true ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
-                Host = ApiDomain,
-                Port = HttpsAvailable == true ? HttpsPort!.Value : 80,
-                Path = path
-            }.Uri;
-        }
-    }
+			string basePath = string.Join('/', ApiBaseUrl.Split('/', StringSplitOptions.RemoveEmptyEntries));
+			string path = basePath.Length is 0 ? $"/v{major}/" : $"/{basePath}/v{major}/";
+			return new UriBuilder
+			{
+				Scheme = HttpsAvailable is true ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
+				Host = ApiDomain,
+				Port = HttpsAvailable is true ? HttpsPort!.Value : 80,
+				Path = path
+			}.Uri;
+		}
+	}
 }

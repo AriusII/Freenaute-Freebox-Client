@@ -4,8 +4,8 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 [JsonConverter(typeof(JsonStringEnumConverter<DownloadFilePriority>))]
 public enum DownloadFilePriority
 {
-    [JsonStringEnumMemberName("no_dl")] NoDl,
-    [JsonStringEnumMemberName("low")] Low,
-    [JsonStringEnumMemberName("normal")] Normal,
-    [JsonStringEnumMemberName("high")] High
+	[JsonStringEnumMemberName("no_dl")] NoDl,
+	[JsonStringEnumMemberName("low")] Low,
+	[JsonStringEnumMemberName("normal")] Normal,
+	[JsonStringEnumMemberName("high")] High
 }

@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome;
 /// </summary>
 public sealed record SystemConfigFan
 {
-    [JsonPropertyName("id")] public string? Id { get; init; }
-    [JsonPropertyName("name")] public string? Name { get; init; }
-    [JsonPropertyName("value")] public long? Value { get; init; }
+	[JsonPropertyName("id")] public string? Id { get; init; }
+	[JsonPropertyName("name")] public string? Name { get; init; }
+	[JsonPropertyName("value")] public long? Value { get; init; }
 }

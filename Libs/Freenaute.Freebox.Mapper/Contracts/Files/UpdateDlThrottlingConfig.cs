@@ -6,23 +6,23 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record UpdateDlThrottlingConfig
 {
-    [JsonPropertyName("normal")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<UpdateDlRate>))]
-    public Optional<UpdateDlRate> Normal { get; init; }
+	[JsonPropertyName("normal")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<UpdateDlRate>))]
+	public Optional<UpdateDlRate> Normal { get; init; }
 
-    [JsonPropertyName("slow")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<UpdateDlRate>))]
-    public Optional<UpdateDlRate> Slow { get; init; }
+	[JsonPropertyName("slow")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<UpdateDlRate>))]
+	public Optional<UpdateDlRate> Slow { get; init; }
 
-    [JsonPropertyName("schedule")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<DownloadScheduleMode[]>))]
-    public Optional<DownloadScheduleMode[]> Schedule { get; init; }
+	[JsonPropertyName("schedule")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<DownloadScheduleMode[]>))]
+	public Optional<DownloadScheduleMode[]> Schedule { get; init; }
 
-    [JsonPropertyName("mode")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<DownloadThrottlingMode>))]
-    public Optional<DownloadThrottlingMode> Mode { get; init; }
+	[JsonPropertyName("mode")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<DownloadThrottlingMode>))]
+	public Optional<DownloadThrottlingMode> Mode { get; init; }
 }

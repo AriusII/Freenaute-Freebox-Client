@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LanHostName
 {
-    /// <summary>Host name</summary>
-    [JsonPropertyName("name")]
-    public string? Name { get; init; }
+	/// <summary>Host name</summary>
+	[JsonPropertyName("name")]
+	public string? Name { get; init; }
 
-    /// <summary>source of the name</summary>
-    [JsonPropertyName("source")]
-    public string? Source { get; init; }
+	/// <summary>source of the name</summary>
+	[JsonPropertyName("source")]
+	public string? Source { get; init; }
 }

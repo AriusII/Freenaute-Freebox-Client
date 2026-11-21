@@ -6,27 +6,27 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class DhcpStaticLeasePatch
 {
-    /// <summary>Host mac address</summary>
-    [JsonPropertyName("mac")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Mac { get; init; }
+	/// <summary>Host mac address</summary>
+	[JsonPropertyName("mac")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Mac { get; init; }
 
-    /// <summary>an optional comment</summary>
-    [JsonPropertyName("comment")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Comment { get; init; }
+	/// <summary>an optional comment</summary>
+	[JsonPropertyName("comment")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Comment { get; init; }
 
-    /// <summary>IPv4 to assign to the host</summary>
-    [JsonPropertyName("ip")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Ip { get; init; }
+	/// <summary>IPv4 to assign to the host</summary>
+	[JsonPropertyName("ip")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Ip { get; init; }
 
-    /// <summary>List of dns options to include in DHCP reply</summary>
-    [JsonPropertyName("options")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<DhcpOptionWrite[]>))]
-    public Optional<DhcpOptionWrite[]> Options { get; init; }
+	/// <summary>List of dns options to include in DHCP reply</summary>
+	[JsonPropertyName("options")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<DhcpOptionWrite[]>))]
+	public Optional<DhcpOptionWrite[]> Options { get; init; }
 }

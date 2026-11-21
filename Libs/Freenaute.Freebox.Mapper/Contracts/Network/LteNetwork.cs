@@ -6,21 +6,21 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LteNetwork
 {
-    [JsonPropertyName("pdn_up")] public bool? PdnUp { get; init; }
+	[JsonPropertyName("pdn_up")] public bool? PdnUp { get; init; }
 
-    [JsonPropertyName("has_ipv6")] public bool? HasIpv6 { get; init; }
+	[JsonPropertyName("has_ipv6")] public bool? HasIpv6 { get; init; }
 
-    [JsonPropertyName("ipv6_dns")] public string? Ipv6Dns { get; init; }
+	[JsonPropertyName("ipv6_dns")] public string? Ipv6Dns { get; init; }
 
-    [JsonPropertyName("ipv6")] public string? Ipv6 { get; init; }
+	[JsonPropertyName("ipv6")] public string? Ipv6 { get; init; }
 
-    [JsonPropertyName("ipv6_netmask")] public string? Ipv6Netmask { get; init; }
+	[JsonPropertyName("ipv6_netmask")] public string? Ipv6Netmask { get; init; }
 
-    [JsonPropertyName("has_ipv4")] public bool? HasIpv4 { get; init; }
+	[JsonPropertyName("has_ipv4")] public bool? HasIpv4 { get; init; }
 
-    [JsonPropertyName("ipv4_dns")] public string? Ipv4Dns { get; init; }
+	[JsonPropertyName("ipv4_dns")] public string? Ipv4Dns { get; init; }
 
-    [JsonPropertyName("ipv4")] public string? Ipv4 { get; init; }
+	[JsonPropertyName("ipv4")] public string? Ipv4 { get; init; }
 
-    [JsonPropertyName("ipv4_netmask")] public string? Ipv4Netmask { get; init; }
+	[JsonPropertyName("ipv4_netmask")] public string? Ipv4Netmask { get; init; }
 }

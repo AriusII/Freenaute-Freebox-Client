@@ -4,16 +4,13 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 /// <seealso href="http://mafreebox.freebox.fr/doc/index.html#ContactEmail" />
 public sealed record ContactEmail
 {
-    [JsonPropertyName("id")] public long? Id { get; init; }
+	[JsonPropertyName("id")] public long? Id { get; init; }
 
-    [JsonPropertyName("contact_id")] public long? ContactId { get; init; }
+	[JsonPropertyName("contact_id")] public long? ContactId { get; init; }
 
-    [JsonPropertyName("type")] public ContactEmailType? Type { get; init; }
+	[JsonPropertyName("type")] public ContactEmailType? Type { get; init; }
 
-    [JsonPropertyName("email")] public string? Email { get; init; }
+	[JsonPropertyName("email")] public string? Email { get; init; }
 
-    public override string ToString()
-    {
-        return nameof(ContactEmail);
-    }
+	public override string ToString() => nameof(ContactEmail);
 }

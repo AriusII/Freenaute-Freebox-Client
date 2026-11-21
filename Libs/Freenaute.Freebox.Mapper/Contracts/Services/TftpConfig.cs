@@ -4,12 +4,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 /// <seealso href="http://mafreebox.freebox.fr/doc/index.html#TftpConfig" />
 public sealed record TftpConfig
 {
-    [JsonPropertyName("enabled")] public bool? Enabled { get; init; }
+	[JsonPropertyName("enabled")] public bool? Enabled { get; init; }
 
-    [JsonPropertyName("root")] public string? Root { get; init; }
+	[JsonPropertyName("root")] public string? Root { get; init; }
 
-    public override string ToString()
-    {
-        return nameof(TftpConfig);
-    }
+	public override string ToString() => nameof(TftpConfig);
 }

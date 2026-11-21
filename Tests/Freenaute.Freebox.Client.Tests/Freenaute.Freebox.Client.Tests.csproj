@@ -2,15 +2,14 @@
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <OutputType>Exe</OutputType>
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+        <!-- Tests intentionally control cancellation, synchronization context and string comparison fixtures. -->
+        <!-- xUnit1031 is used only by compatibility tests that exercise synchronous public entry points. -->
+        <NoWarn>$(NoWarn);MA0002;MA0004;MA0006;MA0051;MA0074;xUnit1031;xUnit1051</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-        <PackageReference Include="xunit"/>
-        <PackageReference Include="xunit.runner.visualstudio">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        <PackageReference Include="xunit.v3"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj"/>

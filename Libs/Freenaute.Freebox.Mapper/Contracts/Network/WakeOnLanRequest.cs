@@ -6,13 +6,13 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WakeOnLanRequest
 {
-    [JsonPropertyName("mac")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Mac { get; init; }
+	[JsonPropertyName("mac")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Mac { get; init; }
 
-    [JsonPropertyName("password")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Password { get; init; }
+	[JsonPropertyName("password")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Password { get; init; }
 }

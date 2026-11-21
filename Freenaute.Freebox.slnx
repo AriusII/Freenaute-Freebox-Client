@@ -1,0 +1,16 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU"/>
+        <Platform Name="x64"/>
+        <Platform Name="x86"/>
+    </Configurations>
+    <Folder Name="/Libs/">
+        <Project Path="Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj"/>
+        <Project Path="Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj"/>
+    </Folder>
+    <Folder Name="/Tests/">
+        <Project Path="Tests/Freenaute.Freebox.Client.Tests/Freenaute.Freebox.Client.Tests.csproj"/>
+        <Project Path="Tests/Freenaute.Freebox.Mapper.Tests/Freenaute.Freebox.Mapper.Tests.csproj"/>
+        <Project Path="Tests/Freenaute.Freebox.AotSmoke/Freenaute.Freebox.AotSmoke.csproj"/>
+    </Folder>
+</Solution>

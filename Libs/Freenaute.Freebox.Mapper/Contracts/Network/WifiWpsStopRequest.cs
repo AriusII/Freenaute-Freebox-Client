@@ -6,8 +6,8 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiWpsStopRequest
 {
-    [JsonPropertyName("session_id")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> SessionId { get; init; }
+	[JsonPropertyName("session_id")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> SessionId { get; init; }
 }

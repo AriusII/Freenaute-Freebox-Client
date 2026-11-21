@@ -12,9 +12,9 @@ namespace Freenaute.Freebox.Mapper.ServerSide.WebSocket;
 ///     notification.
 /// </param>
 public sealed record WebSocketNotification(
-    [property: JsonPropertyName("action")] string Action,
-    [property: JsonPropertyName("success")]
-    bool Success,
-    [property: JsonPropertyName("source")] string Source,
-    [property: JsonPropertyName("event")] string Event,
-    [property: JsonPropertyName("result")] JsonElement? Result = null);
+	[property: JsonPropertyName("action")] string Action,
+	[property: JsonPropertyName("success")]
+	bool Success,
+	[property: JsonPropertyName("source")] string Source,
+	[property: JsonPropertyName("event")] string Event,
+	[property: JsonPropertyName("result")] JsonElement? Result = null);

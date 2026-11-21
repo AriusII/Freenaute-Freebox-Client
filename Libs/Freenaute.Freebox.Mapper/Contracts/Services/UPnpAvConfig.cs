@@ -4,10 +4,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 /// <seealso href="http://mafreebox.freebox.fr/doc/index.html#UPnPAVConfig" />
 public sealed record UPnpAvConfig
 {
-    [JsonPropertyName("enabled")] public bool? Enabled { get; init; }
+	[JsonPropertyName("enabled")] public bool? Enabled { get; init; }
 
-    public override string ToString()
-    {
-        return nameof(UPnpAvConfig);
-    }
+	public override string ToString() => nameof(UPnpAvConfig);
 }

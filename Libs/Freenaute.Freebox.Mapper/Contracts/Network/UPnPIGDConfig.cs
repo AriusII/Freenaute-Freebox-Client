@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class UPnPIGDConfig
 {
-    /// <summary>is the UPnP IGD service enabled</summary>
-    [JsonPropertyName("enabled")]
-    public bool? Enabled { get; init; }
+	/// <summary>is the UPnP IGD service enabled</summary>
+	[JsonPropertyName("enabled")]
+	public bool? Enabled { get; init; }
 
-    /// <summary>UPnP IGD protocol version Supported values are 1 / 2</summary>
-    [JsonPropertyName("version")]
-    public long? Version { get; init; }
+	/// <summary>UPnP IGD protocol version Supported values are 1 / 2</summary>
+	[JsonPropertyName("version")]
+	public long? Version { get; init; }
 }

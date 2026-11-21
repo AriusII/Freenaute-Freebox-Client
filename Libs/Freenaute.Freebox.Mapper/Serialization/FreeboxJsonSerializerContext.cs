@@ -4,8 +4,8 @@ namespace Freenaute.Freebox.Mapper.Serialization;
 ///     Supplies generated JSON metadata for the Freebox wire contracts without runtime reflection.
 /// </summary>
 [JsonSourceGenerationOptions(
-    GenerationMode = JsonSourceGenerationMode.Default,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+	GenerationMode = JsonSourceGenerationMode.Default,
+	DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(ApiVersionResponse))]
 [JsonSerializable(typeof(TokenRequest))]
 [JsonSerializable(typeof(SessionStartRequest))]

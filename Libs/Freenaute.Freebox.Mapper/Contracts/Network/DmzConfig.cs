@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class DmzConfig
 {
-    /// <summary>dmz host IP</summary>
-    [JsonPropertyName("ip")]
-    public string? Ip { get; init; }
+	/// <summary>dmz host IP</summary>
+	[JsonPropertyName("ip")]
+	public string? Ip { get; init; }
 
-    /// <summary>is dmz enabled</summary>
-    [JsonPropertyName("enabled")]
-    public bool? Enabled { get; init; }
+	/// <summary>is dmz enabled</summary>
+	[JsonPropertyName("enabled")]
+	public bool? Enabled { get; init; }
 }

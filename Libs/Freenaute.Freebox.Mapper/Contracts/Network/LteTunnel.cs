@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LteTunnel
 {
-    [JsonPropertyName("lte")] public LteTunnelDetails? Lte { get; init; }
+	[JsonPropertyName("lte")] public LteTunnelDetails? Lte { get; init; }
 
-    [JsonPropertyName("xdsl")] public LteTunnelDetails? Xdsl { get; init; }
+	[JsonPropertyName("xdsl")] public LteTunnelDetails? Xdsl { get; init; }
 }

@@ -6,15 +6,15 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LanHostNetworkControl
 {
-    /// <summary>Id of profile this device is associated with.</summary>
-    [JsonPropertyName("profile_id")]
-    public long? ProfileId { get; init; }
+	/// <summary>Id of profile this device is associated with.</summary>
+	[JsonPropertyName("profile_id")]
+	public long? ProfileId { get; init; }
 
-    /// <summary>Name of profile this device is associated with.</summary>
-    [JsonPropertyName("name")]
-    public string? Name { get; init; }
+	/// <summary>Name of profile this device is associated with.</summary>
+	[JsonPropertyName("name")]
+	public string? Name { get; init; }
 
-    /// <summary>Mode described in Network Control Object</summary>
-    [JsonPropertyName("current_mode")]
-    public string? CurrentMode { get; init; }
+	/// <summary>Mode described in Network Control Object</summary>
+	[JsonPropertyName("current_mode")]
+	public string? CurrentMode { get; init; }
 }

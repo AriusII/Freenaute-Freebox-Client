@@ -6,15 +6,15 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LteSim
 {
-    [JsonPropertyName("present")] public bool? Present { get; init; }
+	[JsonPropertyName("present")] public bool? Present { get; init; }
 
-    [JsonPropertyName("pin_locked")] public bool? PinLocked { get; init; }
+	[JsonPropertyName("pin_locked")] public bool? PinLocked { get; init; }
 
-    [JsonPropertyName("puk_remaining")] public long? PukRemaining { get; init; }
+	[JsonPropertyName("puk_remaining")] public long? PukRemaining { get; init; }
 
-    [JsonPropertyName("iccid")] public string? Iccid { get; init; }
+	[JsonPropertyName("iccid")] public string? Iccid { get; init; }
 
-    [JsonPropertyName("puk_locked")] public bool? PukLocked { get; init; }
+	[JsonPropertyName("puk_locked")] public bool? PukLocked { get; init; }
 
-    [JsonPropertyName("pin_remaining")] public long? PinRemaining { get; init; }
+	[JsonPropertyName("pin_remaining")] public long? PinRemaining { get; init; }
 }

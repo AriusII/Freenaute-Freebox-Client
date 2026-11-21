@@ -6,9 +6,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class SwitchMacEntry
 {
-    [JsonPropertyName("mac")] public string? Mac { get; init; }
+	[JsonPropertyName("mac")] public string? Mac { get; init; }
 
-    [JsonPropertyName("name")] public string? Name { get; init; }
+	[JsonPropertyName("name")] public string? Name { get; init; }
 
-    [JsonPropertyName("hostname")] public string? Hostname { get; init; }
+	[JsonPropertyName("hostname")] public string? Hostname { get; init; }
 }

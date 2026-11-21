@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LanHostTypeDescriptor
 {
-    [JsonPropertyName("icon")] public string? Icon { get; init; }
+	[JsonPropertyName("icon")] public string? Icon { get; init; }
 
-    [JsonPropertyName("type")] public string? Type { get; init; }
+	[JsonPropertyName("type")] public string? Type { get; init; }
 
-    [JsonPropertyName("name")] public string? Name { get; init; }
+	[JsonPropertyName("name")] public string? Name { get; init; }
 
-    [JsonPropertyName("category")] public string? Category { get; init; }
+	[JsonPropertyName("category")] public string? Category { get; init; }
 }

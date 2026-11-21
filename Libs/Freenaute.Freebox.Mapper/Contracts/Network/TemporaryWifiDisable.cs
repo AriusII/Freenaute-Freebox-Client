@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class TemporaryWifiDisable
 {
-    /// <summary>remaining seconds the wifi is temporarily disabled. Set to 0 to stop the temporary wifi disabling period.</summary>
-    [JsonPropertyName("remaining")]
-    public long? Remaining { get; init; }
+	/// <summary>remaining seconds the wifi is temporarily disabled. Set to 0 to stop the temporary wifi disabling period.</summary>
+	[JsonPropertyName("remaining")]
+	public long? Remaining { get; init; }
 }

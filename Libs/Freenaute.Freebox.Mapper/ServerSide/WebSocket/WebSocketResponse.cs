@@ -13,13 +13,13 @@ namespace Freenaute.Freebox.Mapper.ServerSide.WebSocket;
 /// <param name="ErrorCode">In case of request error, this error code provides information about the error.</param>
 /// <param name="Message">In case of error, provides a French error message relative to the error.</param>
 public sealed record WebSocketResponse(
-    [property: JsonPropertyName("request_id")]
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    int? RequestId,
-    [property: JsonPropertyName("action")] string Action,
-    [property: JsonPropertyName("success")]
-    bool Success,
-    [property: JsonPropertyName("result")] JsonElement? Result = null,
-    [property: JsonPropertyName("error_code")]
-    string? ErrorCode = null,
-    [property: JsonPropertyName("msg")] string? Message = null);
+	[property: JsonPropertyName("request_id")]
+	[property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+	int? RequestId,
+	[property: JsonPropertyName("action")] string Action,
+	[property: JsonPropertyName("success")]
+	bool Success,
+	[property: JsonPropertyName("result")] JsonElement? Result = null,
+	[property: JsonPropertyName("error_code")]
+	string? ErrorCode = null,
+	[property: JsonPropertyName("msg")] string? Message = null);

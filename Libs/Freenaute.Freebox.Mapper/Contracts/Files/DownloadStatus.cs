@@ -4,22 +4,22 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 [JsonConverter(typeof(JsonStringEnumConverter<DownloadStatus>))]
 public enum DownloadStatus
 {
-    [JsonStringEnumMemberName("stopped")] Stopped,
-    [JsonStringEnumMemberName("queued")] Queued,
-    [JsonStringEnumMemberName("starting")] Starting,
+	[JsonStringEnumMemberName("stopped")] Stopped,
+	[JsonStringEnumMemberName("queued")] Queued,
+	[JsonStringEnumMemberName("starting")] Starting,
 
-    [JsonStringEnumMemberName("downloading")]
-    Downloading,
-    [JsonStringEnumMemberName("stopping")] Stopping,
-    [JsonStringEnumMemberName("error")] Error,
-    [JsonStringEnumMemberName("done")] Done,
-    [JsonStringEnumMemberName("checking")] Checking,
+	[JsonStringEnumMemberName("downloading")]
+	Downloading,
+	[JsonStringEnumMemberName("stopping")] Stopping,
+	[JsonStringEnumMemberName("error")] Error,
+	[JsonStringEnumMemberName("done")] Done,
+	[JsonStringEnumMemberName("checking")] Checking,
 
-    [JsonStringEnumMemberName("repairing")]
-    Repairing,
+	[JsonStringEnumMemberName("repairing")]
+	Repairing,
 
-    [JsonStringEnumMemberName("extracting")]
-    Extracting,
-    [JsonStringEnumMemberName("seeding")] Seeding,
-    [JsonStringEnumMemberName("retry")] Retry
+	[JsonStringEnumMemberName("extracting")]
+	Extracting,
+	[JsonStringEnumMemberName("seeding")] Seeding,
+	[JsonStringEnumMemberName("retry")] Retry
 }

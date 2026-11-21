@@ -6,13 +6,13 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class DDNSConfig
 {
-    [JsonPropertyName("enabled")] public bool? Enabled { get; init; }
+	[JsonPropertyName("enabled")] public bool? Enabled { get; init; }
 
-    /// <summary>dns name to use to register</summary>
-    [JsonPropertyName("hostname")]
-    public string? Hostname { get; init; }
+	/// <summary>dns name to use to register</summary>
+	[JsonPropertyName("hostname")]
+	public string? Hostname { get; init; }
 
-    /// <summary>username to use to register</summary>
-    [JsonPropertyName("user")]
-    public string? User { get; init; }
+	/// <summary>username to use to register</summary>
+	[JsonPropertyName("user")]
+	public string? User { get; init; }
 }

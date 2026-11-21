@@ -6,15 +6,15 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiDiagnosticFix
 {
-    /// <summary>The operation prose explicitly allows omitting aps and/or bsss.</summary>
-    [JsonPropertyName("aps")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<WifiApDiagnosticFix[]>))]
-    public Optional<WifiApDiagnosticFix[]> Aps { get; init; }
+	/// <summary>The operation prose explicitly allows omitting aps and/or bsss.</summary>
+	[JsonPropertyName("aps")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<WifiApDiagnosticFix[]>))]
+	public Optional<WifiApDiagnosticFix[]> Aps { get; init; }
 
-    /// <summary>The operation prose explicitly allows omitting aps and/or bsss.</summary>
-    [JsonPropertyName("bsss")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<WifiBssDiagnosticFix[]>))]
-    public Optional<WifiBssDiagnosticFix[]> Bsss { get; init; }
+	/// <summary>The operation prose explicitly allows omitting aps and/or bsss.</summary>
+	[JsonPropertyName("bsss")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<WifiBssDiagnosticFix[]>))]
+	public Optional<WifiBssDiagnosticFix[]> Bsss { get; init; }
 }

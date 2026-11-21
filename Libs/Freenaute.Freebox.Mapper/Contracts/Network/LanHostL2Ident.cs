@@ -6,14 +6,14 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class LanHostL2Ident
 {
-    /// <summary>Layer 2 id</summary>
-    [JsonPropertyName("id")]
-    public string? Id { get; init; }
+	/// <summary>Layer 2 id</summary>
+	[JsonPropertyName("id")]
+	public string? Id { get; init; }
 
-    /// <summary>
-    ///     Type of layer 2 address source Description dhcp DHCP netbios Netbios mdns mDNS hostname mdns_srv mDNS service
-    ///     upnp UPnP wsd WS-Discovery
-    /// </summary>
-    [JsonPropertyName("type")]
-    public string? Type { get; init; }
+	/// <summary>
+	///     Type of layer 2 address source Description dhcp DHCP netbios Netbios mdns mDNS hostname mdns_srv mDNS service
+	///     upnp UPnP wsd WS-Discovery
+	/// </summary>
+	[JsonPropertyName("type")]
+	public string? Type { get; init; }
 }

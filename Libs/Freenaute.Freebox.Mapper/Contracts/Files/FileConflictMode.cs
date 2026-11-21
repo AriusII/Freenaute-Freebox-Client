@@ -4,9 +4,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 [JsonConverter(typeof(JsonStringEnumConverter<FileConflictMode>))]
 public enum FileConflictMode
 {
-    [JsonStringEnumMemberName("overwrite")]
-    Overwrite,
-    [JsonStringEnumMemberName("both")] Both,
-    [JsonStringEnumMemberName("recent")] Recent,
-    [JsonStringEnumMemberName("skip")] Skip
+	[JsonStringEnumMemberName("overwrite")]
+	Overwrite,
+	[JsonStringEnumMemberName("both")] Both,
+	[JsonStringEnumMemberName("recent")] Recent,
+	[JsonStringEnumMemberName("skip")] Skip
 }

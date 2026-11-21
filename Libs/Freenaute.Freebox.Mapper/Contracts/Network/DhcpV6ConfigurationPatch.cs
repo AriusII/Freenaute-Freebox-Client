@@ -6,21 +6,21 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class DhcpV6ConfigurationPatch
 {
-    /// <summary>
-    ///     Enable/Disable the DHCPv6 server NOTE: on some Android devices, enabling the DHCPv6 server may cause IPv6 to
-    ///     stop working on those devices
-    /// </summary>
-    [JsonPropertyName("enabled")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> Enabled { get; init; }
+	/// <summary>
+	///     Enable/Disable the DHCPv6 server NOTE: on some Android devices, enabling the DHCPv6 server may cause IPv6 to
+	///     stop working on those devices
+	/// </summary>
+	[JsonPropertyName("enabled")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> Enabled { get; init; }
 
-    /// <summary>
-    ///     if set to true, the user provided IPv6 dns servers will be used instead of Free default IPv6 dns servers NOTE:
-    ///     even if DHCPv6 server is disabled the custom dns can be used to replace Free dns in RA RDNSS
-    /// </summary>
-    [JsonPropertyName("use_custom_dns")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> UseCustomDns { get; init; }
+	/// <summary>
+	///     if set to true, the user provided IPv6 dns servers will be used instead of Free default IPv6 dns servers NOTE:
+	///     even if DHCPv6 server is disabled the custom dns can be used to replace Free dns in RA RDNSS
+	/// </summary>
+	[JsonPropertyName("use_custom_dns")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> UseCustomDns { get; init; }
 }

@@ -6,5 +6,5 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record CreateDownloadFeedRequest
 {
-    [JsonPropertyName("url")] public required string Url { get; init; }
+	[JsonPropertyName("url")] public required string Url { get; init; }
 }

@@ -7,6 +7,6 @@ namespace Freenaute.Freebox.Mapper.Common;
 /// <param name="Success">Indicates whether the operation was successful.</param>
 /// <param name="Result">The result of the operation.</param>
 public sealed record SuccessfulResponse<TResponse>(
-    [property: JsonPropertyName("success")]
-    bool Success,
-    [property: JsonPropertyName("result")] TResponse Result);
+	[property: JsonPropertyName("success")]
+	bool Success,
+	[property: JsonPropertyName("result")] TResponse Result);

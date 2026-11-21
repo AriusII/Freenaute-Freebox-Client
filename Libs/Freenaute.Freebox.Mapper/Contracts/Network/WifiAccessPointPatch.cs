@@ -6,9 +6,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiAccessPointPatch
 {
-    /// <summary>ap configuration</summary>
-    [JsonPropertyName("config")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<WifiApConfigurationPatch>))]
-    public Optional<WifiApConfigurationPatch> Config { get; init; }
+	/// <summary>ap configuration</summary>
+	[JsonPropertyName("config")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<WifiApConfigurationPatch>))]
+	public Optional<WifiApConfigurationPatch> Config { get; init; }
 }

@@ -2,9 +2,11 @@ namespace Freenaute.Freebox.Mapper.Serialization;
 
 /// <summary>Source-generated metadata for network contracts, including explicit closed converters and their value types.</summary>
 [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    Converters = new[]
-        { typeof(ObjectOrArrayJsonConverter<WifiGlobalState>), typeof(ObjectOrArrayJsonConverter<LanHostL2Ident>) })]
+	DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+	Converters =
+	[
+		typeof(ObjectOrArrayJsonConverter<WifiGlobalState>), typeof(ObjectOrArrayJsonConverter<LanHostL2Ident>)
+	])]
 [JsonSerializable(typeof(ConnectionConfiguration))]
 [JsonSerializable(typeof(ConnectionConfigurationPatch))]
 [JsonSerializable(typeof(ConnectionIpv6Configuration))]
@@ -108,8 +110,6 @@ namespace Freenaute.Freebox.Mapper.Serialization;
 [JsonSerializable(typeof(WifiApConfigurationPatch))]
 [JsonSerializable(typeof(WifiApDiagnosticFix))]
 [JsonSerializable(typeof(WifiApDiagnosticFix[]))]
-[JsonSerializable(typeof(WifiApHeConfig))]
-[JsonSerializable(typeof(WifiApHeConfigurationPatch))]
 [JsonSerializable(typeof(WifiApHtConfig))]
 [JsonSerializable(typeof(WifiApHtConfigurationPatch))]
 [JsonSerializable(typeof(WifiApStatus))]

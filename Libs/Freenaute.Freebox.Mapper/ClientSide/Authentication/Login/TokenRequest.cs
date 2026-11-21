@@ -8,10 +8,10 @@ namespace Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
 /// <param name="AppVersion">The application version.</param>
 /// <param name="DeviceName">The device name.</param>
 public sealed record TokenRequest(
-    [property: JsonPropertyName("app_id")] string AppId,
-    [property: JsonPropertyName("app_name")]
-    string AppName,
-    [property: JsonPropertyName("app_version")]
-    string AppVersion,
-    [property: JsonPropertyName("device_name")]
-    string DeviceName);
+	[property: JsonPropertyName("app_id")] string AppId,
+	[property: JsonPropertyName("app_name")]
+	string AppName,
+	[property: JsonPropertyName("app_version")]
+	string AppVersion,
+	[property: JsonPropertyName("device_name")]
+	string DeviceName);

@@ -1,24 +1,225 @@
 root = true
 
+# ============================================================
+# Global defaults — tabs (4) preferred
+# ============================================================
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
-indent_style = space
+indent_style = tab
+tab_width = 4
 indent_size = 4
 trim_trailing_whitespace = true
 
-[*.{json,yml,yaml}]
+# JSON / YAML / XML / project files — 2 spaces (ecosystem convention)
+[*.{json,json5,yml,yaml,xml,csproj,props,targets,resx,config,nuspec}]
+indent_style = space
 indent_size = 2
 
+# Shell scripts
+[*.{sh,ps1,cmd,bat}]
+end_of_line = lf
+
+# Web assets
+[*.{htm,html,js,ts,css,scss,less}]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+
+# ============================================================
+# C# — formatting, style, analyzers (Meziantou + .NET)
+# Single section to avoid overlaps / duplicate properties
+# ============================================================
 [*.cs]
-csharp_style_namespace_declarations = file_scoped:warning
-dotnet_sort_system_directives_first = true
+# Indentation inherited from [*] (tabs 4) — not redeclared here
+
+# Braces / new lines
+csharp_indent_braces = false
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_between_query_expression_clauses = true
 csharp_prefer_braces = true:suggestion
+csharp_preserve_single_line_blocks = true
+
+# Spacing
+csharp_space_after_cast = false
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_after_comma = true
+csharp_space_after_dot = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_before_comma = false
+csharp_space_before_dot = false
+csharp_space_before_open_square_brackets = false
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_parentheses = false
+csharp_space_between_square_brackets = false
+
+# Style preferences
+csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_var_for_built_in_types = false:suggestion
 csharp_style_var_when_type_is_apparent = true:suggestion
 csharp_style_var_elsewhere = true:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_constructors = false:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_expression_bodied_accessors = true:suggestion
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
+dotnet_style_predefined_type_for_member_access = true:suggestion
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:suggestion
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
+dotnet_style_readonly_field = true:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, file, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, required, volatile, async:suggestion
 
-[docs/freebox-official/api-16.0/**]
-trim_trailing_whitespace = false
-insert_final_newline = false
+# .NET analyzer severity — only overrides from defaults (avoid duplicate diagnostics with MA)
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.CA1307.severity = suggestion
+dotnet_diagnostic.CA1309.severity = suggestion
+
+# Meziantou.Analyzer — severity overrides (only where changing from default)
+dotnet_diagnostic.MA0004.severity = warning
+dotnet_diagnostic.MA0015.severity = warning
+dotnet_diagnostic.MA0051.severity = warning
+dotnet_diagnostic.MA0053.severity = suggestion
+dotnet_diagnostic.MA0074.severity = warning
+dotnet_diagnostic.MA0137.severity = suggestion
+dotnet_diagnostic.MA0138.severity = suggestion
+dotnet_diagnostic.MA0141.severity = suggestion
+dotnet_diagnostic.MA0142.severity = suggestion
+dotnet_diagnostic.MA0148.severity = suggestion
+dotnet_diagnostic.MA0149.severity = suggestion
+dotnet_diagnostic.MA0155.severity = suggestion
+dotnet_diagnostic.MA0171.severity = suggestion
+dotnet_diagnostic.MA0180.severity = suggestion
+dotnet_diagnostic.MA0184.severity = suggestion
+dotnet_diagnostic.MA0032.severity = suggestion
+dotnet_diagnostic.MA0080.severity = suggestion
+dotnet_diagnostic.MA0167.severity = suggestion
+dotnet_diagnostic.MA0214.severity = suggestion
+dotnet_diagnostic.MA0215.severity = suggestion
+dotnet_diagnostic.MA0101.severity = none
+dotnet_diagnostic.MA0136.severity = none
+
+# Meziantou per-rule configuration keys (only rules that expose keys)
+MA0001.include_extension_methods_from_not_imported_namespaces = false
+MA0002.exclude_query_operator_syntaxes = false
+MA0002.report_collection_expressions = false
+MA0002.report_only_non_ordinal = false
+MA0002.include_extension_methods_from_not_imported_namespaces = false
+MA0003.minimum_method_parameters = 1
+MA0003.expression_kinds = "Null, Boolean, Numeric, String, Default"
+MA0003.ignore_arguments_matching_parameter_name = true
+MA0004.report = DetectContext
+MA0007.ignore_catch_all_arm = true
+MA0011.exclude_tostring_methods = true
+MA0011.consider_nullable_types = true
+MA0011.treat_opaque_runtime_types_as_culture_sensitive = false
+MA0011.treat_unsealed_types_as_culture_sensitive = false
+MA0011.include_extension_methods_from_not_imported_namespaces = false
+MA0015.consider_member_access_as_parameter = true
+MA0020.report_when_conversion_needed = true
+MA0032.allow_overloads_with_optional_parameters = false
+MA0032.include_extension_methods_from_not_imported_namespaces = false
+MA0040.include_extension_methods_from_not_imported_namespaces = false
+MA0042.enable_sqlite_special_cases = true
+MA0042.enable_db_special_cases = true
+MA0042.include_extension_methods_from_not_imported_namespaces = false
+MA0042.report_collection_initializers = false
+MA0045.enable_sqlite_special_cases = true
+MA0045.enable_db_special_cases = true
+MA0045.include_extension_methods_from_not_imported_namespaces = false
+MA0045.report_collection_initializers = false
+MA0048.exclude_file_local_types = true
+MA0048.only_validate_first_type = false
+MA0048.mode = Exact
+MA0048.allow_oft_for_all_generic_types = false
+MA0048.excluded_file_name_parts = "razor,
+."
+MA0048.excluded_file_name_parts_regex =
+\.(razor\.)?
+MA0051.maximum_lines_per_method = 60
+MA0051.maximum_statements_per_method = 40
+MA0051.skip_local_functions = false
+MA0053.public_class_should_be_sealed = false
+MA0053.class_with_virtual_member_should_be_sealed = false
+MA0053.exceptions_should_be_sealed = true
+MA0060.enable_tryparse_pattern = false
+MA0062.allow_all_bits_set_value = true
+MA0074.include_extension_methods_from_not_imported_namespaces = false
+MA0075.exclude_tostring_methods = true
+MA0075.consider_nullable_types = true
+MA0075.treat_opaque_runtime_types_as_culture_sensitive = false
+MA0075.treat_unsealed_types_as_culture_sensitive = false
+MA0076.exclude_tostring_methods = true
+MA0076.consider_nullable_types = true
+MA0076.treat_opaque_runtime_types_as_culture_sensitive = false
+MA0076.treat_unsealed_types_as_culture_sensitive = false
+MA0099.exclude_enum_without_zero_member = true
+MA0099.report_on = argument
+MA0104.namespaces_regex =
+^System($|\.)
+MA0104.use_preview_types = true
+MA0104.only_consider_public_symbols = false
+MA0107.exclude_tostring_methods = true
+MA0115.report_pascal_case_unmatched_parameter = true
+MA0124.allow_non_constant_formats = true
+MA0134.report_discarded = false
+MA0137.exclude_test_methods = true
+MA0137.exclude_property_accessors = true
+MA0153.report_types_with_data_classification_attributes = false
+MA0166.include_extension_methods_from_not_imported_namespaces = false
+MA0167.include_extension_methods_from_not_imported_namespaces = false
+MA0185.treat_opaque_runtime_types_as_culture_sensitive = false
+MA0185.treat_unsealed_types_as_culture_sensitive = false
+MA0210.include_extension_methods_from_not_imported_namespaces = false
+
+# Rider-specific inspection severities
+resharper_possible_null_reference_exception_highlighting = error
+resharper_replace_with_string_is_null_or_empty_highlighting = hint
+
+# Rider braces for control-flow statements
+braces_for_ifelse = required
+braces_for_for = required
+braces_for_foreach = required
+braces_for_while = required
+braces_for_using = required
+braces_for_lock = required
+braces_for_fixed = required
+braces_for_dowhile = required
+
+# Rider formatting
+resharper_csharp_brace_style = next_line
+resharper_csharp_blank_lines_around_invocable = 1
+
+# ============================================================
+# Generated code — excluded from analysis
+# ============================================================
+[*.generated.cs]
+generated_code = true
+
+[*.g.cs]
+generated_code = true
+
+[*.designer.cs]
+generated_code = true

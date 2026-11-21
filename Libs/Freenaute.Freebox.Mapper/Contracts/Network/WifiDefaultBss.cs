@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiDefaultBss
 {
-    [JsonPropertyName("bssid")] public string? Bssid { get; init; }
+	[JsonPropertyName("bssid")] public string? Bssid { get; init; }
 
-    [JsonPropertyName("params")] public WifiBssConfig? Params { get; init; }
+	[JsonPropertyName("params")] public WifiBssConfig? Params { get; init; }
 }

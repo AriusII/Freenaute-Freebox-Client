@@ -6,10 +6,10 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record RepairFilesRequest
 {
-    [JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
+	[JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
 
-    [JsonPropertyName("delete_archive")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> DeleteArchive { get; init; }
+	[JsonPropertyName("delete_archive")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> DeleteArchive { get; init; }
 }

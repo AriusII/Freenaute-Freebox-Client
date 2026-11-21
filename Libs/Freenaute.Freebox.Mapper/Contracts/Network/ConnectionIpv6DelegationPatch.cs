@@ -6,15 +6,15 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class ConnectionIpv6DelegationPatch
 {
-    /// <summary>IPv6 prefix</summary>
-    [JsonPropertyName("prefix")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Prefix { get; init; }
+	/// <summary>IPv6 prefix</summary>
+	[JsonPropertyName("prefix")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Prefix { get; init; }
 
-    /// <summary>the next hop for the prefix</summary>
-    [JsonPropertyName("next_hop")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> NextHop { get; init; }
+	/// <summary>the next hop for the prefix</summary>
+	[JsonPropertyName("next_hop")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> NextHop { get; init; }
 }

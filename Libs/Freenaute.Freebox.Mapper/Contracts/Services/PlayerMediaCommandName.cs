@@ -5,16 +5,13 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 [JsonConverter(typeof(PlayerMediaCommandNameJsonConverter))]
 public readonly record struct PlayerMediaCommandName(string Value)
 {
-    public static PlayerMediaCommandName PlayPause => new("play_pause");
-    public static PlayerMediaCommandName Stop => new("stop");
-    public static PlayerMediaCommandName Prev => new("prev");
-    public static PlayerMediaCommandName Next => new("next");
-    public static PlayerMediaCommandName SelectStream => new("select_stream");
-    public static PlayerMediaCommandName SelectAudioTrack => new("select_audio_track");
-    public static PlayerMediaCommandName SelectSrtTrack => new("select_srt_track");
+	public static PlayerMediaCommandName PlayPause => new("play_pause");
+	public static PlayerMediaCommandName Stop => new("stop");
+	public static PlayerMediaCommandName Prev => new("prev");
+	public static PlayerMediaCommandName Next => new("next");
+	public static PlayerMediaCommandName SelectStream => new("select_stream");
+	public static PlayerMediaCommandName SelectAudioTrack => new("select_audio_track");
+	public static PlayerMediaCommandName SelectSrtTrack => new("select_srt_track");
 
-    public override string ToString()
-    {
-        return Value ?? string.Empty;
-    }
+	public override string ToString() => Value ?? string.Empty;
 }

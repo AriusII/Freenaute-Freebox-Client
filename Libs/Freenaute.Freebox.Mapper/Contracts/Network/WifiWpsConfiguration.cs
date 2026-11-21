@@ -6,5 +6,5 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiWpsConfiguration
 {
-    [JsonPropertyName("enabled")] public bool? Enabled { get; init; }
+	[JsonPropertyName("enabled")] public bool? Enabled { get; init; }
 }

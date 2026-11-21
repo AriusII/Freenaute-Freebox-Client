@@ -4,21 +4,18 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 /// <seealso href="http://mafreebox.freebox.fr/doc/index.html#CallEntry" />
 public sealed record CallEntryPatch
 {
-    [JsonPropertyName("new")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> New { get; init; }
+	[JsonPropertyName("new")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> New { get; init; }
 
-    public void Validate()
-    {
-        if (New.IsNull)
-        {
-            throw new ArgumentException("Explicit null is not documented for CallEntry.New.", nameof(New));
-        }
-    }
+	public void Validate()
+	{
+		if (New.IsNull)
+		{
+			throw new ArgumentException("Explicit null is not documented for CallEntry.New.", nameof(New));
+		}
+	}
 
-    public override string ToString()
-    {
-        return nameof(CallEntryPatch);
-    }
+	public override string ToString() => nameof(CallEntryPatch);
 }

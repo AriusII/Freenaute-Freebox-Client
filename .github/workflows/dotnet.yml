@@ -15,11 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  managed-build:
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v5
@@ -27,23 +24,102 @@ jobs:
           global-json-file: global.json
           cache: true
           cache-dependency-path: '**/packages.lock.json'
-      - run: dotnet restore Freenaute.Freebox.sln --locked-mode
-      - run: dotnet test Freenaute.Freebox.sln -c ${{ matrix.configuration }} --no-restore
-      - run: dotnet run --project Tools/Freenaute.Freebox.Documentation -c ${{ matrix.configuration }} --no-build -- verify
-      - run: dotnet run --project Tools/Freenaute.Freebox.Documentation -c ${{ matrix.configuration }} --no-build -- coverage --output artifacts/documentation-coverage
-      - run: dotnet pack Libs/Freenaute.Freebox.Client -c ${{ matrix.configuration }} --no-build
-      - run: dotnet pack Libs/Freenaute.Freebox.Mapper -c ${{ matrix.configuration }} --no-build
+      - name: Restore locked solution
+        run: dotnet restore Freenaute.Freebox.slnx --locked-mode
+      - name: Build release
+        run: dotnet build Freenaute.Freebox.slnx -c Release --no-restore -warnaserror
+      - name: Run MTP tests
+        run: |
+          mkdir -p .artifacts/test
+          dotnet test --solution Freenaute.Freebox.slnx -c Release --no-build --no-restore 2>&1 | tee .artifacts/test/managed-tests.log
+      - name: Pack libraries
+        run: |
+          dotnet pack Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj -c Release --no-build --no-restore -warnaserror
+          dotnet pack Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj -c Release --no-build --no-restore -warnaserror
+      - name: Validate package candidates
+        shell: pwsh
+        run: ./.github/scripts/Validate-Packages.ps1
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: .artifacts/test
+          if-no-files-found: warn
+      - name: Upload NuGet candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-candidates
+          path: .artifacts/nuget
+          if-no-files-found: error
 
-  native-aot:
+  aot-linux:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
-      - run: dotnet restore Samples/Freenaute.Freebox.AotSmoke -r linux-x64 --locked-mode
-      - run: dotnet publish Samples/Freenaute.Freebox.AotSmoke -c Release -r linux-x64 --no-restore
-      - run: artifacts/publish/Freenaute.Freebox.AotSmoke/release_linux-x64/Freenaute.Freebox.AotSmoke
-      - run: dotnet restore Tools/Freenaute.Freebox.Documentation -r linux-x64 --locked-mode
-      - run: dotnet publish Tools/Freenaute.Freebox.Documentation -c Release -r linux-x64 --no-restore -p:PublishAot=true
-      - run: artifacts/publish/Freenaute.Freebox.Documentation/release_linux-x64/Freenaute.Freebox.Documentation verify
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - name: Restore AOT smoke
+        run: dotnet restore Tests/Freenaute.Freebox.AotSmoke/Freenaute.Freebox.AotSmoke.csproj --locked-mode
+      - name: Publish linux-x64 native smoke
+        run: dotnet publish Tests/Freenaute.Freebox.AotSmoke/Freenaute.Freebox.AotSmoke.csproj -c Release -r linux-x64 --no-restore -warnaserror -o .artifacts/aot/linux-x64
+      - name: Validate and run native smoke
+        run: |
+          test -x .artifacts/aot/linux-x64/Freenaute.Freebox.AotSmoke
+          file .artifacts/aot/linux-x64/Freenaute.Freebox.AotSmoke | grep -q ELF
+          test ! -e .artifacts/aot/linux-x64/Freenaute.Freebox.AotSmoke.deps.json
+          test ! -e .artifacts/aot/linux-x64/Freenaute.Freebox.AotSmoke.runtimeconfig.json
+          ! find .artifacts/aot/linux-x64 -maxdepth 1 -type f -name 'Freenaute.Freebox.*.dll' | grep -q .
+          mkdir -p .artifacts/aot/run
+          (cd .artifacts/aot/run && env -u DOTNET_ROOT ../linux-x64/Freenaute.Freebox.AotSmoke)
+          sha256sum .artifacts/aot/linux-x64/Freenaute.Freebox.AotSmoke | tee .artifacts/aot/linux-x64/SHA256SUMS.txt
+      - name: Upload Linux native artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aot-linux-x64
+          path: .artifacts/aot/linux-x64
+          if-no-files-found: error
+
+  aot-windows:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - name: Restore AOT smoke
+        run: dotnet restore Tests/Freenaute.Freebox.AotSmoke/Freenaute.Freebox.AotSmoke.csproj --locked-mode
+      - name: Publish win-x64 native smoke
+        run: dotnet publish Tests/Freenaute.Freebox.AotSmoke/Freenaute.Freebox.AotSmoke.csproj -c Release -r win-x64 --no-restore -warnaserror -o .artifacts/aot/win-x64
+      - name: Validate and run native smoke
+        shell: pwsh
+        run: |
+          $binary = Resolve-Path .artifacts/aot/win-x64/Freenaute.Freebox.AotSmoke.exe
+          $signature = [System.IO.File]::ReadAllBytes($binary)[0..1]
+          if ([char]$signature[0] -ne 'M' -or [char]$signature[1] -ne 'Z') { throw 'Expected PE executable.' }
+          if (Test-Path .artifacts/aot/win-x64/Freenaute.Freebox.AotSmoke.deps.json) { throw 'Managed deps file found.' }
+          if (Test-Path .artifacts/aot/win-x64/Freenaute.Freebox.AotSmoke.runtimeconfig.json) { throw 'Managed runtime config found.' }
+          if (Get-ChildItem .artifacts/aot/win-x64 -Filter 'Freenaute.Freebox.*.dll') { throw 'Managed library found.' }
+          $runDirectory = Join-Path $PWD '.artifacts/aot/run-win'
+          New-Item -ItemType Directory -Force $runDirectory | Out-Null
+          Push-Location $runDirectory
+          try {
+            $previous = $env:DOTNET_ROOT
+            Remove-Item Env:DOTNET_ROOT -ErrorAction SilentlyContinue
+            & $binary
+            if ($LASTEXITCODE -ne 0) { throw "Native smoke failed with exit code $LASTEXITCODE." }
+            $env:DOTNET_ROOT = $previous
+          }
+          finally { Pop-Location }
+          Get-FileHash $binary -Algorithm SHA256 | Format-List | Out-File .artifacts/aot/win-x64/SHA256SUMS.txt
+      - name: Upload Windows native artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aot-win-x64
+          path: .artifacts/aot/win-x64
+          if-no-files-found: error

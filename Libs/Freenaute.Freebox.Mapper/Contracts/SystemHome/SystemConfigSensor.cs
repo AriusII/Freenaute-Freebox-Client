@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome;
 /// </summary>
 public sealed record SystemConfigSensor
 {
-    [JsonPropertyName("id")] public string? Id { get; init; }
-    [JsonPropertyName("name")] public string? Name { get; init; }
-    [JsonPropertyName("value")] public long? Value { get; init; }
+	[JsonPropertyName("id")] public string? Id { get; init; }
+	[JsonPropertyName("name")] public string? Name { get; init; }
+	[JsonPropertyName("value")] public long? Value { get; init; }
 }

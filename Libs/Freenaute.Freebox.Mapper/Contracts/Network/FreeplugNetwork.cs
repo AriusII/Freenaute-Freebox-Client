@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class FreeplugNetwork
 {
-    /// <summary>Network unique id</summary>
-    [JsonPropertyName("id")]
-    public string? Id { get; init; }
+	/// <summary>Network unique id</summary>
+	[JsonPropertyName("id")]
+	public string? Id { get; init; }
 
-    /// <summary>List of freeplugs member of this network</summary>
-    [JsonPropertyName("members")]
-    public Freeplug[]? Members { get; init; }
+	/// <summary>List of freeplugs member of this network</summary>
+	[JsonPropertyName("members")]
+	public Freeplug[]? Members { get; init; }
 }

@@ -1,0 +1,14 @@
+global using System.Net;
+global using System.Net.WebSockets;
+global using System.Text;
+global using System.Text.Json;
+global using Freenaute.Freebox.AotSmoke;
+global using Freenaute.Freebox.Client;
+global using Freenaute.Freebox.Mapper;
+global using Freenaute.Freebox.Mapper.Adapter;
+global using Freenaute.Freebox.Mapper.Contracts.Primitives;
+global using Freenaute.Freebox.Mapper.Serialization;
+global using Freenaute.Freebox.Mapper.ServerSide.Api.AirMedia;
+global using Freenaute.Freebox.Mapper.ServerSide.General;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Options;

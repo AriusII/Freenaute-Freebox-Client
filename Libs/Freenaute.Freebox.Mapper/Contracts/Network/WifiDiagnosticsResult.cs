@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiDiagnosticsResult
 {
-    [JsonPropertyName("aps")] public WifiDiagItem[]? Aps { get; init; }
+	[JsonPropertyName("aps")] public WifiDiagItem[]? Aps { get; init; }
 
-    [JsonPropertyName("bsss")] public WifiDiagItem[]? Bsss { get; init; }
+	[JsonPropertyName("bsss")] public WifiDiagItem[]? Bsss { get; init; }
 }

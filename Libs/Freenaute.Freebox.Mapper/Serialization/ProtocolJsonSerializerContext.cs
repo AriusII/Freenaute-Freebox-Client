@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Mapper.Serialization;
 
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    Converters = [typeof(NotificationTargetResultJsonConverter)])]
+	Converters = [typeof(NotificationTargetResultJsonConverter)])]
 [JsonSerializable(typeof(Camera))]
 [JsonSerializable(typeof(Camera[]))]
 [JsonSerializable(typeof(NotificationTarget))]

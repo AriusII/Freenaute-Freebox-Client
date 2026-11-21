@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record DlFeedConfig
 {
-    /// <summary>http://mafreebox.freebox.fr/doc/index.html#DlFeedConfig.fetch_interval</summary>
-    [JsonPropertyName("fetch_interval")]
-    public long? FetchInterval { get; init; }
+	/// <summary>http://mafreebox.freebox.fr/doc/index.html#DlFeedConfig.fetch_interval</summary>
+	[JsonPropertyName("fetch_interval")]
+	public long? FetchInterval { get; init; }
 
-    /// <summary>http://mafreebox.freebox.fr/doc/index.html#DlFeedConfig.max_items</summary>
-    [JsonPropertyName("max_items")]
-    public long? MaxItems { get; init; }
+	/// <summary>http://mafreebox.freebox.fr/doc/index.html#DlFeedConfig.max_items</summary>
+	[JsonPropertyName("max_items")]
+	public long? MaxItems { get; init; }
 }

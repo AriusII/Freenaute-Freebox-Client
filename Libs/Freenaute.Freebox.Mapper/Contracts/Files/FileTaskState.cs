@@ -4,9 +4,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 [JsonConverter(typeof(JsonStringEnumConverter<FileTaskState>))]
 public enum FileTaskState
 {
-    [JsonStringEnumMemberName("queued")] Queued,
-    [JsonStringEnumMemberName("running")] Running,
-    [JsonStringEnumMemberName("paused")] Paused,
-    [JsonStringEnumMemberName("done")] Done,
-    [JsonStringEnumMemberName("failed")] Failed
+	[JsonStringEnumMemberName("queued")] Queued,
+	[JsonStringEnumMemberName("running")] Running,
+	[JsonStringEnumMemberName("paused")] Paused,
+	[JsonStringEnumMemberName("done")] Done,
+	[JsonStringEnumMemberName("failed")] Failed
 }

@@ -4,11 +4,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 [JsonConverter(typeof(JsonStringEnumConverter<DownloadCryptoSupport>))]
 public enum DownloadCryptoSupport
 {
-    [JsonStringEnumMemberName("unsupported")]
-    Unsupported,
-    [JsonStringEnumMemberName("allowed")] Allowed,
+	[JsonStringEnumMemberName("unsupported")]
+	Unsupported,
+	[JsonStringEnumMemberName("allowed")] Allowed,
 
-    [JsonStringEnumMemberName("preferred")]
-    Preferred,
-    [JsonStringEnumMemberName("required")] Required
+	[JsonStringEnumMemberName("preferred")]
+	Preferred,
+	[JsonStringEnumMemberName("required")] Required
 }

@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record CreateShareLinkRequest
 {
-    [JsonPropertyName("path")] public required string Path { get; init; }
+	[JsonPropertyName("path")] public required string Path { get; init; }
 
-    [JsonPropertyName("expire")] public required long Expire { get; init; }
+	[JsonPropertyName("expire")] public required long Expire { get; init; }
 }

@@ -6,43 +6,43 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record UpdateDlBtConfig
 {
-    [JsonPropertyName("max_peers")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> MaxPeers { get; init; }
+	[JsonPropertyName("max_peers")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> MaxPeers { get; init; }
 
-    [JsonPropertyName("stop_ratio")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> StopRatio { get; init; }
+	[JsonPropertyName("stop_ratio")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> StopRatio { get; init; }
 
-    [JsonPropertyName("crypto_support")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<DownloadCryptoSupport>))]
-    public Optional<DownloadCryptoSupport> CryptoSupport { get; init; }
+	[JsonPropertyName("crypto_support")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<DownloadCryptoSupport>))]
+	public Optional<DownloadCryptoSupport> CryptoSupport { get; init; }
 
-    [JsonPropertyName("enable_dht")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> EnableDht { get; init; }
+	[JsonPropertyName("enable_dht")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> EnableDht { get; init; }
 
-    [JsonPropertyName("enable_pex")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> EnablePex { get; init; }
+	[JsonPropertyName("enable_pex")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> EnablePex { get; init; }
 
-    [JsonPropertyName("announce_timeout")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> AnnounceTimeout { get; init; }
+	[JsonPropertyName("announce_timeout")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> AnnounceTimeout { get; init; }
 
-    [JsonPropertyName("main_port")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> MainPort { get; init; }
+	[JsonPropertyName("main_port")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> MainPort { get; init; }
 
-    [JsonPropertyName("dht_port")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> DhtPort { get; init; }
+	[JsonPropertyName("dht_port")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> DhtPort { get; init; }
 }

@@ -6,9 +6,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class XdslInfos
 {
-    [JsonPropertyName("status")] public XdslStatus? Status { get; init; }
+	[JsonPropertyName("status")] public XdslStatus? Status { get; init; }
 
-    [JsonPropertyName("down")] public XdslStats? Down { get; init; }
+	[JsonPropertyName("down")] public XdslStats? Down { get; init; }
 
-    [JsonPropertyName("up")] public XdslStats? Up { get; init; }
+	[JsonPropertyName("up")] public XdslStats? Up { get; init; }
 }

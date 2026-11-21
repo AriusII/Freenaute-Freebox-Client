@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class ConnectionIpv6Delegation
 {
-    /// <summary>IPv6 prefix</summary>
-    [JsonPropertyName("prefix")]
-    public string? Prefix { get; init; }
+	/// <summary>IPv6 prefix</summary>
+	[JsonPropertyName("prefix")]
+	public string? Prefix { get; init; }
 
-    /// <summary>the next hop for the prefix</summary>
-    [JsonPropertyName("next_hop")]
-    public string? NextHop { get; init; }
+	/// <summary>the next hop for the prefix</summary>
+	[JsonPropertyName("next_hop")]
+	public string? NextHop { get; init; }
 }

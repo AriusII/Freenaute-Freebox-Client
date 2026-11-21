@@ -4,12 +4,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 /// <seealso href="http://mafreebox.freebox.fr/doc/index.html#post--api-v8-player-id_player-api-v6-control-open" />
 public sealed record PlayerOpenRequest
 {
-    [JsonPropertyName("url")] public string? Url { get; init; }
+	[JsonPropertyName("url")] public string? Url { get; init; }
 
-    [JsonPropertyName("type")] public string? Type { get; init; }
+	[JsonPropertyName("type")] public string? Type { get; init; }
 
-    public override string ToString()
-    {
-        return nameof(PlayerOpenRequest);
-    }
+	public override string ToString() => nameof(PlayerOpenRequest);
 }

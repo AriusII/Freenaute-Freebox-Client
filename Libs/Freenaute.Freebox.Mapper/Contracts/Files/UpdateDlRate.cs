@@ -6,13 +6,13 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record UpdateDlRate
 {
-    [JsonPropertyName("tx_rate")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> TxRate { get; init; }
+	[JsonPropertyName("tx_rate")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> TxRate { get; init; }
 
-    [JsonPropertyName("rx_rate")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> RxRate { get; init; }
+	[JsonPropertyName("rx_rate")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> RxRate { get; init; }
 }

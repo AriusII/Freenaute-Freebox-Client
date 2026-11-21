@@ -5,12 +5,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services;
 [JsonConverter(typeof(ContactAddressTypeJsonConverter))]
 public readonly record struct ContactAddressType(string Value)
 {
-    public static ContactAddressType Home => new("home");
-    public static ContactAddressType Work => new("work");
-    public static ContactAddressType Other => new("other");
+	public static ContactAddressType Home => new("home");
+	public static ContactAddressType Work => new("work");
+	public static ContactAddressType Other => new("other");
 
-    public override string ToString()
-    {
-        return Value ?? string.Empty;
-    }
+	public override string ToString() => Value ?? string.Empty;
 }

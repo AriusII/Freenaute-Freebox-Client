@@ -6,22 +6,22 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record ExtractFilesRequest
 {
-    [JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
+	[JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
 
-    [JsonPropertyName("dst")] public required EncodedFreeboxPath Dst { get; init; }
+	[JsonPropertyName("dst")] public required EncodedFreeboxPath Dst { get; init; }
 
-    [JsonPropertyName("password")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<string>))]
-    public Optional<string> Password { get; init; }
+	[JsonPropertyName("password")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string>))]
+	public Optional<string> Password { get; init; }
 
-    [JsonPropertyName("delete_archive")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> DeleteArchive { get; init; }
+	[JsonPropertyName("delete_archive")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> DeleteArchive { get; init; }
 
-    [JsonPropertyName("overwrite")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<bool>))]
-    public Optional<bool> Overwrite { get; init; }
+	[JsonPropertyName("overwrite")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> Overwrite { get; init; }
 }

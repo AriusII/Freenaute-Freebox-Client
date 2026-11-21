@@ -4,9 +4,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 [JsonConverter(typeof(JsonStringEnumConverter<DownloadScheduleMode>))]
 public enum DownloadScheduleMode
 {
-    [JsonStringEnumMemberName("normal")] Normal,
-    [JsonStringEnumMemberName("slow")] Slow,
+	[JsonStringEnumMemberName("normal")] Normal,
+	[JsonStringEnumMemberName("slow")] Slow,
 
-    [JsonStringEnumMemberName("hibernate")]
-    Hibernate
+	[JsonStringEnumMemberName("hibernate")]
+	Hibernate
 }

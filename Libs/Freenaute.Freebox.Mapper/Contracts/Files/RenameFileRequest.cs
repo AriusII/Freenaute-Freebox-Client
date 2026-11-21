@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record RenameFileRequest
 {
-    [JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
+	[JsonPropertyName("src")] public required EncodedFreeboxPath Src { get; init; }
 
-    [JsonPropertyName("dst")] public required string Dst { get; init; }
+	[JsonPropertyName("dst")] public required string Dst { get; init; }
 }

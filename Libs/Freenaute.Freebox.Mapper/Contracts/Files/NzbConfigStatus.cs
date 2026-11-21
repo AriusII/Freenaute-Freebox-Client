@@ -6,11 +6,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record NzbConfigStatus
 {
-    /// <summary>http://mafreebox.freebox.fr/doc/index.html#NzbConfigStatus.status</summary>
-    [JsonPropertyName("status")]
-    public string? Status { get; init; }
+	/// <summary>http://mafreebox.freebox.fr/doc/index.html#NzbConfigStatus.status</summary>
+	[JsonPropertyName("status")]
+	public string? Status { get; init; }
 
-    /// <summary>http://mafreebox.freebox.fr/doc/index.html#NzbConfigStatus.error</summary>
-    [JsonPropertyName("error")]
-    public string? Error { get; init; }
+	/// <summary>http://mafreebox.freebox.fr/doc/index.html#NzbConfigStatus.error</summary>
+	[JsonPropertyName("error")]
+	public string? Error { get; init; }
 }

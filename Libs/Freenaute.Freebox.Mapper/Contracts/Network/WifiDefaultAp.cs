@@ -6,7 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiDefaultAp
 {
-    [JsonPropertyName("ap_id")] public long? ApId { get; init; }
+	[JsonPropertyName("ap_id")] public long? ApId { get; init; }
 
-    [JsonPropertyName("params")] public WifiApConfig? Params { get; init; }
+	[JsonPropertyName("params")] public WifiApConfig? Params { get; init; }
 }

@@ -6,5 +6,5 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record SetFileTaskStateRequest
 {
-    [JsonPropertyName("state")] public required FileTaskState State { get; init; }
+	[JsonPropertyName("state")] public required FileTaskState State { get; init; }
 }

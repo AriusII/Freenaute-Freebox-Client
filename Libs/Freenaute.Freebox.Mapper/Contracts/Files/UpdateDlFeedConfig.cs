@@ -6,13 +6,13 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 /// </summary>
 public sealed record UpdateDlFeedConfig
 {
-    [JsonPropertyName("fetch_interval")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> FetchInterval { get; init; }
+	[JsonPropertyName("fetch_interval")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> FetchInterval { get; init; }
 
-    [JsonPropertyName("max_items")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [JsonConverter(typeof(OptionalJsonConverter<long>))]
-    public Optional<long> MaxItems { get; init; }
+	[JsonPropertyName("max_items")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<long>))]
+	public Optional<long> MaxItems { get; init; }
 }

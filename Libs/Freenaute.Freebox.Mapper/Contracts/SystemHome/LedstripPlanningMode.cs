@@ -7,17 +7,14 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<LedstripPlanningMode>))]
 public readonly record struct LedstripPlanningMode(string Value) : ISystemHomeWireToken<LedstripPlanningMode>
 {
-    public bool IsKnown => Value is "ledstrip_off";
-    public static LedstripPlanningMode LedstripOff { get; } = new("ledstrip_off");
+	public bool IsKnown => Value is "ledstrip_off";
+	public static LedstripPlanningMode LedstripOff { get; } = new("ledstrip_off");
 
-    public static LedstripPlanningMode FromWire(string value)
-    {
-        ArgumentNullException.ThrowIfNull(value);
-        return new LedstripPlanningMode(value);
-    }
+	public static LedstripPlanningMode FromWire(string value)
+	{
+		ArgumentNullException.ThrowIfNull(value);
+		return new LedstripPlanningMode(value);
+	}
 
-    public override string ToString()
-    {
-        return Value ?? string.Empty;
-    }
+	public override string ToString() => Value ?? string.Empty;
 }

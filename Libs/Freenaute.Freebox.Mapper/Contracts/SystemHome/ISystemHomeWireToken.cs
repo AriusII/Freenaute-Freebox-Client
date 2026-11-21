@@ -2,6 +2,6 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome;
 
 public interface ISystemHomeWireToken<TSelf> where TSelf : struct, ISystemHomeWireToken<TSelf>
 {
-    string Value { get; }
-    static abstract TSelf FromWire(string value);
+	string Value { get; }
+	static abstract TSelf FromWire(string value);
 }

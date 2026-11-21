@@ -6,11 +6,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network;
 /// </summary>
 public sealed class WifiApHtConfig
 {
-    /// <summary>enable 802.11ac</summary>
-    [JsonPropertyName("ac_enabled")]
-    public bool? AcEnabled { get; init; }
-
-    /// <summary>enable 802.11n [UNSTABLE]</summary>
-    [JsonPropertyName("ht_enabled")]
-    public bool? HtEnabled { get; init; }
+	/// <summary>enable 802.11ac</summary>
+	[JsonPropertyName("ac_enabled")]
+	public bool? AcEnabled { get; init; }
 }

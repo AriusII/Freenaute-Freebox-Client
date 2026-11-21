@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>false</IsTestProject>
+        <PublishAot>true</PublishAot>
+        <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
+        <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+        <!-- IL3058 is disabled because Http.Resilience dependencies do not advertise AOT metadata; actual AOT publish remains the gate. -->
+        <VerifyReferenceAotCompatibility>false</VerifyReferenceAotCompatibility>
+        <!-- The standalone harness is intentionally compact and has no synchronization context. -->
+        <NoWarn>$(NoWarn);MA0004;MA0006;MA0047;MA0048;MA0061</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj"/>
+        <ProjectReference Include="../../Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj"/>
+    </ItemGroup>
+</Project>

@@ -10,10 +10,10 @@ namespace Freenaute.Freebox.Mapper.Common;
 /// <param name="Result">The result object of type <typeparamref name="TResponse" />.</param>
 /// <typeparam name="TResponse">The type of the result object.</typeparam>
 public sealed record ErrorResponse<TResponse>(
-    [property: JsonPropertyName("success")]
-    bool Success,
-    [property: JsonPropertyName("error_code")]
-    string ErrorCode,
-    [property: JsonPropertyName("msg")] string Message,
-    [property: JsonPropertyName("result")] TResponse? Result = default,
-    [property: JsonPropertyName("uid")] string? Uid = null);
+	[property: JsonPropertyName("success")]
+	bool Success,
+	[property: JsonPropertyName("error_code")]
+	string ErrorCode,
+	[property: JsonPropertyName("msg")] string Message,
+	[property: JsonPropertyName("result")] TResponse? Result = default,
+	[property: JsonPropertyName("uid")] string? Uid = null);
