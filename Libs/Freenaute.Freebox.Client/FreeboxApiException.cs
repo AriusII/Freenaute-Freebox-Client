@@ -5,7 +5,7 @@ public sealed class FreeboxApiException : Exception
 {
 	internal FreeboxApiException(HttpStatusCode statusCode, string? errorCode = null,
 		string? apiMessage = null, string? errorUid = null, JsonElement? details = null)
-		: base($"The Freebox request failed (HTTP {(int)statusCode}).")
+		: base(string.Create(CultureInfo.InvariantCulture, $"The Freebox request failed (HTTP {(int)statusCode})."))
 	{
 		StatusCode = statusCode;
 		ErrorCode = errorCode;

@@ -10,6 +10,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="xunit.v3"/>
+        <PackageReference Remove="ZeroAlloc.Analyzers"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj"/>

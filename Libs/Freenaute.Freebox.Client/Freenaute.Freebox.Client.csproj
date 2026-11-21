@@ -19,5 +19,6 @@
         <PackageReference Include="Microsoft.Extensions.Options"/>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
         <None Include="../../README.md" Pack="true" PackagePath="/"/>
+        <PackageReference Remove="ZeroAlloc.Analyzers"/>
     </ItemGroup>
 </Project>

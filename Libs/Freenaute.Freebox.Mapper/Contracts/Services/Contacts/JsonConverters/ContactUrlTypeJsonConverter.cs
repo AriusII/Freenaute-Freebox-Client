@@ -1,0 +1,21 @@
+namespace Freenaute.Freebox.Mapper.Contracts.Services.Contacts.JsonConverters;
+
+public sealed class ContactUrlTypeJsonConverter : JsonConverter<ContactUrlType>
+{
+	public override ContactUrlType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		return reader.TokenType is JsonTokenType.String
+			? new ContactUrlType(reader.GetString()!)
+			: throw new JsonException("Expected a string for ContactUrlType.");
+	}
+
+	public override void Write(Utf8JsonWriter writer, ContactUrlType value, JsonSerializerOptions options)
+	{
+		if (value.Value is null)
+		{
+			throw new JsonException("An uninitialized wire value cannot be serialized.");
+		}
+
+		writer.WriteStringValue(value.Value);
+	}
+}

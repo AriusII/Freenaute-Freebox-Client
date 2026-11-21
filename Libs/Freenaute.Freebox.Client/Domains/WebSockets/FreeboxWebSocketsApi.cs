@@ -7,9 +7,9 @@ public sealed class FreeboxWebSocketsApi : IFreeboxWebSocketsApi
 	{
 		ArgumentNullException.ThrowIfNull(transport);
 		Events = new FreeboxEventsApi(transport);
-		Uploads = new FreeboxUploadsApi(transport);
+		Uploads = new FreeboxWebSocketUploadsApi(transport);
 	}
 
 	public FreeboxEventsApi Events { get; }
-	public FreeboxUploadsApi Uploads { get; }
+	public FreeboxWebSocketUploadsApi Uploads { get; }
 }

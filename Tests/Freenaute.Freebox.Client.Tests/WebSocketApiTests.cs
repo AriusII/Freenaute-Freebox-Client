@@ -195,7 +195,8 @@ public sealed class WebSocketApiTests
 				else
 				{
 					socket.Text(
-						$"{{\"action\":\"upload_finalize\",\"request_id\":{requestId},\"success\":true,\"result\":{{\"total_len\":0,\"complete\":{complete.ToString().ToLowerInvariant()}}}}}");
+						string.Create(CultureInfo.InvariantCulture,
+							$"{{\"action\":\"upload_finalize\",\"request_id\":{requestId},\"success\":true,\"result\":{{\"total_len\":0,\"complete\":{complete.ToString().ToLowerInvariant()}}}}}"));
 				}
 			}
 
@@ -302,7 +303,8 @@ public sealed class WebSocketApiTests
 				else
 				{
 					socket.Text(
-						$"{{\"action\":\"upload_finalize\",\"request_id\":2,\"success\":true,\"result\":{{\"total_len\":{totalLength},\"complete\":true}}}}");
+						string.Create(CultureInfo.InvariantCulture,
+							$"{{\"action\":\"upload_finalize\",\"request_id\":2,\"success\":true,\"result\":{{\"total_len\":{totalLength},\"complete\":true}}}}"));
 				}
 			}
 

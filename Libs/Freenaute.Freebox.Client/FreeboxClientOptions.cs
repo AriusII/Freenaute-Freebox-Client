@@ -53,7 +53,7 @@ public sealed class FreeboxClientOptions : IValidatableObject
 
 	IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
 	{
-		if (ServerAddress is null || !ServerAddress.IsAbsoluteUri ||
+		if (!ServerAddress.IsAbsoluteUri ||
 		    (!string.Equals(ServerAddress.Scheme, Uri.UriSchemeHttp, StringComparison.Ordinal) &&
 		     !string.Equals(ServerAddress.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal)) ||
 		    !string.IsNullOrEmpty(ServerAddress.UserInfo) || !string.IsNullOrEmpty(ServerAddress.Query) ||

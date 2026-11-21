@@ -6,5 +6,5 @@ public interface IFreeboxFilesApi
 	FreeboxDownloadsApi Downloads { get; }
 	FreeboxFileSystemApi FileSystem { get; }
 	FreeboxSharesApi Shares { get; }
-	FreeboxUploadsApi Uploads { get; }
+	FreeboxFileUploadsApi Uploads { get; }
 }

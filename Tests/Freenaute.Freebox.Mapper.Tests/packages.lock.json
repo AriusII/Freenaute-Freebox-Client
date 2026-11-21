@@ -17,12 +17,6 @@
           "xunit.v3.mtp-v2": "[4.0.3]"
         }
       },
-      "ZeroAlloc.Analyzers": {
-        "type": "Direct",
-        "requested": "[1.13.1, )",
-        "resolved": "1.13.1",
-        "contentHash": "CTejxMhP+zvBsZeUVC58WRQ6hcyoINVvqfkWJehXByEIKXjgVdyEYbCu3uRuBMI2xd+3h0+MpFwdROvWm1HFEA=="
-      },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
         "resolved": "2.23.0",

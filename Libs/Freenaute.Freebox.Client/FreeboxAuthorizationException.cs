@@ -1,12 +1,7 @@
 namespace Freenaute.Freebox.Client;
 
-public sealed class FreeboxAuthorizationException : InvalidOperationException
+public sealed class FreeboxAuthorizationException(AuthorizationTrackEnum status)
+	: InvalidOperationException($"Freebox authorization ended with status '{status}'.")
 {
-	public FreeboxAuthorizationException(AuthorizationTrackEnum status)
-		: base($"Freebox authorization ended with status '{status}'.")
-	{
-		Status = status;
-	}
-
-	public AuthorizationTrackEnum Status { get; }
+	public AuthorizationTrackEnum Status { get; } = status;
 }

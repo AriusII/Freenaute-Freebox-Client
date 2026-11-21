@@ -5,36 +5,37 @@ public static class FreeboxServiceCollectionExtensions
 	/// <summary>Default HTTP client name used when none is configured.</summary>
 	public const string DefaultHttpClientName = "Freenaute.Freebox.Client";
 
-	public static IHttpClientBuilder AddFreeboxClient(this IServiceCollection services,
-		Action<FreeboxClientOptions> configure)
+	extension(IServiceCollection services)
 	{
-		ArgumentNullException.ThrowIfNull(services);
-		ArgumentNullException.ThrowIfNull(configure);
-		return AddCore(services, null, configure, null, false);
-	}
+		public IHttpClientBuilder AddFreeboxClient(Action<FreeboxClientOptions> configure)
+		{
+			ArgumentNullException.ThrowIfNull(services);
+			ArgumentNullException.ThrowIfNull(configure);
+			return AddCore(services, null, configure, null, false);
+		}
 
-	public static IHttpClientBuilder AddFreeboxClient(this IServiceCollection services, IConfiguration section)
-	{
-		ArgumentNullException.ThrowIfNull(services);
-		ArgumentNullException.ThrowIfNull(section);
-		return AddCore(services, null, null, section, false);
-	}
+		public IHttpClientBuilder AddFreeboxClient(IConfiguration section)
+		{
+			ArgumentNullException.ThrowIfNull(services);
+			ArgumentNullException.ThrowIfNull(section);
+			return AddCore(services, null, null, section, false);
+		}
 
-	public static IHttpClientBuilder AddFreeboxClient(this IServiceCollection services,
-		Action<FreeboxClientOptions> configure, bool validateOnStart)
-	{
-		ArgumentNullException.ThrowIfNull(services);
-		ArgumentNullException.ThrowIfNull(configure);
-		return AddCore(services, null, configure, null, validateOnStart);
-	}
+		public IHttpClientBuilder AddFreeboxClient(Action<FreeboxClientOptions> configure, bool validateOnStart)
+		{
+			ArgumentNullException.ThrowIfNull(services);
+			ArgumentNullException.ThrowIfNull(configure);
+			return AddCore(services, null, configure, null, validateOnStart);
+		}
 
-	public static IHttpClientBuilder AddFreeboxClient(this IServiceCollection services, string name,
-		Action<FreeboxClientOptions> configure)
-	{
-		ArgumentNullException.ThrowIfNull(services);
-		ArgumentException.ThrowIfNullOrWhiteSpace(name);
-		ArgumentNullException.ThrowIfNull(configure);
-		return AddCore(services, name, configure, null, false);
+		public IHttpClientBuilder AddFreeboxClient(string name,
+			Action<FreeboxClientOptions> configure)
+		{
+			ArgumentNullException.ThrowIfNull(services);
+			ArgumentException.ThrowIfNullOrWhiteSpace(name);
+			ArgumentNullException.ThrowIfNull(configure);
+			return AddCore(services, name, configure, null, false);
+		}
 	}
 
 	private static IHttpClientBuilder AddCore(IServiceCollection services, string? keyedName,

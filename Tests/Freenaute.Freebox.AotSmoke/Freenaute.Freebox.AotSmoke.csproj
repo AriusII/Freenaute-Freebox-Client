@@ -15,4 +15,7 @@
         <ProjectReference Include="../../Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj"/>
         <ProjectReference Include="../../Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Remove="ZeroAlloc.Analyzers"/>
+    </ItemGroup>
 </Project>

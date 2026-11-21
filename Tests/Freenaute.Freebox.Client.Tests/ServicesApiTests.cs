@@ -104,7 +104,7 @@ public sealed class ServicesApiTests
 			}));
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
-		await using var audio = await new FreeboxServicesApi(client.Transport).Call
+		await using var audio = await new FreeboxServicesApi(client.Transport, client.BinaryTransport).Call
 			.Voicemail("20221215_154135_#1.au").DownloadAudioAsync();
 		using var reader = new StreamReader(audio.Content, leaveOpen: true);
 		Assert.Equal("RIFF-fixture", await reader.ReadToEndAsync());

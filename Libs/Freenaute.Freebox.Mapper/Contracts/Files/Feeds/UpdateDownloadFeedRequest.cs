@@ -1,0 +1,10 @@
+namespace Freenaute.Freebox.Mapper.Contracts.Files.Feeds;
+
+/// <summary>
+///     Write contract from http://mafreebox.freebox.fr/doc/index.html#put--api-v8-downloads-feeds-id. Unset patch
+///     fields are omitted; null clearing is not promised.
+/// </summary>
+public sealed record UpdateDownloadFeedRequest
+{
+	[JsonPropertyName("auto_download")] public required bool AutoDownload { get; init; }
+}

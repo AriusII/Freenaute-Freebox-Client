@@ -94,7 +94,9 @@ public sealed record ApiVersionResponse(
 			}
 
 			string basePath = string.Join('/', ApiBaseUrl.Split('/', StringSplitOptions.RemoveEmptyEntries));
-			string path = basePath.Length is 0 ? $"/v{major}/" : $"/{basePath}/v{major}/";
+			string path = basePath.Length is 0
+				? string.Create(CultureInfo.InvariantCulture, $"/v{major}/")
+				: string.Create(CultureInfo.InvariantCulture, $"/{basePath}/v{major}/");
 			return new UriBuilder
 			{
 				Scheme = HttpsAvailable is true ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,

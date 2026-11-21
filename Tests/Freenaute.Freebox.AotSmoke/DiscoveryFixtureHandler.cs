@@ -1,14 +1,7 @@
 namespace Freenaute.Freebox.AotSmoke;
 
-internal sealed class DiscoveryFixtureHandler : HttpMessageHandler
+internal sealed class DiscoveryFixtureHandler(bool fail = false) : HttpMessageHandler
 {
-	private readonly bool _fail;
-
-	public DiscoveryFixtureHandler(bool fail = false)
-	{
-		_fail = fail;
-	}
-
 	public int RequestCount { get; private set; }
 
 	public static DiscoveryFixtureHandler FailingIfCalled() => new(true);
@@ -17,7 +10,7 @@ internal sealed class DiscoveryFixtureHandler : HttpMessageHandler
 		CancellationToken cancellationToken)
 	{
 		RequestCount++;
-		if (_fail)
+		if (fail)
 		{
 			throw new InvalidOperationException("HTTP discovery should not run after a valid mDNS result.");
 		}

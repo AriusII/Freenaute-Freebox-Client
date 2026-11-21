@@ -79,7 +79,7 @@ public sealed class TlsTests
 		using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 		var server = ServeOnceAsync(listener, certificates.Leaf, expectedSuccess, cancellation.Token);
 		using var http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(10) };
-		var address = new Uri($"https://localhost:{endpoint.Port}/probe/");
+		var address = new Uri(string.Create(CultureInfo.InvariantCulture, $"https://localhost:{endpoint.Port}/probe/"));
 
 		if (expectedSuccess)
 		{

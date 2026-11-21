@@ -6,11 +6,10 @@ namespace Freenaute.Freebox.Client.Domains.Services;
 /// </summary>
 public sealed class FreeboxServicesApi : IFreeboxServicesApi
 {
-	public FreeboxServicesApi(IFreeboxTransport transport)
+	public FreeboxServicesApi(IFreeboxTransport transport, IFreeboxBinaryTransport? binaryTransport = null)
 	{
 		ArgumentNullException.ThrowIfNull(transport);
-		var binary = transport as IFreeboxBinaryTransport;
-		Call = new FreeboxCallApi(transport, binary);
+		Call = new FreeboxCallApi(transport, binaryTransport);
 		Contacts = new FreeboxContactsApi(transport);
 		Ftp = new FreeboxFtpApi(transport);
 		Tftp = new FreeboxTftpApi(transport);

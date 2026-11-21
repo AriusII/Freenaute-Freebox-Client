@@ -51,20 +51,23 @@ public sealed class FreeboxClient : IFreeboxClient, IDisposable
 		_state = state;
 		_ownsState = ownsState;
 		_ownsHttpClient = ownsHttpClient;
-		var transport = new FreeboxHttpTransport(httpClient, state, ownsState ? state.Options.Timeout : null);
+		var core = new FreeboxHttpTransportCore(httpClient, state, ownsState ? state.Options.Timeout : null);
+		var transport = new FreeboxHttpTransport(core);
+		var binaryTransport = new FreeboxBinaryTransport(core);
+		var webSocketTransport = new FreeboxWebSocketTransport(core);
 		Transport = transport;
-		BinaryTransport = transport;
-		WebSocketTransport = transport;
+		BinaryTransport = binaryTransport;
+		WebSocketTransport = webSocketTransport;
 		Discovery = new FreeboxDiscoveryApi(transport);
 		Authentication = new FreeboxAuthenticationApi(transport);
 		AirMedia = new FreeboxAirMediaApi(transport);
 		Cameras = new FreeboxCamerasApi(transport);
 		Notifications = new FreeboxNotificationsApi(transport);
 		Network = new FreeboxNetworkApi(transport);
-		Services = new FreeboxServicesApi(transport);
-		Files = new FreeboxFilesApi(transport, transport);
+		Services = new FreeboxServicesApi(transport, binaryTransport);
+		Files = new FreeboxFilesApi(transport, binaryTransport);
 		SystemHome = new FreeboxSystemHomeApi(transport);
-		WebSockets = new FreeboxWebSocketsApi(transport);
+		WebSockets = new FreeboxWebSocketsApi(webSocketTransport);
 	}
 
 	public void Dispose()
