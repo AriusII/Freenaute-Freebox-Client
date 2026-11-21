@@ -1,11 +1,7 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Services;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Serialization;
 
-[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(AfpConfig))]
 [JsonSerializable(typeof(AfpConfigPatch))]
 [JsonSerializable(typeof(AfpConfig[]))]

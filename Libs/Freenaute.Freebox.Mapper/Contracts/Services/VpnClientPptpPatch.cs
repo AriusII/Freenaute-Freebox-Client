@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of VPNClientConfigPPTP; unset fields are omitted and explicit null is rejected.</summary>
@@ -34,13 +31,43 @@ public sealed record VpnClientPptpPatch
 
     public void Validate()
     {
-        if (RemoteHost.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.RemoteHost.", nameof(RemoteHost));
-        if (Username.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.Username.", nameof(Username));
-        if (Password.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.Password.", nameof(Password));
-        if (Mppe.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.Mppe.", nameof(Mppe));
-        if (AllowedAuth.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.AllowedAuth.", nameof(AllowedAuth));
-        if (AllowedAuth.HasValue) AllowedAuth.Value.Validate();
+        if (RemoteHost.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.RemoteHost.",
+                nameof(RemoteHost));
+        }
+
+        if (Username.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.Username.",
+                nameof(Username));
+        }
+
+        if (Password.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.Password.",
+                nameof(Password));
+        }
+
+        if (Mppe.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.Mppe.", nameof(Mppe));
+        }
+
+        if (AllowedAuth.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigPPTP.AllowedAuth.",
+                nameof(AllowedAuth));
+        }
+
+        if (AllowedAuth.HasValue)
+        {
+            AllowedAuth.Value.Validate();
+        }
     }
 
-    public override string ToString() => nameof(VpnClientPptpPatch);
+    public override string ToString()
+    {
+        return nameof(VpnClientPptpPatch);
+    }
 }

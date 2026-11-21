@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of Frecord; unset fields are omitted and explicit null is rejected.</summary>
@@ -19,9 +16,19 @@ public sealed record FinishedRecordingPatch
 
     public void Validate()
     {
-        if (Name.IsNull) throw new ArgumentException("Explicit null is not documented for Frecord.Name.", nameof(Name));
-        if (Subname.IsNull) throw new ArgumentException("Explicit null is not documented for Frecord.Subname.", nameof(Subname));
+        if (Name.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Frecord.Name.", nameof(Name));
+        }
+
+        if (Subname.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Frecord.Subname.", nameof(Subname));
+        }
     }
 
-    public override string ToString() => nameof(FinishedRecordingPatch);
+    public override string ToString()
+    {
+        return nameof(FinishedRecordingPatch);
+    }
 }

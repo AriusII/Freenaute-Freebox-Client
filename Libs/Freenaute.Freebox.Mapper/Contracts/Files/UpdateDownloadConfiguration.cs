@@ -1,10 +1,9 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
-/// <summary>Write contract from http://mafreebox.freebox.fr/doc/index.html#put--api-v8-downloads-config-. Unset patch fields are omitted; null clearing is not promised.</summary>
+/// <summary>
+///     Write contract from http://mafreebox.freebox.fr/doc/index.html#put--api-v8-downloads-config-. Unset patch
+///     fields are omitted; null clearing is not promised.
+/// </summary>
 public sealed record UpdateDownloadConfiguration
 {
     [JsonPropertyName("max_downloading_tasks")]
@@ -56,5 +55,4 @@ public sealed record UpdateDownloadConfiguration
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [JsonConverter(typeof(OptionalJsonConverter<string>))]
     public Optional<string> Dns2 { get; init; }
-
 }

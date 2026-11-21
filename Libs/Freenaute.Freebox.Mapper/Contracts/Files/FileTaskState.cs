@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#FsTask.state</summary>
@@ -10,5 +8,5 @@ public enum FileTaskState
     [JsonStringEnumMemberName("running")] Running,
     [JsonStringEnumMemberName("paused")] Paused,
     [JsonStringEnumMemberName("done")] Done,
-    [JsonStringEnumMemberName("failed")] Failed,
+    [JsonStringEnumMemberName("failed")] Failed
 }

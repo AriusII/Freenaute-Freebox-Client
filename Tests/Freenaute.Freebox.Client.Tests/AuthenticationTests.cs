@@ -1,10 +1,3 @@
-using System.Net;
-using System.Text.Json;
-using Freenaute.Freebox.Mapper.ClientSide.Api.AirMedia;
-using Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.Common.Types;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class AuthenticationTests
@@ -14,7 +7,7 @@ public sealed class AuthenticationTests
     {
         using var handler = new FixtureHandler((request, _) => Task.FromResult(Respond(request)));
         using var http = new HttpClient(handler);
-        var client = HttpClientTests.CreateClient(http, authenticate: true);
+        var client = HttpClientTests.CreateClient(http);
 
         var configuration = await client.AirMedia.GetConfigurationAsync();
         await client.Authentication.GetLoginAsync();
@@ -47,10 +40,11 @@ public sealed class AuthenticationTests
                 loginEntered.TrySetResult();
                 await releaseLogin.Task.WaitAsync(cancellationToken);
             }
+
             return Respond(request);
         });
         using var http = new HttpClient(handler);
-        var client = HttpClientTests.CreateClient(http, authenticate: true);
+        var client = HttpClientTests.CreateClient(http);
 
         var calls = Enumerable.Range(0, 20).Select(_ => client.AirMedia.GetConfigurationAsync()).ToArray();
         await loginEntered.Task.WaitAsync(TimeSpan.FromSeconds(10));
@@ -59,8 +53,10 @@ public sealed class AuthenticationTests
 
         Assert.All(results, configuration => Assert.True(configuration.Enabled));
         Assert.Single(handler.Requests, x => x.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal));
-        Assert.Single(handler.Requests, x => x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal));
-        var protectedRequests = handler.Requests.Where(x => x.Address.AbsolutePath.Contains("airmedia", StringComparison.Ordinal)).ToArray();
+        Assert.Single(handler.Requests,
+            x => x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal));
+        var protectedRequests = handler.Requests
+            .Where(x => x.Address.AbsolutePath.Contains("airmedia", StringComparison.Ordinal)).ToArray();
         Assert.Equal(20, protectedRequests.Length);
         Assert.All(protectedRequests, request => Assert.Equal("fixture-session", request.SessionToken));
     }
@@ -77,10 +73,11 @@ public sealed class AuthenticationTests
                 loginEntered.TrySetResult();
                 await releaseLogin.Task.WaitAsync(cancellationToken);
             }
+
             return Respond(request);
         });
         using var http = new HttpClient(handler);
-        var client = HttpClientTests.CreateClient(http, authenticate: true);
+        var client = HttpClientTests.CreateClient(http);
         using var cancellation = new CancellationTokenSource();
 
         var owner = client.AirMedia.GetConfigurationAsync();
@@ -105,18 +102,21 @@ public sealed class AuthenticationTests
     {
         using var handler = new FixtureHandler((request, _) => Task.FromResult(
             request.Address.AbsolutePath.Contains("/airmedia/receivers/", StringComparison.Ordinal)
-                ? FixtureHandler.Json("""{"success":false,"error_code":"auth_required","msg":"Expired session"}""", HttpStatusCode.Forbidden)
+                ? FixtureHandler.Json("""{"success":false,"error_code":"auth_required","msg":"Expired session"}""",
+                    HttpStatusCode.Forbidden)
                 : Respond(request)));
         using var http = new HttpClient(handler);
-        var client = HttpClientTests.CreateClient(http, authenticate: true);
+        var client = HttpClientTests.CreateClient(http);
 
         await Assert.ThrowsAsync<FreeboxApiException>(() => client.AirMedia.SendToReceiverAsync("TV",
             new AirMediaReceiverRequest(AirMediaAction.Start, AirMediaMediaType.Video,
                 "https://media.example/video.mp4")));
-        Assert.Single(handler.Requests, x => x.Address.AbsolutePath.Contains("/airmedia/receivers/", StringComparison.Ordinal));
+        Assert.Single(handler.Requests,
+            x => x.Address.AbsolutePath.Contains("/airmedia/receivers/", StringComparison.Ordinal));
 
         Assert.True((await client.AirMedia.GetConfigurationAsync()).Enabled);
-        Assert.Equal(2, handler.Requests.Count(x => x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)));
+        Assert.Equal(2,
+            handler.Requests.Count(x => x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)));
     }
 
     [Fact]
@@ -127,10 +127,14 @@ public sealed class AuthenticationTests
             if (request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal))
             {
                 using var body = JsonDocument.Parse(request.Body!);
-                var session = body.RootElement.GetProperty("app_id").GetString() == "org.fixture.a" ? "session-a" : "session-b";
+                string session = body.RootElement.GetProperty("app_id").GetString() == "org.fixture.a"
+                    ? "session-a"
+                    : "session-b";
                 return Task.FromResult(FixtureHandler.Json(
-                    "{\"success\":true,\"result\":{\"session_token\":\"" + session + "\",\"challenge\":\"next\",\"permissions\":{\"settings\":true}}}"));
+                    "{\"success\":true,\"result\":{\"session_token\":\"" + session +
+                    "\",\"challenge\":\"next\",\"permissions\":{\"settings\":true}}}"));
             }
+
             return Task.FromResult(Respond(request));
         });
         using var http = new HttpClient(handler);
@@ -146,13 +150,16 @@ public sealed class AuthenticationTests
             .Select(x => x.SessionToken!).ToArray());
         Assert.False(http.DefaultRequestHeaders.Contains("X-Fbx-App-Auth"));
 
-        FreeboxClient Client(string appId) => new(http, new FreeboxClientOptions
+        FreeboxClient Client(string appId)
         {
-            ServerAddress = new Uri("https://fixture.example/"),
-            ApiVersion = 16,
-            ApplicationId = appId,
-            AppToken = "fixture-app-token"
-        });
+            return new FreeboxClient(http, new FreeboxClientOptions
+            {
+                ServerAddress = new Uri("https://fixture.example/"),
+                ApiVersion = 16,
+                ApplicationId = appId,
+                AppToken = "fixture-app-token"
+            });
+        }
     }
 
     [Fact]
@@ -211,28 +218,43 @@ public sealed class AuthenticationTests
     {
         using var handler = new FixtureHandler((request, _) => Task.FromResult(
             request.Address.AbsolutePath.EndsWith("/login/logout/", StringComparison.Ordinal)
-                ? FixtureHandler.Json("""{"success":true}""") : Respond(request)));
+                ? FixtureHandler.Json("""{"success":true}""")
+                : Respond(request)));
         using var http = new HttpClient(handler);
-        var client = HttpClientTests.CreateClient(http, authenticate: true);
+        var client = HttpClientTests.CreateClient(http);
 
         await client.AirMedia.GetConfigurationAsync();
         await client.Authentication.CloseSessionAsync();
         await client.AirMedia.GetConfigurationAsync();
 
-        var logout = Assert.Single(handler.Requests, x => x.Address.AbsolutePath.EndsWith("/login/logout/", StringComparison.Ordinal));
+        var logout = Assert.Single(handler.Requests,
+            x => x.Address.AbsolutePath.EndsWith("/login/logout/", StringComparison.Ordinal));
         Assert.Equal(HttpMethod.Post, logout.Method);
         Assert.Equal("fixture-session", logout.SessionToken);
-        Assert.Equal(2, handler.Requests.Count(x => x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)));
+        Assert.Equal(2,
+            handler.Requests.Count(x => x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)));
     }
 
     private static HttpResponseMessage Respond(CapturedRequest request)
     {
-        var path = request.Address.AbsolutePath;
-        if (path == "/api_version") return FixtureHandler.Json(HttpClientTests.DiscoveryJson);
+        string path = request.Address.AbsolutePath;
+        if (path == "/api_version")
+        {
+            return FixtureHandler.Json(HttpClientTests.DiscoveryJson);
+        }
+
         if (path.EndsWith("/login/", StringComparison.Ordinal))
-            return FixtureHandler.Json("""{"success":true,"result":{"logged_in":false,"challenge":"fixture-challenge"}}""");
+        {
+            return FixtureHandler.Json(
+                """{"success":true,"result":{"logged_in":false,"challenge":"fixture-challenge"}}""");
+        }
+
         if (path.EndsWith("/login/session/", StringComparison.Ordinal))
-            return FixtureHandler.Json("""{"success":true,"result":{"session_token":"fixture-session","challenge":"next-challenge","permissions":{"settings":true}}}""");
+        {
+            return FixtureHandler.Json(
+                """{"success":true,"result":{"session_token":"fixture-session","challenge":"next-challenge","permissions":{"settings":true}}}""");
+        }
+
         return FixtureHandler.Json("""{"success":true,"result":{"enabled":true}}""");
     }
 }

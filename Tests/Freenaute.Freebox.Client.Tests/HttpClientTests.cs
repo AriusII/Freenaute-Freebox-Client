@@ -1,15 +1,13 @@
-using System.Net;
-using System.Text.Json;
-using Freenaute.Freebox.Mapper.ClientSide.Api.AirMedia;
-using Freenaute.Freebox.Mapper.Common.Types;
-using Freenaute.Freebox.Mapper.Serialization;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class HttpClientTests
 {
+    internal const string DiscoveryJson = """
+                                          {"uid":"fixture","device_name":"Server","box_model":"fbxgw9-r1/full","box_model_name":"Ultra",
+                                           "api_version":"16.0","api_domain":"advertised.example","api_base_url":"/custom/api/",
+                                           "https_available":true,"https_port":8443}
+                                          """;
+
     [Fact]
     public async Task DependencyInjectionUsesConfiguredHttpClientHandler()
     {
@@ -37,8 +35,9 @@ public sealed class HttpClientTests
     public async Task DiscoveryUsesUnversionedEndpointAndAdvertisedVersionOnConfiguredOrigin()
     {
         using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
-            request.Address.AbsolutePath == "/api_version" ? DiscoveryJson :
-                """{"success":true,"result":{"enabled":true}}""")));
+            request.Address.AbsolutePath == "/api_version"
+                ? DiscoveryJson
+                : """{"success":true,"result":{"enabled":true}}""")));
         using var http = new HttpClient(handler);
         var client = new FreeboxClient(http, new FreeboxClientOptions
         {
@@ -103,15 +102,17 @@ public sealed class HttpClientTests
     public async Task AirMediaUpdateAndReceiversUseExpectedMethodsAndReadNestedCapabilities()
     {
         using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
-            request.Method == HttpMethod.Put ? """{"success":true,"result":{"enabled":false}}""" :
-                """
-                {"success":true,"result":[{"name":"Living room","password_protected":true,
-                 "capabilities":{"photo":true,"audio":false,"video":true,"screen":false}}]}
-                """)));
+            request.Method == HttpMethod.Put
+                ? """{"success":true,"result":{"enabled":false}}"""
+                : """
+                  {"success":true,"result":[{"name":"Living room","password_protected":true,
+                   "capabilities":{"photo":true,"audio":false,"video":true,"screen":false}}]}
+                  """)));
         using var http = new HttpClient(handler);
         var client = CreateClient(http);
 
-        var updated = await client.AirMedia.UpdateConfigurationAsync(new UpdateAirMediaConfigRequest(false, "fixture-password"));
+        var updated =
+            await client.AirMedia.UpdateConfigurationAsync(new UpdateAirMediaConfigRequest(false, "fixture-password"));
         var receivers = await client.AirMedia.GetReceiversAsync();
 
         Assert.False(updated.Enabled);
@@ -161,7 +162,8 @@ public sealed class HttpClientTests
     [Fact]
     public async Task HttpFailureWithoutJsonDoesNotExposeResponseBody()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("private fixture diagnostic", HttpStatusCode.BadGateway);
+        using var handler =
+            FixtureHandler.AuthenticatedConstant("private fixture diagnostic", HttpStatusCode.BadGateway);
         using var http = new HttpClient(handler);
         var client = CreateClient(http);
 
@@ -240,12 +242,16 @@ public sealed class HttpClientTests
         Assert.Empty(handler.Requests);
     }
 
-    private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler) =>
-        handler.Requests.Where(request => !request.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal) &&
+    private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)
+    {
+        return handler.Requests.Where(request =>
+            !request.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal) &&
             !request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal));
+    }
 
-    internal static FreeboxClient CreateClient(HttpClient http, bool authenticate = true) =>
-        new(http, new FreeboxClientOptions
+    internal static FreeboxClient CreateClient(HttpClient http, bool authenticate = true)
+    {
+        return new FreeboxClient(http, new FreeboxClientOptions
         {
             ServerAddress = new Uri("https://fixture.example/"),
             ApiVersion = 16,
@@ -253,10 +259,5 @@ public sealed class HttpClientTests
             ApplicationId = authenticate ? "org.fixture" : null,
             AppToken = authenticate ? "fixture-app-token" : null
         });
-
-    internal const string DiscoveryJson = """
-        {"uid":"fixture","device_name":"Server","box_model":"fbxgw9-r1/full","box_model_name":"Ultra",
-         "api_version":"16.0","api_domain":"advertised.example","api_base_url":"/custom/api/",
-         "https_available":true,"https_port":8443}
-        """;
+    }
 }

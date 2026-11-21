@@ -1,7 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>Read contract from http://mafreebox.freebox.fr/doc/index.html#StorageDisk. Unknown enum strings are preserved.</summary>
@@ -90,5 +86,4 @@ public sealed record StorageDisk
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#StorageDisk.write_error_requests</summary>
     [JsonPropertyName("write_error_requests")]
     public long? WriteErrorRequests { get; init; }
-
 }

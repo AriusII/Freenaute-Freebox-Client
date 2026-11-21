@@ -1,12 +1,11 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Serialization;
 
 /// <summary>Generated metadata for primitive contracts; domains register their explicitly closed model converters.</summary>
-[JsonSourceGenerationOptions(Converters = [
+[JsonSourceGenerationOptions(Converters =
+[
     typeof(OptionalBooleanJsonConverter), typeof(OptionalInt32JsonConverter), typeof(OptionalInt64JsonConverter),
-    typeof(OptionalStringJsonConverter), typeof(OptionalDecimalJsonConverter)])]
+    typeof(OptionalStringJsonConverter), typeof(OptionalDecimalJsonConverter)
+])]
 [JsonSerializable(typeof(bool))]
 [JsonSerializable(typeof(int))]
 [JsonSerializable(typeof(long))]

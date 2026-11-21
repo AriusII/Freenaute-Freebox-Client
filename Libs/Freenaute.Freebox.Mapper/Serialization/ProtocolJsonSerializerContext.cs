@@ -1,7 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Contracts.Protocol;
-
 namespace Freenaute.Freebox.Mapper.Serialization;
 
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,

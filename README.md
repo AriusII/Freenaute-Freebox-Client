@@ -1,6 +1,6 @@
 # Freenaute — Freebox Server SDK
 
-Client Freebox Server en **C# 14 / .NET 10**, construit sur `System.Net.Http` et
+Client Freebox Server en **C# 15 / .NET 11**, construit sur `System.Net.Http` et
 `Microsoft.Extensions.Http`. Il propose des façades typées, des commandes fluentes,
 l'injection de dépendances standard et une sérialisation compatible **NativeAOT**.
 
@@ -153,17 +153,17 @@ reste une action explicite.
 
 ## Domaines
 
-| Façade | Responsabilités |
-| --- | --- |
-| `Discovery` / `Authentication` | Découverte, autorisation, challenge, session |
-| `Network` | Connexion, LAN, DHCP/DHCPv6, NAT, IGD, Freeplug, SFP, switch, WiFi |
-| `Services` | Téléphonie, contacts, FTP/TFTP, partages, UPnP AV, VPN, Player, PVR |
-| `Files` | Fichiers, tâches, téléchargements, feeds, partages, stockage, RAID, VM, statistiques |
-| `SystemHome` | Système, langue, écran, LED, veille, mises à jour, domotique, profils |
-| `Cameras` / `Notifications` | Caméras et cibles de notifications |
-| `AirMedia` | Configuration, récepteurs et lecture |
-| `WebSockets` | Événements et upload moderne |
-| `Transport` / `BinaryTransport` / `WebSocketTransport` | Extensions avec contrats et métadonnées explicites |
+| Façade                                                 | Responsabilités                                                                      |
+|--------------------------------------------------------|--------------------------------------------------------------------------------------|
+| `Discovery` / `Authentication`                         | Découverte, autorisation, challenge, session                                         |
+| `Network`                                              | Connexion, LAN, DHCP/DHCPv6, NAT, IGD, Freeplug, SFP, switch, WiFi                   |
+| `Services`                                             | Téléphonie, contacts, FTP/TFTP, partages, UPnP AV, VPN, Player, PVR                  |
+| `Files`                                                | Fichiers, tâches, téléchargements, feeds, partages, stockage, RAID, VM, statistiques |
+| `SystemHome`                                           | Système, langue, écran, LED, veille, mises à jour, domotique, profils                |
+| `Cameras` / `Notifications`                            | Caméras et cibles de notifications                                                   |
+| `AirMedia`                                             | Configuration, récepteurs et lecture                                                 |
+| `WebSockets`                                           | Événements et upload moderne                                                         |
+| `Transport` / `BinaryTransport` / `WebSocketTransport` | Extensions avec contrats et métadonnées explicites                                   |
 
 La [couverture vérifiable](docs/freebox-official/README.md) rapproche les opérations
 avec leurs sources. Quelques contrats restent non exposés parce que la documentation
@@ -184,14 +184,14 @@ flowchart LR
     Http --> Server[Freebox Server]
 ```
 
-| Projet | Rôle |
-| --- | --- |
-| `Libs/Freenaute.Freebox.Client` | DI, façades, commandes, session et transports |
-| `Libs/Freenaute.Freebox.Mapper` | Contrats filaires, primitives et contextes JSON générés |
-| `Tests` | Contrats, HTTP/TLS, concurrence, transferts, WebSocket et intégrité documentaire |
-| `Samples/Freenaute.Freebox.AotSmoke` | Parcours représentatifs publiés et exécutés en natif |
-| `Tools/Freenaute.Freebox.Documentation` | Vérification, contexte et couverture du corpus en C# |
-| `docs` | Architecture, preuves documentaires, revues et limites d'implémentation |
+| Projet                                  | Rôle                                                                             |
+|-----------------------------------------|----------------------------------------------------------------------------------|
+| `Libs/Freenaute.Freebox.Client`         | DI, façades, commandes, session et transports                                    |
+| `Libs/Freenaute.Freebox.Mapper`         | Contrats filaires, primitives et contextes JSON générés                          |
+| `Tests`                                 | Contrats, HTTP/TLS, concurrence, transferts, WebSocket et intégrité documentaire |
+| `Samples/Freenaute.Freebox.AotSmoke`    | Parcours représentatifs publiés et exécutés en natif                             |
+| `Tools/Freenaute.Freebox.Documentation` | Vérification, contexte et couverture du corpus en C#                             |
+| `docs`                                  | Architecture, preuves documentaires, revues et limites d'implémentation          |
 
 Les bibliothèques sont marquées `IsAotCompatible`. Les tests et le sample désactivent
 la réflexion JSON. Chaque contrat utilise des `JsonTypeInfo<T>` générés ; une extension

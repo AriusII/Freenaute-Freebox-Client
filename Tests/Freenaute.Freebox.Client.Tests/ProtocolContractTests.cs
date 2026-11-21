@@ -1,11 +1,3 @@
-using System.Text.Json;
-using Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.ClientSide.WebSocket;
-using Freenaute.Freebox.Mapper.Common.Types;
-using Freenaute.Freebox.Mapper.Serialization;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class ProtocolContractTests
@@ -34,8 +26,9 @@ public sealed class ProtocolContractTests
     {
         const string partial = """{"api_version":"16.0","api_base_url":"/api/"}""";
         using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
-            request.Address.AbsolutePath == "/api_version" ? partial :
-                """{"success":true,"result":{"enabled":true}}""")));
+            request.Address.AbsolutePath == "/api_version"
+                ? partial
+                : """{"success":true,"result":{"enabled":true}}""")));
         using var http = new HttpClient(handler);
         using var client = new FreeboxClient(http, new FreeboxClientOptions()
             .UseServer(new Uri("https://configured.example:8443/"))
@@ -52,7 +45,8 @@ public sealed class ProtocolContractTests
         Assert.Null(discovery.HttpsPort);
         Assert.Throws<ArgumentNullException>(() => discovery.ApiUri);
         Assert.True((await client.AirMedia.GetConfigurationAsync()).Enabled);
-        Assert.Equal("https://configured.example:8443/api/v16/airmedia/config/", handler.Requests.Last().Address.AbsoluteUri);
+        Assert.Equal("https://configured.example:8443/api/v16/airmedia/config/",
+            handler.Requests.Last().Address.AbsoluteUri);
         Assert.Single(handler.Requests, request => request.Address.AbsolutePath == "/api_version");
     }
 
@@ -79,23 +73,31 @@ public sealed class ProtocolContractTests
             options.ApiVersion = 16;
             options.UseServer(new Uri("https://fixture.example/"))
                 .UseCredentials("org.fixture", "fixture-app-token");
-            if (version is not null) options.WithApplicationVersion(version);
+            if (version is not null)
+            {
+                options.WithApplicationVersion(version);
+            }
         }).ConfigurePrimaryHttpMessageHandler(() => handler);
         using var provider = services.BuildServiceProvider();
 
         await provider.GetRequiredService<IFreeboxClient>().AirMedia.GetConfigurationAsync();
 
-        var session = Assert.Single(handler.Requests, request => request.Address.AbsolutePath.EndsWith("/login/session/"));
+        var session = Assert.Single(handler.Requests,
+            request => request.Address.AbsolutePath.EndsWith("/login/session/"));
         using var body = JsonDocument.Parse(session.Body!);
         Assert.Equal("8951185163485b44ef71e6f92c2e872f7817f13c", body.RootElement.GetProperty("password").GetString());
         Assert.Equal(version is not null, body.RootElement.TryGetProperty("app_version", out var wireVersion));
-        if (version is not null) Assert.Equal(version, wireVersion.GetString());
+        if (version is not null)
+        {
+            Assert.Equal(version, wireVersion.GetString());
+        }
     }
 
     [Fact]
     public void SessionStartGeneratedMetadataOmitsUnconfiguredApplicationVersion()
     {
-        using var json = JsonDocument.Parse(JsonSerializer.Serialize(new SessionStartRequest("org.fixture", "fixture-hmac"),
+        using var json = JsonDocument.Parse(JsonSerializer.Serialize(
+            new SessionStartRequest("org.fixture", "fixture-hmac"),
             FreeboxJsonSerializerContext.Default.SessionStartRequest));
 
         Assert.False(json.RootElement.TryGetProperty("app_version", out _));
@@ -135,7 +137,8 @@ public sealed class ProtocolContractTests
         Assert.False(session.PermissionsModel.Downloader);
         Assert.False(session.PermissionsModel.Pvr);
         Assert.False(session.PermissionsModel.Profile);
-        using var json = JsonDocument.Parse(JsonSerializer.Serialize(session, FreeboxJsonSerializerContext.Default.SessionResponse));
+        using var json =
+            JsonDocument.Parse(JsonSerializer.Serialize(session, FreeboxJsonSerializerContext.Default.SessionResponse));
         var permissions = json.RootElement.GetProperty("permissions");
         Assert.True(permissions.GetProperty("camera").GetBoolean());
         Assert.False(permissions.TryGetProperty("parental", out _));

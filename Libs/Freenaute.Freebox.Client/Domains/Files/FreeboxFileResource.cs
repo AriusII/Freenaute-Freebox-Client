@@ -1,6 +1,3 @@
-using Freenaute.Freebox.Mapper.Contracts.Files;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Client.Domains.Files;
 
 /// <summary>An immutable selector retaining the exact encoded path returned by Freebox.</summary>
@@ -16,7 +13,19 @@ public sealed class FreeboxFileResource
         this.path = path;
     }
 
-    public Task<FileEntry> GetInformationAsync(CancellationToken cancellationToken = default) => api.GetInformationAsync(path, cancellationToken);
-    public Task<FileListing> ListAsync(FileListingOptions? options = null, CancellationToken cancellationToken = default) => api.ListAsync(path, options, cancellationToken);
-    public Task<FreeboxDownload> DownloadAsync(CancellationToken cancellationToken = default) => api.DownloadAsync(path, cancellationToken);
+    public Task<FileEntry> GetInformationAsync(CancellationToken cancellationToken = default)
+    {
+        return api.GetInformationAsync(path, cancellationToken);
+    }
+
+    public Task<FileListing> ListAsync(FileListingOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return api.ListAsync(path, options, cancellationToken);
+    }
+
+    public Task<FreeboxDownload> DownloadAsync(CancellationToken cancellationToken = default)
+    {
+        return api.DownloadAsync(path, cancellationToken);
+    }
 }

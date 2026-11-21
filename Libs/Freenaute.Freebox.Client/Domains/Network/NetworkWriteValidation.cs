@@ -1,14 +1,13 @@
-using System.Globalization;
-using Freenaute.Freebox.Mapper.Contracts.Network;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Client.Domains.Network;
 
 internal static class NetworkWriteValidation
 {
     private static void RejectNull<T>(Optional<T> value, string field)
     {
-        if (value.IsNull) throw new ArgumentException($"JSON null is not documented for network field {field}.", field);
+        if (value.IsNull)
+        {
+            throw new ArgumentException($"JSON null is not documented for network field {field}.", field);
+        }
     }
 
     internal static void Validate(ConnectionConfigurationPatch request)
@@ -30,8 +29,19 @@ internal static class NetworkWriteValidation
         RejectNull(request.Ipv6Firewall, "ipv6_firewall");
         RejectNull(request.Ipv6PrefixFirewall, "ipv6_prefix_firewall");
         RejectNull(request.Delegations, "delegations");
-        if (request.Delegations.HasValue) foreach (var value in request.Delegations.Value) Validate(value);
-        if (request.Delegations.HasValue && request.Delegations.Value.Length != 8) throw new ArgumentException("IPv6 delegation configuration is a documented array of eight entries.", nameof(request));
+        if (request.Delegations.HasValue)
+        {
+            foreach (var value in request.Delegations.Value)
+            {
+                Validate(value);
+            }
+        }
+
+        if (request.Delegations.HasValue && request.Delegations.Value.Length != 8)
+        {
+            throw new ArgumentException("IPv6 delegation configuration is a documented array of eight entries.",
+                nameof(request));
+        }
     }
 
     internal static void Validate(ConnectionIpv6DelegationPatch request)
@@ -68,9 +78,22 @@ internal static class NetworkWriteValidation
         RejectNull(request.BootServer, "boot_server");
         RejectNull(request.BootFile, "boot_file");
         RejectNull(request.Dns, "dns");
-        if (request.Dns.HasValue) foreach (var value in request.Dns.Value) ArgumentNullException.ThrowIfNull(value);
+        if (request.Dns.HasValue)
+        {
+            foreach (string value in request.Dns.Value)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+            }
+        }
+
         RejectNull(request.Options, "options");
-        if (request.Options.HasValue) foreach (var value in request.Options.Value) Validate(value);
+        if (request.Options.HasValue)
+        {
+            foreach (var value in request.Options.Value)
+            {
+                Validate(value);
+            }
+        }
     }
 
     internal static void Validate(DhcpOptionWrite request)
@@ -87,7 +110,13 @@ internal static class NetworkWriteValidation
         RejectNull(request.Comment, "comment");
         RejectNull(request.Ip, "ip");
         RejectNull(request.Options, "options");
-        if (request.Options.HasValue) foreach (var value in request.Options.Value) Validate(value);
+        if (request.Options.HasValue)
+        {
+            foreach (var value in request.Options.Value)
+            {
+                Validate(value);
+            }
+        }
     }
 
     internal static void Validate(CreateDhcpStaticLeaseRequest request)
@@ -97,7 +126,13 @@ internal static class NetworkWriteValidation
         RejectNull(request.Comment, "comment");
         RejectNull(request.Ip, "ip");
         RejectNull(request.Options, "options");
-        if (request.Options.HasValue) foreach (var value in request.Options.Value) Validate(value);
+        if (request.Options.HasValue)
+        {
+            foreach (var value in request.Options.Value)
+            {
+                Validate(value);
+            }
+        }
     }
 
     internal static void Validate(DhcpV6ConfigurationPatch request)
@@ -238,16 +273,26 @@ internal static class NetworkWriteValidation
         RejectNull(request.SecondaryChannel, "secondary_channel");
         RejectNull(request.DfsEnabled, "dfs_enabled");
         RejectNull(request.Ht, "ht");
-        if (request.Ht.HasValue) Validate(request.Ht.Value);
+        if (request.Ht.HasValue)
+        {
+            Validate(request.Ht.Value);
+        }
+
         RejectNull(request.He, "he");
-        if (request.He.HasValue) Validate(request.He.Value);
+        if (request.He.HasValue)
+        {
+            Validate(request.He.Value);
+        }
     }
 
     internal static void Validate(WifiAccessPointPatch request)
     {
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.Config, "config");
-        if (request.Config.HasValue) Validate(request.Config.Value);
+        if (request.Config.HasValue)
+        {
+            Validate(request.Config.Value);
+        }
     }
 
     internal static void Validate(WifiBssConfigurationPatch request)
@@ -267,7 +312,10 @@ internal static class NetworkWriteValidation
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.UseSharedParams, "use_shared_params");
         RejectNull(request.Config, "config");
-        if (request.Config.HasValue) Validate(request.Config.Value);
+        if (request.Config.HasValue)
+        {
+            Validate(request.Config.Value);
+        }
     }
 
     internal static void Validate(WifiPlanningPatch request)
@@ -275,7 +323,13 @@ internal static class NetworkWriteValidation
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.UsePlanning, "use_planning");
         RejectNull(request.Mapping, "mapping");
-        if (request.Mapping.HasValue) foreach (var value in request.Mapping.Value) ArgumentNullException.ThrowIfNull(value);
+        if (request.Mapping.HasValue)
+        {
+            foreach (string value in request.Mapping.Value)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+            }
+        }
     }
 
     internal static void Validate(WifiMacFilterPatch request)
@@ -297,9 +351,22 @@ internal static class NetworkWriteValidation
     {
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.Aps, "aps");
-        if (request.Aps.HasValue) foreach (var value in request.Aps.Value) Validate(value);
+        if (request.Aps.HasValue)
+        {
+            foreach (var value in request.Aps.Value)
+            {
+                Validate(value);
+            }
+        }
+
         RejectNull(request.Bsss, "bsss");
-        if (request.Bsss.HasValue) foreach (var value in request.Bsss.Value) Validate(value);
+        if (request.Bsss.HasValue)
+        {
+            foreach (var value in request.Bsss.Value)
+            {
+                Validate(value);
+            }
+        }
     }
 
     internal static void Validate(WifiApDiagnosticFix request)
@@ -351,10 +418,17 @@ internal static class NetworkWriteValidation
         if (request.MaxUseCount.HasValue)
         {
             var value = request.MaxUseCount.Value;
-            var count = value.Kind == StringOrIntegerKind.Integer ? value.Integer :
-                value.Kind == StringOrIntegerKind.String && long.TryParse(value.String, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed :
-                throw new ArgumentException("Guest access max_use_count must contain an integer or its documented string representation.", nameof(request));
-            if (count is < 0 or > 127) throw new ArgumentOutOfRangeException(nameof(request), "Guest access max_use_count must be between zero (unlimited) and 127.");
+            long count = value.Kind == StringOrIntegerKind.Integer ? value.Integer :
+                value.Kind == StringOrIntegerKind.String && long.TryParse(value.String, NumberStyles.Integer,
+                    CultureInfo.InvariantCulture, out long parsed) ? parsed :
+                throw new ArgumentException(
+                    "Guest access max_use_count must contain an integer or its documented string representation.",
+                    nameof(request));
+            if (count is < 0 or > 127)
+            {
+                throw new ArgumentOutOfRangeException(nameof(request),
+                    "Guest access max_use_count must be between zero (unlimited) and 127.");
+            }
         }
     }
 
@@ -368,13 +442,18 @@ internal static class NetworkWriteValidation
     internal static void Validate(LanRouteWrite[] values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        foreach (var value in values) Validate(value);
+        foreach (var value in values)
+        {
+            Validate(value);
+        }
     }
 
     internal static void Validate(string[] values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        foreach (var value in values) ArgumentNullException.ThrowIfNull(value);
+        foreach (string value in values)
+        {
+            ArgumentNullException.ThrowIfNull(value);
+        }
     }
-
 }

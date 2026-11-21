@@ -1,29 +1,36 @@
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Contracts.WebSockets;
-
 namespace Freenaute.Freebox.Client.Domains.WebSockets;
 
 /// <summary>Immutable upload selection. Resume appends the stream as supplied; no seek or size inference is performed.</summary>
 public sealed class FreeboxUploadCommand
 {
-    private readonly IFreeboxWebSocketTransport _transport;
+    private readonly int _chunkSize;
     private readonly EncodedFreeboxPath _directory;
     private readonly string _filename;
     private readonly string? _force;
     private readonly long? _size;
-    private readonly int _chunkSize;
+    private readonly IFreeboxWebSocketTransport _transport;
 
     public FreeboxUploadCommand(IFreeboxWebSocketTransport transport, EncodedFreeboxPath directory, string filename)
-        : this(transport, directory, filename, null, null, 512 * 1024) { }
+        : this(transport, directory, filename, null, null, 512 * 1024)
+    {
+    }
 
     private FreeboxUploadCommand(IFreeboxWebSocketTransport transport, EncodedFreeboxPath directory,
         string filename, string? force, long? size, int chunkSize)
     {
         ArgumentNullException.ThrowIfNull(transport);
         ArgumentException.ThrowIfNullOrEmpty(filename);
-        if (!directory.IsInitialized) throw new ArgumentException("A destination requires an encoded Freebox path.", nameof(directory));
+        if (!directory.IsInitialized)
+        {
+            throw new ArgumentException("A destination requires an encoded Freebox path.", nameof(directory));
+        }
+
         if (filename is "." or ".." || filename.IndexOfAny(['/', '\\', '\0']) >= 0)
-            throw new ArgumentException("Filename must be a single filename, separate from the destination directory.", nameof(filename));
+        {
+            throw new ArgumentException("Filename must be a single filename, separate from the destination directory.",
+                nameof(filename));
+        }
+
         _transport = transport;
         _directory = directory;
         _filename = filename;
@@ -32,21 +39,32 @@ public sealed class FreeboxUploadCommand
         _chunkSize = chunkSize;
     }
 
-    public FreeboxUploadCommand Overwrite() => new(_transport, _directory, _filename, "overwrite", _size, _chunkSize);
-    public FreeboxUploadCommand Resume() => new(_transport, _directory, _filename, "resume", _size, _chunkSize);
+    public FreeboxUploadCommand Overwrite()
+    {
+        return new FreeboxUploadCommand(_transport, _directory, _filename, "overwrite", _size, _chunkSize);
+    }
+
+    public FreeboxUploadCommand Resume()
+    {
+        return new FreeboxUploadCommand(_transport, _directory, _filename, "resume", _size, _chunkSize);
+    }
 
     /// <summary>Supplies the documented optional file size explicitly; zero is included. No Stream.Length is inspected.</summary>
     public FreeboxUploadCommand WithSize(long size)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(size);
-        return new(_transport, _directory, _filename, _force, size, _chunkSize);
+        return new FreeboxUploadCommand(_transport, _directory, _filename, _force, size, _chunkSize);
     }
 
     /// <summary>Controls local binary message size, bounded by the conservative one-million-byte WebSocket limit.</summary>
     public FreeboxUploadCommand WithChunkSize(int bytes)
     {
-        if (bytes is < 1 or > 1_000_000) throw new ArgumentOutOfRangeException(nameof(bytes));
-        return new(_transport, _directory, _filename, _force, _size, bytes);
+        if (bytes is < 1 or > 1_000_000)
+        {
+            throw new ArgumentOutOfRangeException(nameof(bytes));
+        }
+
+        return new FreeboxUploadCommand(_transport, _directory, _filename, _force, _size, bytes);
     }
 
     public async Task<FreeboxUploadSession> OpenAsync(CancellationToken cancellationToken = default)
@@ -67,22 +85,12 @@ public sealed class FreeboxUploadCommand
         IProgress<FreeboxUploadProgress>? progress = null)
     {
         ArgumentNullException.ThrowIfNull(source);
-        if (!source.CanRead) throw new ArgumentException("The upload stream must be readable.", nameof(source));
+        if (!source.CanRead)
+        {
+            throw new ArgumentException("The upload stream must be readable.", nameof(source));
+        }
+
         await using var session = await OpenAsync(cancellationToken).ConfigureAwait(false);
         return await session.SendAsync(source, cancellationToken, progress).ConfigureAwait(false);
     }
-}
-
-public sealed record FreeboxUploadProgress(long BytesSent, long? TotalFileLength, long? ExpectedFileLength, bool Complete);
-public sealed record FreeboxUploadResult(long TotalFileLength, long BytesSent);
-
-public enum FreeboxUploadState
-{
-    Starting,
-    Ready,
-    Sending,
-    Completed,
-    Cancelled,
-    Faulted,
-    Disposed
 }

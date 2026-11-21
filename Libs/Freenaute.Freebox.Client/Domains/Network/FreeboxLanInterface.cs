@@ -1,16 +1,11 @@
-using Freenaute.Freebox.Mapper.Contracts.Network;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-
 namespace Freenaute.Freebox.Client.Domains.Network;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
 public sealed class FreeboxLanInterface
 {
-    private readonly IFreeboxTransport _transport;
-    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
     private readonly string _interface;
     private readonly string _interfaceValue;
+    private readonly IFreeboxTransport _transport;
 
     public FreeboxLanInterface(IFreeboxTransport transport, string @interface)
     {
@@ -20,7 +15,12 @@ public sealed class FreeboxLanInterface
         _interfaceValue = @interface;
     }
 
-    public FreeboxLanHost Host(string id) => new(_transport, _interfaceValue, id);
+    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
+
+    public FreeboxLanHost Host(string id)
+    {
+        return new FreeboxLanHost(_transport, _interfaceValue, id);
+    }
 
     /// <summary>Getting the list of hosts on a given interface.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v16-lan-browser-interface-</remarks>
@@ -35,7 +35,7 @@ public sealed class FreeboxLanInterface
     {
         ArgumentNullException.ThrowIfNull(request);
         NetworkWriteValidation.Validate(request);
-        return _transport.SendAsync(HttpMethod.Post, $"lan/wol/{_interface}/", request, Json.WakeOnLanRequest, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Post, $"lan/wol/{_interface}/", request, Json.WakeOnLanRequest,
+            cancellationToken);
     }
-
 }

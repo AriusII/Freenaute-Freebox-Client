@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of PlayerVolume; unset fields are omitted and explicit null is rejected.</summary>
@@ -19,10 +16,24 @@ public sealed record PlayerVolumePatch
 
     public void Validate()
     {
-        if (Volume.IsNull) throw new ArgumentException("Explicit null is not documented for PlayerVolume.Volume.", nameof(Volume));
-        if (Mute.IsNull) throw new ArgumentException("Explicit null is not documented for PlayerVolume.Mute.", nameof(Mute));
-        if (Volume.HasValue && (Volume.Value < 0 || Volume.Value > 100)) throw new ArgumentOutOfRangeException(nameof(Volume), "Volume must be between 0 and 100.");
+        if (Volume.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for PlayerVolume.Volume.", nameof(Volume));
+        }
+
+        if (Mute.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for PlayerVolume.Mute.", nameof(Mute));
+        }
+
+        if (Volume.HasValue && (Volume.Value < 0 || Volume.Value > 100))
+        {
+            throw new ArgumentOutOfRangeException(nameof(Volume), "Volume must be between 0 and 100.");
+        }
     }
 
-    public override string ToString() => nameof(PlayerVolumePatch);
+    public override string ToString()
+    {
+        return nameof(PlayerVolumePatch);
+    }
 }

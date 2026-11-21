@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of AfpConfig; unset fields are omitted and explicit null is rejected.</summary>
@@ -34,12 +31,37 @@ public sealed record AfpConfigPatch
 
     public void Validate()
     {
-        if (Enabled.IsNull) throw new ArgumentException("Explicit null is not documented for AfpConfig.Enabled.", nameof(Enabled));
-        if (GuestAllow.IsNull) throw new ArgumentException("Explicit null is not documented for AfpConfig.GuestAllow.", nameof(GuestAllow));
-        if (ServerType.IsNull) throw new ArgumentException("Explicit null is not documented for AfpConfig.ServerType.", nameof(ServerType));
-        if (LoginName.IsNull) throw new ArgumentException("Explicit null is not documented for AfpConfig.LoginName.", nameof(LoginName));
-        if (LoginPassword.IsNull) throw new ArgumentException("Explicit null is not documented for AfpConfig.LoginPassword.", nameof(LoginPassword));
+        if (Enabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for AfpConfig.Enabled.", nameof(Enabled));
+        }
+
+        if (GuestAllow.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for AfpConfig.GuestAllow.",
+                nameof(GuestAllow));
+        }
+
+        if (ServerType.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for AfpConfig.ServerType.",
+                nameof(ServerType));
+        }
+
+        if (LoginName.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for AfpConfig.LoginName.", nameof(LoginName));
+        }
+
+        if (LoginPassword.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for AfpConfig.LoginPassword.",
+                nameof(LoginPassword));
+        }
     }
 
-    public override string ToString() => nameof(AfpConfigPatch);
+    public override string ToString()
+    {
+        return nameof(AfpConfigPatch);
+    }
 }

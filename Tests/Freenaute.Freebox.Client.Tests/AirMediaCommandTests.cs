@@ -1,7 +1,3 @@
-using System.Globalization;
-using System.Text.Json;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class AirMediaCommandTests
@@ -64,7 +60,8 @@ public sealed class AirMediaCommandTests
         using var client = HttpClientTests.CreateClient(http);
         var command = client.AirMedia.Receiver("TV").PlayVideo("https://media.example/video.mp4");
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => command.AtPercent(decimal.Parse(percentage, CultureInfo.InvariantCulture)));
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            command.AtPercent(decimal.Parse(percentage, CultureInfo.InvariantCulture)));
         Assert.Empty(handler.Requests);
     }
 

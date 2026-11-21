@@ -1,8 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.WebSockets;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Serialization;
 
 /// <summary>Source-generated control-message metadata; file content remains binary.</summary>

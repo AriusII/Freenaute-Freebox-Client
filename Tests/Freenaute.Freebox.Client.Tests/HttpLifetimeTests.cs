@@ -1,7 +1,3 @@
-using System.Net;
-using System.Text;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class HttpLifetimeTests
@@ -55,7 +51,7 @@ public sealed class HttpLifetimeTests
     {
         using var handler = FixtureHandler.Constant("{}");
         using var http = new HttpClient(handler);
-        var client = new FreeboxClient(http, new FreeboxClientOptions { ApiVersion = 16 }, disposeHttpClient: true);
+        var client = new FreeboxClient(http, new FreeboxClientOptions { ApiVersion = 16 }, true);
 
         client.Dispose();
 
@@ -68,10 +64,14 @@ public sealed class HttpLifetimeTests
     {
         var bothEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var enteredCount = 0;
+        int enteredCount = 0;
         using var handler = new FixtureHandler(async (_, cancellationToken) =>
         {
-            if (Interlocked.Increment(ref enteredCount) == 2) bothEntered.TrySetResult();
+            if (Interlocked.Increment(ref enteredCount) == 2)
+            {
+                bothEntered.TrySetResult();
+            }
+
             await release.Task.WaitAsync(cancellationToken);
             return FixtureHandler.Json("""{"success":true,"result":{"value":"accepted"}}""");
         });
@@ -86,7 +86,8 @@ public sealed class HttpLifetimeTests
         try
         {
             await bothEntered.Task.WaitAsync(TimeSpan.FromSeconds(10));
-            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => shortCall.WaitAsync(TimeSpan.FromSeconds(10)));
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+                shortCall.WaitAsync(TimeSpan.FromSeconds(10)));
             Assert.False(longCall.IsCompleted);
         }
         finally
@@ -98,12 +99,15 @@ public sealed class HttpLifetimeTests
         Assert.Equal(TimeSpan.FromSeconds(30), http.Timeout);
         Assert.Equal(2, handler.Requests.Count);
 
-        FreeboxClient Client(TimeSpan timeout) => new(http, new FreeboxClientOptions
+        FreeboxClient Client(TimeSpan timeout)
         {
-            ServerAddress = new Uri("http://fixture.example/"),
-            ApiVersion = 16,
-            Timeout = timeout
-        });
+            return new FreeboxClient(http, new FreeboxClientOptions
+            {
+                ServerAddress = new Uri("http://fixture.example/"),
+                ApiVersion = 16,
+                Timeout = timeout
+            });
+        }
     }
 
     [Fact]
@@ -182,23 +186,50 @@ public sealed class HttpLifetimeTests
         public override bool CanSeek => false;
         public override bool CanWrite => false;
         public override long Length => throw new NotSupportedException();
-        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
+            CancellationToken cancellationToken = default)
         {
             ReadStarted.TrySetResult();
             await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
             return 0;
         }
 
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-            ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        }
 
-        public override void Flush() => throw new NotSupportedException();
-        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
-        public override void SetLength(long value) => throw new NotSupportedException();
-        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override void Flush()
+        {
+            throw new NotSupportedException();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
 
         protected override void Dispose(bool disposing)
         {

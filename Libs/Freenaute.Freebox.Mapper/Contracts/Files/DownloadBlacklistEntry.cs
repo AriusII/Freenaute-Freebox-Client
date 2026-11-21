@@ -1,10 +1,9 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
-/// <summary>Read contract from http://mafreebox.freebox.fr/doc/index.html#DownloadBlacklistEntry. Unknown enum strings are preserved.</summary>
+/// <summary>
+///     Read contract from http://mafreebox.freebox.fr/doc/index.html#DownloadBlacklistEntry. Unknown enum strings are
+///     preserved.
+/// </summary>
 public sealed record DownloadBlacklistEntry
 {
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadBlacklistEntry.host</summary>
@@ -22,5 +21,4 @@ public sealed record DownloadBlacklistEntry
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadBlacklistEntry.global</summary>
     [JsonPropertyName("global")]
     public bool? Global { get; init; }
-
 }

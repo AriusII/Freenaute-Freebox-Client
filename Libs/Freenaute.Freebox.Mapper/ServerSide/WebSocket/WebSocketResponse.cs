@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Freenaute.Freebox.Mapper.ServerSide.WebSocket;
 
 /// <summary>
@@ -21,7 +19,7 @@ public sealed record WebSocketResponse(
     [property: JsonPropertyName("action")] string Action,
     [property: JsonPropertyName("success")]
     bool Success,
-    [property: JsonPropertyName("result")] System.Text.Json.JsonElement? Result = null,
+    [property: JsonPropertyName("result")] JsonElement? Result = null,
     [property: JsonPropertyName("error_code")]
     string? ErrorCode = null,
     [property: JsonPropertyName("msg")] string? Message = null);

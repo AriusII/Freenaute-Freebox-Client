@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Protocol;
 
 public sealed record Camera

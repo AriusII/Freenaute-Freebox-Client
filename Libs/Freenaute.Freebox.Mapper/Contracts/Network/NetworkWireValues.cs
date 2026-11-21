@@ -314,6 +314,7 @@ public static class NetworkWireValues
     {
         /// <summary>Explicitly established by the API 12.0 change note.</summary>
         public const string Stopping = "stopping";
+
         public const string Scanning = "scanning";
         public const string NoParam = "no_param";
         public const string BadParam = "bad_param";
@@ -443,5 +444,4 @@ public static class NetworkWireValues
         public const string Value5g = "5g";
         public const string Value6g = "6g";
     }
-
 }

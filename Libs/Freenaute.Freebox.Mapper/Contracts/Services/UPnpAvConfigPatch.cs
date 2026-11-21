@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of UPnPAVConfig; unset fields are omitted and explicit null is rejected.</summary>
@@ -14,8 +11,14 @@ public sealed record UPnpAvConfigPatch
 
     public void Validate()
     {
-        if (Enabled.IsNull) throw new ArgumentException("Explicit null is not documented for UPnPAVConfig.Enabled.", nameof(Enabled));
+        if (Enabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for UPnPAVConfig.Enabled.", nameof(Enabled));
+        }
     }
 
-    public override string ToString() => nameof(UPnpAvConfigPatch);
+    public override string ToString()
+    {
+        return nameof(UPnpAvConfigPatch);
+    }
 }

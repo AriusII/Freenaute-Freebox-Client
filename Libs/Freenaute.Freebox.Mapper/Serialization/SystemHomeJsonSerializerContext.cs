@@ -1,8 +1,3 @@
-using System.Collections.Immutable;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.SystemHome;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Serialization;
 
 /// <summary>Generated metadata for the reviewed System, Home and Profile wire contracts.</summary>

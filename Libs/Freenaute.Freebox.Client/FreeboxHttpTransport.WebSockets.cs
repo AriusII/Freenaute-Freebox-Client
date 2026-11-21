@@ -1,12 +1,9 @@
-using System.Net;
-using System.Net.WebSockets;
-using Freenaute.Freebox.Mapper.ServerSide.Authentication.Login;
-
 namespace Freenaute.Freebox.Client;
 
 internal sealed partial class FreeboxHttpTransport
 {
-    public async Task<FreeboxWebSocketConnection> ConnectAsync(string relativePath, CancellationToken cancellationToken = default)
+    public async Task<FreeboxWebSocketConnection> ConnectAsync(string relativePath,
+        CancellationToken cancellationToken = default)
     {
         FreeboxApiPath.ValidateRelativePath(relativePath);
         cancellationToken.ThrowIfCancellationRequested();
@@ -15,7 +12,11 @@ internal sealed partial class FreeboxHttpTransport
         SessionResponse? session = null;
         var timeout = standaloneTimeout ?? httpClient.Timeout;
         using var handshake = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        if (timeout != Timeout.InfiniteTimeSpan) handshake.CancelAfter(timeout);
+        if (timeout != Timeout.InfiniteTimeSpan)
+        {
+            handshake.CancelAfter(timeout);
+        }
+
         try
         {
             var apiAddress = await GetApiAddressAsync(handshake.Token).ConfigureAwait(false);
@@ -23,9 +24,14 @@ internal sealed partial class FreeboxHttpTransport
             if (session is null)
             {
                 if (!state.Options.AuthenticateAutomatically)
-                    throw new FreeboxAuthenticationException("Open a session before opening an authenticated WebSocket.");
+                {
+                    throw new FreeboxAuthenticationException(
+                        "Open a session before opening an authenticated WebSocket.");
+                }
+
                 session = await OpenSessionAsync(handshake.Token).ConfigureAwait(false);
             }
+
             var address = FreeboxApiPath.Resolve(apiAddress, relativePath);
             var websocketAddress = new UriBuilder(address)
             {
@@ -37,8 +43,13 @@ internal sealed partial class FreeboxHttpTransport
             return new FreeboxWebSocketConnection(socket);
         }
         catch (WebSocketException error) when (session is not null &&
-            (socket.HttpStatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden ||
-             error.InnerException is HttpRequestException { StatusCode: HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden }))
+                                               (socket.HttpStatusCode is HttpStatusCode.Unauthorized
+                                                    or HttpStatusCode.Forbidden ||
+                                                error.InnerException is HttpRequestException
+                                                {
+                                                    StatusCode: HttpStatusCode.Unauthorized
+                                                    or HttpStatusCode.Forbidden
+                                                }))
         {
             Interlocked.CompareExchange(ref state.Session, null, session);
             socket.Dispose();

@@ -1,5 +1,3 @@
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>Form fields documented by POST downloads/add; exactly one URL source must be supplied.</summary>

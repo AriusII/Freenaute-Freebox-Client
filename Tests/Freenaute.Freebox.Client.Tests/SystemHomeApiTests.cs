@@ -1,11 +1,3 @@
-using System.Collections.Immutable;
-using System.Text.Json;
-using Freenaute.Freebox.Client.Domains.SystemHome;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Contracts.SystemHome;
-using Freenaute.Freebox.Mapper.Serialization;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class SystemHomeApiTests
@@ -32,7 +24,8 @@ public sealed class SystemHomeApiTests
     [Fact]
     public void IntegralFloatFactoryDoesNotBecomeIntegerOnRoundtrip()
     {
-        var wire = JsonSerializer.Serialize(HomeIoValue.FromFloat(1), SystemHomeJsonSerializerContext.Default.HomeIoValue);
+        string wire = JsonSerializer.Serialize(HomeIoValue.FromFloat(1),
+            SystemHomeJsonSerializerContext.Default.HomeIoValue);
         Assert.Equal("1.0", wire);
         Assert.Equal(HomeIoValueKind.Float,
             JsonSerializer.Deserialize(wire, SystemHomeJsonSerializerContext.Default.HomeIoValue)!.Kind);
@@ -52,9 +45,11 @@ public sealed class SystemHomeApiTests
     [InlineData("{}")]
     [InlineData("[]")]
     [InlineData("9223372036854775808")]
-    public void HomeScalarRejectsUndocumentedShapesAndIntegerOverflow(string wire) =>
+    public void HomeScalarRejectsUndocumentedShapesAndIntegerOverflow(string wire)
+    {
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(wire,
             SystemHomeJsonSerializerContext.Default.HomeIoValue));
+    }
 
     [Fact]
     public async Task LcdPatchSendsFalseAndZeroWhileOmittingUnsetAndReadonlyFields()
@@ -63,7 +58,8 @@ public sealed class SystemHomeApiTests
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var api = new FreeboxSystemHomeApi(client.Transport);
-        await api.Lcd.Configure().UseFields(new LcdConfigPatch().WithBrightness(0).WithOrientationForced(false)).SendAsync();
+        await api.Lcd.Configure().UseFields(new LcdConfigPatch().WithBrightness(0).WithOrientationForced(false))
+            .SendAsync();
         var request = handler.Requests.Last();
         Assert.Equal(HttpMethod.Put, request.Method);
         Assert.Equal("/api/v16/lcd/config/", request.Address.AbsolutePath);
@@ -99,7 +95,7 @@ public sealed class SystemHomeApiTests
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var command = new FreeboxSystemHomeApi(client.Transport).Lcd.Configure()
-            .UseFields(new() { HideWifiKey = Optional<bool>.Null });
+            .UseFields(new LcdConfigPatch { HideWifiKey = Optional<bool>.Null });
         Assert.Throws<ArgumentException>(() => { _ = command.SendAsync(); });
         Assert.Empty(handler.Requests);
     }
@@ -134,7 +130,10 @@ public sealed class SystemHomeApiTests
         Assert.Equal("start", start.RootElement.GetProperty("op").GetString());
         Assert.False(start.RootElement.TryGetProperty("session", out _));
         await pairing.Next(StringOrInteger.FromString("659887"), StringOrInteger.FromString("1"),
-            [HomeIoValue.Null, HomeIoValue.FromString("mon texte"), HomeIoValue.FromBoolean(false), HomeIoValue.FromInteger(38)]).SendAsync();
+        [
+            HomeIoValue.Null, HomeIoValue.FromString("mon texte"), HomeIoValue.FromBoolean(false),
+            HomeIoValue.FromInteger(38)
+        ]).SendAsync();
         using var next = JsonDocument.Parse(handler.Requests.Last().Body!);
         Assert.Equal("next", next.RootElement.GetProperty("op").GetString());
         Assert.Equal(JsonValueKind.String, next.RootElement.GetProperty("session").ValueKind);
@@ -145,7 +144,8 @@ public sealed class SystemHomeApiTests
         Assert.Equal("stop", stop.RootElement.GetProperty("op").GetString());
         Assert.Equal(15645, stop.RootElement.GetProperty("session").GetInt64());
         Assert.Equal(2, stop.RootElement.EnumerateObject().Count());
-        Assert.All(handler.Requests.Where(r => r.Address.AbsolutePath.Contains("/home/pairing/", StringComparison.Ordinal)),
+        Assert.All(
+            handler.Requests.Where(r => r.Address.AbsolutePath.Contains("/home/pairing/", StringComparison.Ordinal)),
             request => Assert.Equal("/api/v16/home/pairing/1", request.Address.AbsolutePath));
     }
 
@@ -155,7 +155,7 @@ public sealed class SystemHomeApiTests
         using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"resolution":48}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
-        var values = Enumerable.Repeat(false, 7 * 48).ToArray();
+        bool[] values = Enumerable.Repeat(false, 7 * 48).ToArray();
         var fields = new StandbyConfigUpdate().WithUsePlanning(false).WithMapping(values);
         values[0] = true;
         await new FreeboxSystemHomeApi(client.Transport).Standby.Configure().UseFields(fields).SendAsync();
@@ -178,7 +178,8 @@ public sealed class SystemHomeApiTests
             SystemHomeJsonSerializerContext.Default.Profile)!;
         Assert.Equal("declared", profile.Icon);
         Assert.Equal("example", profile.Url);
-        using var serialized = JsonDocument.Parse(JsonSerializer.Serialize(profile, SystemHomeJsonSerializerContext.Default.Profile));
+        using var serialized =
+            JsonDocument.Parse(JsonSerializer.Serialize(profile, SystemHomeJsonSerializerContext.Default.Profile));
         Assert.Equal("declared", serialized.RootElement.GetProperty("icon").GetString());
         Assert.Equal("example", serialized.RootElement.GetProperty("url").GetString());
     }
@@ -192,14 +193,17 @@ public sealed class SystemHomeApiTests
         var hosts = JsonSerializer.Deserialize(wire, SystemHomeJsonSerializerContext.Default.NetworkControlHosts)!;
         Assert.Equal(kind, hosts.Kind);
         var restored = JsonSerializer.Deserialize(JsonSerializer.Serialize(hosts,
-            SystemHomeJsonSerializerContext.Default.NetworkControlHosts), SystemHomeJsonSerializerContext.Default.NetworkControlHosts)!;
+                SystemHomeJsonSerializerContext.Default.NetworkControlHosts),
+            SystemHomeJsonSerializerContext.Default.NetworkControlHosts)!;
         Assert.Equal(kind, restored.Kind);
     }
 
     [Fact]
-    public void HostUnionRejectsHeterogeneousArrays() =>
+    public void HostUnionRejectsHeterogeneousArrays()
+    {
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize("""["name",{"id":"host"}]""",
             SystemHomeJsonSerializerContext.Default.NetworkControlHosts));
+    }
 
     [Fact]
     public void ModernSystemSensorsAndExpansionModulesRemainSeparate()

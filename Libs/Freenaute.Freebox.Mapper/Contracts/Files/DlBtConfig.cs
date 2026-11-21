@@ -1,7 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>Read contract from http://mafreebox.freebox.fr/doc/index.html#DlBtConfig. Unknown enum strings are preserved.</summary>
@@ -38,5 +34,4 @@ public sealed record DlBtConfig
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DlBtConfig.dht_port</summary>
     [JsonPropertyName("dht_port")]
     public long? DhtPort { get; init; }
-
 }

@@ -1,8 +1,3 @@
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class WebSocketHandshakeTests
@@ -41,7 +36,7 @@ public sealed class WebSocketHandshakeTests
             ApplicationId = "org.fixture",
             AppToken = "fixture-token"
         });
-        await Assert.ThrowsAsync<System.Net.WebSockets.WebSocketException>(() => client.WebSocketTransport.ConnectAsync("ws/event"));
+        await Assert.ThrowsAsync<WebSocketException>(() => client.WebSocketTransport.ConnectAsync("ws/event"));
         Assert.Equal(1, handler.Upgrades);
         Assert.Equal(1, handler.SessionRequests);
         await client.Authentication.OpenSessionAsync();
@@ -49,27 +44,36 @@ public sealed class WebSocketHandshakeTests
         Assert.Equal(1, handler.Upgrades);
     }
 
-    private sealed class UpgradeHandler(HttpStatusCode upgradeStatus = HttpStatusCode.SwitchingProtocols) : HttpMessageHandler
+    private sealed class UpgradeHandler(HttpStatusCode upgradeStatus = HttpStatusCode.SwitchingProtocols)
+        : HttpMessageHandler
     {
         public Uri? UpgradeAddress { get; private set; }
         public string? SessionToken { get; private set; }
         public int Upgrades { get; private set; }
         public int SessionRequests { get; private set; }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+            CancellationToken cancellationToken)
         {
             if (request.RequestUri!.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal))
+            {
                 return Task.FromResult(FixtureHandler.Json("""{"success":true,"result":{"challenge":"fixture"}}"""));
+            }
+
             if (request.RequestUri.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal))
             {
                 SessionRequests++;
-                return Task.FromResult(FixtureHandler.Json("""{"success":true,"result":{"session_token":"fixture-session","permissions":{}}}"""));
+                return Task.FromResult(FixtureHandler.Json(
+                    """{"success":true,"result":{"session_token":"fixture-session","permissions":{}}}"""));
             }
+
             UpgradeAddress = request.RequestUri;
             SessionToken = request.Headers.GetValues("X-Fbx-App-Auth").Single();
             Upgrades++;
-            var key = request.Headers.GetValues("Sec-WebSocket-Key").Single();
-            var accept = Convert.ToBase64String(SHA1.HashData(Encoding.ASCII.GetBytes(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
+            string key = request.Headers.GetValues("Sec-WebSocket-Key").Single();
+            string accept =
+                Convert.ToBase64String(
+                    SHA1.HashData(Encoding.ASCII.GetBytes(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
             var response = new HttpResponseMessage(upgradeStatus)
             {
                 Version = HttpVersion.Version11,
@@ -84,9 +88,25 @@ public sealed class WebSocketHandshakeTests
 
     private sealed class DuplexContent : HttpContent
     {
-        protected override Stream CreateContentReadStream(CancellationToken cancellationToken) => new MemoryStream();
-        protected override Task<Stream> CreateContentReadStreamAsync() => Task.FromResult<Stream>(new MemoryStream());
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context) => Task.CompletedTask;
-        protected override bool TryComputeLength(out long length) { length = 0; return false; }
+        protected override Stream CreateContentReadStream(CancellationToken cancellationToken)
+        {
+            return new MemoryStream();
+        }
+
+        protected override Task<Stream> CreateContentReadStreamAsync()
+        {
+            return Task.FromResult<Stream>(new MemoryStream());
+        }
+
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = 0;
+            return false;
+        }
     }
 }

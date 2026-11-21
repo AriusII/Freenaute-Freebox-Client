@@ -1,9 +1,3 @@
-using System.Text;
-using System.Text.Json;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class PrimitiveContractTests
@@ -23,7 +17,7 @@ public sealed class PrimitiveContractTests
         Assert.Throws<InvalidOperationException>(() => Optional<int>.Unset.Value);
         Assert.Throws<InvalidOperationException>(() => Optional<bool>.Null.Value);
         Assert.False(Optional<int>.Unset.TryGetValue(out _));
-        Assert.True(Optional<int>.Set(0).TryGetValue(out var zero));
+        Assert.True(Optional<int>.Set(0).TryGetValue(out int zero));
         Assert.Equal(0, zero);
     }
 
@@ -33,7 +27,8 @@ public sealed class PrimitiveContractTests
         Assert.False(JsonSerializer.IsReflectionEnabledByDefault);
         var metadata = PrimitiveTestJsonContext.Default.PrimitivePatch;
         Assert.Equal("{}", JsonSerializer.Serialize(new PrimitivePatch(), metadata));
-        var patch = new PrimitivePatch { Enabled = false, Count = 0, Bytes = 0L, Name = Optional<string>.Null, Rate = 0m };
+        var patch = new PrimitivePatch
+            { Enabled = false, Count = 0, Bytes = 0L, Name = Optional<string>.Null, Rate = 0m };
         using var json = JsonDocument.Parse(JsonSerializer.Serialize(patch, metadata));
         Assert.False(json.RootElement.GetProperty("enabled").GetBoolean());
         Assert.Equal(0, json.RootElement.GetProperty("count").GetInt32());
@@ -74,7 +69,7 @@ public sealed class PrimitiveContractTests
     [Fact]
     public void UnsetOptionalAtRootFailsInsteadOfBecomingAnAccidentalNull()
     {
-        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default(Optional<bool>),
+        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default,
             SharedJsonSerializerContext.Default.OptionalBoolean));
         Assert.Equal("false", JsonSerializer.Serialize(Optional<bool>.Set(false),
             SharedJsonSerializerContext.Default.OptionalBoolean));
@@ -97,8 +92,14 @@ public sealed class PrimitiveContractTests
         Assert.Equal(kind, result.Kind);
         Assert.Equal(json, JsonSerializer.Serialize(result, metadata));
         Assert.NotEqual(StringOrInteger.FromString("0"), StringOrInteger.FromInteger(0));
-        if (kind == StringOrIntegerKind.String) Assert.Throws<InvalidOperationException>(() => result.Integer);
-        else Assert.Throws<InvalidOperationException>(() => result.String);
+        if (kind == StringOrIntegerKind.String)
+        {
+            Assert.Throws<InvalidOperationException>(() => result.Integer);
+        }
+        else
+        {
+            Assert.Throws<InvalidOperationException>(() => result.String);
+        }
     }
 
     [Theory]
@@ -108,16 +109,18 @@ public sealed class PrimitiveContractTests
     [InlineData("9223372036854775808")]
     [InlineData("{}")]
     [InlineData("[]")]
-    public void ScalarUnionRejectsUndocumentedKinds(string json) =>
+    public void ScalarUnionRejectsUndocumentedKinds(string json)
+    {
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(json,
             SharedJsonSerializerContext.Default.StringOrInteger));
+    }
 
     [Fact]
     public void UndefinedScalarUnionCannotSilentlyBecomeIntegerZero()
     {
         Assert.Equal(StringOrIntegerKind.Undefined, default(StringOrInteger).Kind);
         Assert.False(default(StringOrInteger).IsInitialized);
-        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default(StringOrInteger),
+        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default,
             SharedJsonSerializerContext.Default.StringOrInteger));
     }
 
@@ -126,16 +129,27 @@ public sealed class PrimitiveContractTests
     [InlineData("[{\"value\":4}]", ObjectOrArrayKind.Array, 1)]
     [InlineData("[{\"value\":4},{\"value\":8}]", ObjectOrArrayKind.Array, 2)]
     [InlineData("[]", ObjectOrArrayKind.Array, 0)]
-    public void TypedObjectArrayUnionPreservesShapeWhileOfferingAReadOnlyList(string json, ObjectOrArrayKind kind, int count)
+    public void TypedObjectArrayUnionPreservesShapeWhileOfferingAReadOnlyList(string json, ObjectOrArrayKind kind,
+        int count)
     {
         var metadata = PrimitiveTestJsonContext.Default.ItemObjectOrArray;
         var result = JsonSerializer.Deserialize(json, metadata);
         Assert.Equal(kind, result.Kind);
         Assert.Equal(count, result.Items.Count);
         Assert.Equal(json, JsonSerializer.Serialize(result, metadata));
-        if (count == 1) Assert.Equal(new PrimitiveItem(4), result.GetSingle());
-        else Assert.Throws<InvalidOperationException>(() => result.GetSingle());
-        if (kind == ObjectOrArrayKind.Array) Assert.Throws<InvalidOperationException>(() => result.Object);
+        if (count == 1)
+        {
+            Assert.Equal(new PrimitiveItem(4), result.GetSingle());
+        }
+        else
+        {
+            Assert.Throws<InvalidOperationException>(() => result.GetSingle());
+        }
+
+        if (kind == ObjectOrArrayKind.Array)
+        {
+            Assert.Throws<InvalidOperationException>(() => result.Object);
+        }
     }
 
     [Theory]
@@ -144,20 +158,22 @@ public sealed class PrimitiveContractTests
     [InlineData("[null]")]
     [InlineData("[1]")]
     [InlineData("[[]]")]
-    public void TypedObjectArrayUnionRejectsOtherKinds(string json) =>
+    public void TypedObjectArrayUnionRejectsOtherKinds(string json)
+    {
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(json,
             PrimitiveTestJsonContext.Default.ItemObjectOrArray));
+    }
 
     [Fact]
     public void CollectionUnionCopiesInputAndDoesNotExposeAMutableArray()
     {
         PrimitiveItem[] original = [new(1)];
         var result = ObjectOrArray<PrimitiveItem>.FromArray(original);
-        original[0] = new(2);
+        original[0] = new PrimitiveItem(2);
         Assert.Equal(new PrimitiveItem(1), result.Items[0]);
         var collection = Assert.IsAssignableFrom<ICollection<PrimitiveItem>>(result.Items);
         Assert.Throws<NotSupportedException>(() => collection.Add(new PrimitiveItem(3)));
-        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default(ObjectOrArray<PrimitiveItem>),
+        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default,
             PrimitiveTestJsonContext.Default.ItemObjectOrArray));
     }
 
@@ -189,9 +205,11 @@ public sealed class PrimitiveContractTests
     [InlineData("[null]")]
     [InlineData("[\"1\"]")]
     [InlineData("[2147483648]")]
-    public void PeerRequestsUnionRejectsArbitraryMapsAndNonIntegers(string json) =>
+    public void PeerRequestsUnionRejectsArbitraryMapsAndNonIntegers(string json)
+    {
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(json,
             SharedJsonSerializerContext.Default.EmptyObjectOrInt32Array));
+    }
 
     [Fact]
     public void EncodedPathKeepsComposedAndDecomposedUnicodeDistinct()
@@ -219,7 +237,8 @@ public sealed class PrimitiveContractTests
         Assert.Equal("L2E=\n", whitespace.Value);
         Assert.Equal("/a", whitespace.DecodeUtf8Path());
         var metadata = SharedJsonSerializerContext.Default.EncodedFreeboxPath;
-        Assert.Equal(whitespace.Value, JsonSerializer.Deserialize(JsonSerializer.Serialize(whitespace, metadata), metadata).Value);
+        Assert.Equal(whitespace.Value,
+            JsonSerializer.Deserialize(JsonSerializer.Serialize(whitespace, metadata), metadata).Value);
     }
 
     [Fact]
@@ -231,7 +250,7 @@ public sealed class PrimitiveContractTests
             SharedJsonSerializerContext.Default.EncodedFreeboxPath));
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize("null",
             SharedJsonSerializerContext.Default.EncodedFreeboxPath));
-        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default(EncodedFreeboxPath),
+        Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default,
             SharedJsonSerializerContext.Default.EncodedFreeboxPath));
     }
 }

@@ -1,16 +1,11 @@
-using Freenaute.Freebox.Mapper.Contracts.Network;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-
 namespace Freenaute.Freebox.Client.Domains.Network;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
 public sealed class FreeboxWifiAccessPoint
 {
-    private readonly IFreeboxTransport _transport;
-    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
     private readonly string _id;
     private readonly long _idValue;
+    private readonly IFreeboxTransport _transport;
 
     public FreeboxWifiAccessPoint(IFreeboxTransport transport, long id)
     {
@@ -20,7 +15,12 @@ public sealed class FreeboxWifiAccessPoint
         _idValue = id;
     }
 
-    public FreeboxWifiStation Station(string mac) => new(_transport, _idValue, mac);
+    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
+
+    public FreeboxWifiStation Station(string mac)
+    {
+        return new FreeboxWifiStation(_transport, _idValue, mac);
+    }
 
     /// <summary>Get a particular AP.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id</remarks>
@@ -35,28 +35,34 @@ public sealed class FreeboxWifiAccessPoint
     {
         ArgumentNullException.ThrowIfNull(request);
         NetworkWriteValidation.Validate(request);
-        return _transport.SendAsync(HttpMethod.Put, $"wifi/ap/{_id}", request, Json.WifiAccessPointPatch, Json.WifiAp, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Put, $"wifi/ap/{_id}", request, Json.WifiAccessPointPatch, Json.WifiAp,
+            cancellationToken);
     }
 
     /// <summary>Wi-Fi AP allowed channels.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-allowed_channel_comb</remarks>
     public Task<WifiAllowedComb[]> GetAllowedChannelsAsync(CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/allowed_channel_comb", Json.WifiAllowedCombArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/allowed_channel_comb", Json.WifiAllowedCombArray,
+            cancellationToken);
     }
 
     /// <summary>Get Wi-Fi Stations List.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-stations-</remarks>
     public Task<WifiStation[]> GetStationsAsync(CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/stations/", Json.WifiStationArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/stations/", Json.WifiStationArray,
+            cancellationToken);
     }
 
     /// <summary>Get survey data history.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-channel_survey_history-timestamp</remarks>
-    public Task<WifiApChannelSurveyData[]> GetSurveyHistoryAsync(long timestamp, CancellationToken cancellationToken = default)
+    public Task<WifiApChannelSurveyData[]> GetSurveyHistoryAsync(long timestamp,
+        CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/channel_survey_history/{NetworkPath.Number(timestamp)}", Json.WifiApChannelSurveyDataArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Get,
+            $"wifi/ap/{_id}/channel_survey_history/{NetworkPath.Number(timestamp)}", Json.WifiApChannelSurveyDataArray,
+            cancellationToken);
     }
 
     /// <summary>Restart an AP.</summary>
@@ -70,14 +76,16 @@ public sealed class FreeboxWifiAccessPoint
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-neighbors-</remarks>
     public Task<WifiNeighbor[]> GetNeighborsAsync(CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/neighbors/", Json.WifiNeighborArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/neighbors/", Json.WifiNeighborArray,
+            cancellationToken);
     }
 
     /// <summary>List Wi-Fi channels usage.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-channel_usage-</remarks>
     public Task<WifiChannelUsage[]> GetChannelUsageAsync(CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/channel_usage/", Json.WifiChannelUsageArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/channel_usage/", Json.WifiChannelUsageArray,
+            cancellationToken);
     }
 
     /// <summary>Refresh radar informations.</summary>
@@ -107,7 +115,7 @@ public sealed class FreeboxWifiAccessPoint
     {
         ArgumentNullException.ThrowIfNull(request);
         NetworkWriteValidation.Validate(request);
-        return _transport.SendAsync(HttpMethod.Post, $"wifi/ap/{_id}/diag", request, Json.StringArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Post, $"wifi/ap/{_id}/diag", request, Json.StringArray,
+            cancellationToken);
     }
-
 }

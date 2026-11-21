@@ -1,10 +1,9 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
-/// <summary>Read contract from http://mafreebox.freebox.fr/doc/index.html#DlNewsConfig. Unknown enum strings are preserved.</summary>
+/// <summary>
+///     Read contract from http://mafreebox.freebox.fr/doc/index.html#DlNewsConfig. Unknown enum strings are
+///     preserved.
+/// </summary>
 public sealed record DlNewsConfig
 {
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DlNewsConfig.server</summary>
@@ -42,5 +41,4 @@ public sealed record DlNewsConfig
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DlNewsConfig.erase_tmp</summary>
     [JsonPropertyName("erase_tmp")]
     public bool? EraseTmp { get; init; }
-
 }

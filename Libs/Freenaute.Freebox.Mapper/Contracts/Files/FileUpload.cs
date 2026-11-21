@@ -1,7 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>Read contract from http://mafreebox.freebox.fr/doc/index.html#FileUpload. Unknown enum strings are preserved.</summary>
@@ -38,5 +34,4 @@ public sealed record FileUpload
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#FileUpload.dirname</summary>
     [JsonPropertyName("dirname")]
     public string? Dirname { get; init; }
-
 }

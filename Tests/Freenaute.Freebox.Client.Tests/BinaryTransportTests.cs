@@ -1,8 +1,3 @@
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class BinaryTransportTests
@@ -42,7 +37,7 @@ public sealed class BinaryTransportTests
         const string file = """{"success":false,"user_file":true}""";
         using var handler = FixtureHandler.Constant(file);
         using var http = new HttpClient(handler);
-        using var client = HttpClientTests.CreateClient(http, authenticate: false);
+        using var client = HttpClientTests.CreateClient(http, false);
         await using var download = await client.BinaryTransport.DownloadAsync(HttpMethod.Get, "dl/L3RtcC9maWxl/",
             requiresAuthentication: false);
         using var reader = new StreamReader(download.Content, Encoding.UTF8, leaveOpen: true);
@@ -55,10 +50,11 @@ public sealed class BinaryTransportTests
     public async Task FailedHttpDownloadThrowsAndDisposesItsBody(string payload, string? errorCode)
     {
         var body = new TrackingStream(Encoding.UTF8.GetBytes(payload));
-        using var handler = new FixtureHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.Forbidden)
-        { Content = new StreamContent(body) }));
+        using var handler = new FixtureHandler((_, _) => Task.FromResult(
+            new HttpResponseMessage(HttpStatusCode.Forbidden)
+                { Content = new StreamContent(body) }));
         using var http = new HttpClient(handler);
-        using var client = HttpClientTests.CreateClient(http, authenticate: false);
+        using var client = HttpClientTests.CreateClient(http, false);
         var error = await Assert.ThrowsAsync<FreeboxApiException>(() => client.BinaryTransport.DownloadAsync(
             HttpMethod.Get, "fixture/", requiresAuthentication: false));
         Assert.Equal(HttpStatusCode.Forbidden, error.StatusCode);
@@ -71,10 +67,13 @@ public sealed class BinaryTransportTests
     {
         var body = new BlockingStream();
         using var handler = new FixtureHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-        { Content = new StreamContent(body) }));
+            { Content = new StreamContent(body) }));
         using var http = new HttpClient(handler);
         using var client = new FreeboxClient(http, new FreeboxClientOptions
-        { ServerAddress = new Uri("http://fixture.example/"), ApiVersion = 16, Timeout = TimeSpan.FromMilliseconds(250) });
+        {
+            ServerAddress = new Uri("http://fixture.example/"), ApiVersion = 16,
+            Timeout = TimeSpan.FromMilliseconds(250)
+        });
         await using var download = await client.BinaryTransport.DownloadAsync(HttpMethod.Get, "fixture/",
             requiresAuthentication: false);
         var read = download.Content.ReadAsync(new byte[16]).AsTask();
@@ -88,12 +87,12 @@ public sealed class BinaryTransportTests
     {
         var body = new TrackingStream([1]);
         using var handler = new FixtureHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-        { Content = new StreamContent(body) }));
+            { Content = new StreamContent(body) }));
         using var http = new HttpClient(handler);
-        using var client = HttpClientTests.CreateClient(http, authenticate: false);
+        using var client = HttpClientTests.CreateClient(http, false);
         using var cancellation = new CancellationTokenSource();
         await using var download = await client.BinaryTransport.DownloadAsync(HttpMethod.Get, "fixture/",
-            cancellation.Token, requiresAuthentication: false);
+            cancellation.Token, false);
         cancellation.Cancel();
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => download.Content.ReadAsync(new byte[1]).AsTask());
         Assert.True(body.IsDisposed);
@@ -104,8 +103,9 @@ public sealed class BinaryTransportTests
     {
         using var handler = FixtureHandler.Constant("""{"success":true,"result":{"value":"accepted"}}""");
         using var http = new HttpClient(handler);
-        using var client = HttpClientTests.CreateClient(http, authenticate: false);
-        var content = new FormUrlEncodedContent(new Dictionary<string, string> { ["download_url_list"] = "https://a/\nhttps://b/" });
+        using var client = HttpClientTests.CreateClient(http, false);
+        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+            { ["download_url_list"] = "https://a/\nhttps://b/" });
         var result = await client.Transport.SendContentAsync(HttpMethod.Post, "downloads/add", content,
             TestJsonContext.Default.FixtureResult, requiresAuthentication: false);
         Assert.Equal("accepted", result.Value);
@@ -121,7 +121,7 @@ public sealed class BinaryTransportTests
     {
         using var handler = FixtureHandler.Constant("""{"success":true}""");
         using var http = new HttpClient(handler);
-        using var client = HttpClientTests.CreateClient(http, authenticate: false);
+        using var client = HttpClientTests.CreateClient(http, false);
         await client.Transport.SendAsync(HttpMethod.Get, path, requiresAuthentication: false);
         Assert.Equal("https://fixture.example/api/v16/" + path, handler.Requests.Single().Address.AbsoluteUri);
     }
@@ -129,7 +129,12 @@ public sealed class BinaryTransportTests
     private sealed class TrackingStream(byte[] bytes) : MemoryStream(bytes)
     {
         public bool IsDisposed { get; private set; }
-        protected override void Dispose(bool disposing) { IsDisposed = true; base.Dispose(disposing); }
+
+        protected override void Dispose(bool disposing)
+        {
+            IsDisposed = true;
+            base.Dispose(disposing);
+        }
     }
 
     private sealed class BlockingStream : Stream
@@ -140,15 +145,55 @@ public sealed class BinaryTransportTests
         public override bool CanSeek => false;
         public override bool CanWrite => false;
         public override long Length => throw new NotSupportedException();
-        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
-        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-        { ReadStarted.TrySetResult(); await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken); return 0; }
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
-        public override void Flush() => throw new NotSupportedException();
-        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
-        public override void SetLength(long value) => throw new NotSupportedException();
-        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-        protected override void Dispose(bool disposing) { IsDisposed = true; base.Dispose(disposing); }
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
+            CancellationToken cancellationToken = default)
+        {
+            ReadStarted.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+            return 0;
+        }
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        }
+
+        public override void Flush()
+        {
+            throw new NotSupportedException();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            IsDisposed = true;
+            base.Dispose(disposing);
+        }
     }
 }

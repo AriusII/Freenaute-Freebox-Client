@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Common.Types;
-
 namespace Freenaute.Freebox.Mapper.ClientSide.Api.AirMedia;
 
 public sealed record AirMediaReceiverRequest(

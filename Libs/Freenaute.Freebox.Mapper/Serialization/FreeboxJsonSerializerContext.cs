@@ -1,16 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.ClientSide.Api.AirMedia;
-using Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.ClientSide.WebSocket;
-using Freenaute.Freebox.Mapper.Common;
-using Freenaute.Freebox.Mapper.Common.Types;
-using Freenaute.Freebox.Mapper.ServerSide.Api.AirMedia;
-using Freenaute.Freebox.Mapper.ServerSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.ServerSide.General;
-using Freenaute.Freebox.Mapper.ServerSide.Models;
-using Freenaute.Freebox.Mapper.ServerSide.WebSocket;
-
 namespace Freenaute.Freebox.Mapper.Serialization;
 
 /// <summary>

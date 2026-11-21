@@ -1,6 +1,3 @@
-using Freenaute.Freebox.Mapper.Contracts.Files;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Client.Domains.Files;
 
 internal static class FilesRequestValidator
@@ -23,7 +20,11 @@ internal static class FilesRequestValidator
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.Files);
-        foreach (var path in request.Files) _ = path.Value;
+        foreach (var path in request.Files)
+        {
+            _ = path.Value;
+        }
+
         _ = request.Dst.Value;
         return request;
     }
@@ -31,7 +32,11 @@ internal static class FilesRequestValidator
     public static CheckPartitionRequest Validate(CheckPartitionRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.Checkmode)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Checkmode value.");
+        if (!Enum.IsDefined(request.Checkmode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Checkmode value.");
+        }
+
         return request;
     }
 
@@ -39,7 +44,11 @@ internal static class FilesRequestValidator
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.Files);
-        foreach (var path in request.Files) _ = path.Value;
+        foreach (var path in request.Files)
+        {
+            _ = path.Value;
+        }
+
         _ = request.Dst.Value;
         RejectNull(request.MultiVolumes, "MultiVolumes");
         RejectNull(request.DeleteFiles, "DeleteFiles");
@@ -66,7 +75,11 @@ internal static class FilesRequestValidator
     public static CreateRaidRequest Validate(CreateRaidRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.Level)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Level value.");
+        if (!Enum.IsDefined(request.Level))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Level value.");
+        }
+
         ArgumentNullException.ThrowIfNull(request.Name);
         ArgumentNullException.ThrowIfNull(request.Members);
         return request;
@@ -84,11 +97,23 @@ internal static class FilesRequestValidator
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.Name, "Name");
         RejectNull(request.DiskPath, "DiskPath");
-        if (request.DiskPath.HasValue) _ = request.DiskPath.Value.Value;
+        if (request.DiskPath.HasValue)
+        {
+            _ = request.DiskPath.Value.Value;
+        }
+
         RejectNull(request.DiskType, "DiskType");
-        if (request.DiskType.HasValue && !Enum.IsDefined(request.DiskType.Value)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid DiskType value.");
+        if (request.DiskType.HasValue && !Enum.IsDefined(request.DiskType.Value))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid DiskType value.");
+        }
+
         RejectNull(request.CdPath, "CdPath");
-        if (request.CdPath.HasValue) _ = request.CdPath.Value.Value;
+        if (request.CdPath.HasValue)
+        {
+            _ = request.CdPath.Value.Value;
+        }
+
         RejectNull(request.Memory, "Memory");
         RejectNull(request.Vcpus, "Vcpus");
         RejectNull(request.EnableScreen, "EnableScreen");
@@ -97,16 +122,32 @@ internal static class FilesRequestValidator
         RejectNull(request.CloudinitHostname, "CloudinitHostname");
         RejectNull(request.CloudinitUserdata, "CloudinitUserdata");
         RejectNull(request.Os, "Os");
-        if (request.Name.HasValue && request.Name.Value.Length > 31) throw new ArgumentException("Name exceeds its documented length.", nameof(request));
-        if (request.CloudinitHostname.HasValue && request.CloudinitHostname.Value.Length > 59) throw new ArgumentException("CloudinitHostname exceeds its documented length.", nameof(request));
-        if (request.CloudinitUserdata.HasValue && request.CloudinitUserdata.Value.Length > 32767) throw new ArgumentException("CloudinitUserdata exceeds its documented length.", nameof(request));
+        if (request.Name.HasValue && request.Name.Value.Length > 31)
+        {
+            throw new ArgumentException("Name exceeds its documented length.", nameof(request));
+        }
+
+        if (request.CloudinitHostname.HasValue && request.CloudinitHostname.Value.Length > 59)
+        {
+            throw new ArgumentException("CloudinitHostname exceeds its documented length.", nameof(request));
+        }
+
+        if (request.CloudinitUserdata.HasValue && request.CloudinitUserdata.Value.Length > 32767)
+        {
+            throw new ArgumentException("CloudinitUserdata exceeds its documented length.", nameof(request));
+        }
+
         return request;
     }
 
     public static DownloadFilePriorityRequest Validate(DownloadFilePriorityRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.Priority)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Priority value.");
+        if (!Enum.IsDefined(request.Priority))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Priority value.");
+        }
+
         return request;
     }
 
@@ -124,7 +165,11 @@ internal static class FilesRequestValidator
     public static FetchRrdRequest Validate(FetchRrdRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.Db)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Db value.");
+        if (!Enum.IsDefined(request.Db))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Db value.");
+        }
+
         RejectNull(request.DateStart, "DateStart");
         RejectNull(request.DateEnd, "DateEnd");
         RejectNull(request.Precision, "Precision");
@@ -136,17 +181,33 @@ internal static class FilesRequestValidator
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.Files);
-        foreach (var path in request.Files) _ = path.Value;
+        foreach (var path in request.Files)
+        {
+            _ = path.Value;
+        }
+
         _ = request.Dst.Value;
-        if (!Enum.IsDefined(request.Mode)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Mode value.");
+        if (!Enum.IsDefined(request.Mode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Mode value.");
+        }
+
         return request;
     }
 
     public static FormatStorageDiskRequest Validate(FormatStorageDiskRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.TableType)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid TableType value.");
-        if (!Enum.IsDefined(request.FsType)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid FsType value.");
+        if (!Enum.IsDefined(request.TableType))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid TableType value.");
+        }
+
+        if (!Enum.IsDefined(request.FsType))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid FsType value.");
+        }
+
         ArgumentNullException.ThrowIfNull(request.Label);
         return request;
     }
@@ -169,7 +230,11 @@ internal static class FilesRequestValidator
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.Files);
-        foreach (var path in request.Files) _ = path.Value;
+        foreach (var path in request.Files)
+        {
+            _ = path.Value;
+        }
+
         return request;
     }
 
@@ -192,36 +257,60 @@ internal static class FilesRequestValidator
     public static SetDownloadThrottlingRequest Validate(SetDownloadThrottlingRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.Throttling)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Throttling value.");
+        if (!Enum.IsDefined(request.Throttling))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Throttling value.");
+        }
+
         return request;
     }
 
     public static SetFileTaskStateRequest Validate(SetFileTaskStateRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.State)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
+        if (!Enum.IsDefined(request.State))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
+        }
+
         return request;
     }
 
     public static SetPartitionStateRequest Validate(SetPartitionStateRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.State)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
+        if (!Enum.IsDefined(request.State))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
+        }
+
         return request;
     }
 
     public static SetRaidStateRequest Validate(SetRaidStateRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.State)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
+        if (!Enum.IsDefined(request.State))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
+        }
+
         return request;
     }
 
     public static SetStorageDiskStateRequest Validate(SetStorageDiskStateRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!Enum.IsDefined(request.State)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
-        if (request.State is not StorageDiskState.Enabled and not StorageDiskState.Disabled) throw new ArgumentException("Only enabling or disabling a disk is documented.", nameof(request));
+        if (!Enum.IsDefined(request.State))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid State value.");
+        }
+
+        if (request.State is not StorageDiskState.Enabled and not StorageDiskState.Disabled)
+        {
+            throw new ArgumentException("Only enabling or disabling a disk is documented.", nameof(request));
+        }
+
         return request;
     }
 
@@ -231,7 +320,11 @@ internal static class FilesRequestValidator
         RejectNull(request.MaxPeers, "MaxPeers");
         RejectNull(request.StopRatio, "StopRatio");
         RejectNull(request.CryptoSupport, "CryptoSupport");
-        if (request.CryptoSupport.HasValue && !Enum.IsDefined(request.CryptoSupport.Value)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid CryptoSupport value.");
+        if (request.CryptoSupport.HasValue && !Enum.IsDefined(request.CryptoSupport.Value))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid CryptoSupport value.");
+        }
+
         RejectNull(request.EnableDht, "EnableDht");
         RejectNull(request.EnablePex, "EnablePex");
         RejectNull(request.AnnounceTimeout, "AnnounceTimeout");
@@ -276,13 +369,30 @@ internal static class FilesRequestValidator
     {
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.Normal, "Normal");
-        if (request.Normal.HasValue) Validate(request.Normal.Value);
+        if (request.Normal.HasValue)
+        {
+            Validate(request.Normal.Value);
+        }
+
         RejectNull(request.Slow, "Slow");
-        if (request.Slow.HasValue) Validate(request.Slow.Value);
+        if (request.Slow.HasValue)
+        {
+            Validate(request.Slow.Value);
+        }
+
         RejectNull(request.Schedule, "Schedule");
-        if (request.Schedule.HasValue && (request.Schedule.Value.Length != 168 || request.Schedule.Value.Any(value => !Enum.IsDefined(value)))) throw new ArgumentException("Schedule must contain 168 documented mode values.", nameof(request));
+        if (request.Schedule.HasValue && (request.Schedule.Value.Length != 168 ||
+                                          request.Schedule.Value.Any(value => !Enum.IsDefined(value))))
+        {
+            throw new ArgumentException("Schedule must contain 168 documented mode values.", nameof(request));
+        }
+
         RejectNull(request.Mode, "Mode");
-        if (request.Mode.HasValue && !Enum.IsDefined(request.Mode.Value)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Mode value.");
+        if (request.Mode.HasValue && !Enum.IsDefined(request.Mode.Value))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Mode value.");
+        }
+
         return request;
     }
 
@@ -291,18 +401,42 @@ internal static class FilesRequestValidator
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.MaxDownloadingTasks, "MaxDownloadingTasks");
         RejectNull(request.DownloadDir, "DownloadDir");
-        if (request.DownloadDir.HasValue) _ = request.DownloadDir.Value.Value;
+        if (request.DownloadDir.HasValue)
+        {
+            _ = request.DownloadDir.Value.Value;
+        }
+
         RejectNull(request.WatchDir, "WatchDir");
-        if (request.WatchDir.HasValue) _ = request.WatchDir.Value.Value;
+        if (request.WatchDir.HasValue)
+        {
+            _ = request.WatchDir.Value.Value;
+        }
+
         RejectNull(request.UseWatchDir, "UseWatchDir");
         RejectNull(request.Throttling, "Throttling");
-        if (request.Throttling.HasValue) Validate(request.Throttling.Value);
+        if (request.Throttling.HasValue)
+        {
+            Validate(request.Throttling.Value);
+        }
+
         RejectNull(request.News, "News");
-        if (request.News.HasValue) Validate(request.News.Value);
+        if (request.News.HasValue)
+        {
+            Validate(request.News.Value);
+        }
+
         RejectNull(request.Bt, "Bt");
-        if (request.Bt.HasValue) Validate(request.Bt.Value);
+        if (request.Bt.HasValue)
+        {
+            Validate(request.Bt.Value);
+        }
+
         RejectNull(request.Feed, "Feed");
-        if (request.Feed.HasValue) Validate(request.Feed.Value);
+        if (request.Feed.HasValue)
+        {
+            Validate(request.Feed.Value);
+        }
+
         RejectNull(request.Dns1, "Dns1");
         RejectNull(request.Dns2, "Dns2");
         return request;
@@ -318,10 +452,18 @@ internal static class FilesRequestValidator
     {
         ArgumentNullException.ThrowIfNull(request);
         RejectNull(request.Status, "Status");
-        if (request.Status.HasValue && !Enum.IsDefined(request.Status.Value)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid Status value.");
+        if (request.Status.HasValue && !Enum.IsDefined(request.Status.Value))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid Status value.");
+        }
+
         RejectNull(request.QueuePos, "QueuePos");
         RejectNull(request.IoPriority, "IoPriority");
-        if (request.IoPriority.HasValue && !Enum.IsDefined(request.IoPriority.Value)) throw new ArgumentOutOfRangeException(nameof(request), "Invalid IoPriority value.");
+        if (request.IoPriority.HasValue && !Enum.IsDefined(request.IoPriority.Value))
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Invalid IoPriority value.");
+        }
+
         RejectNull(request.ArchivePassword, "ArchivePassword");
         return request;
     }
@@ -359,12 +501,19 @@ internal static class FilesRequestValidator
     public static EncodedFreeboxPath[] Validate(EncodedFreeboxPath[] paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
-        foreach (var path in paths) _ = path.Value;
+        foreach (var path in paths)
+        {
+            _ = path.Value;
+        }
+
         return paths;
     }
 
     private static void RejectNull<T>(Optional<T> value, string name)
     {
-        if (value.IsNull) throw new ArgumentException("Null clearing is not documented; omit the field instead.", name);
+        if (value.IsNull)
+        {
+            throw new ArgumentException("Null clearing is not documented; omit the field instead.", name);
+        }
     }
 }

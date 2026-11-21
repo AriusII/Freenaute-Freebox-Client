@@ -21,15 +21,17 @@ public static class FreeboxApiPath
         if (value is "." or ".." || value[0] is '/' or '\\' || value.Contains('\\') || value.Any(char.IsControl) ||
             value.Split('/').Any(part => part is "." or ".."))
         {
-            throw new ArgumentException("An opaque parameter cannot contain traversal or control characters.", nameof(value));
+            throw new ArgumentException("An opaque parameter cannot contain traversal or control characters.",
+                nameof(value));
         }
+
         return Uri.EscapeDataString(value);
     }
 
     internal static string NormalizeBasePath(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        var relative = path.StartsWith('/') ? path[1..] : path;
+        string relative = path.StartsWith('/') ? path[1..] : path;
         ValidateRelativePath(relative);
         if (relative.Contains('?'))
         {
@@ -45,23 +47,26 @@ public static class FreeboxApiPath
         if (relativePath.StartsWith('/') || relativePath.Contains('\\') || relativePath.Contains('#') ||
             Uri.TryCreate(relativePath, UriKind.Absolute, out _))
         {
-            throw new ArgumentException("An API path must be relative to the versioned API root.", nameof(relativePath));
+            throw new ArgumentException("An API path must be relative to the versioned API root.",
+                nameof(relativePath));
         }
 
-        var queryIndex = relativePath.IndexOf('?');
-        var path = queryIndex < 0 ? relativePath : relativePath[..queryIndex];
+        int queryIndex = relativePath.IndexOf('?');
+        string path = queryIndex < 0 ? relativePath : relativePath[..queryIndex];
         if (path.Length == 0)
         {
             throw new ArgumentException("An API path must contain a resource path.", nameof(relativePath));
         }
 
-        foreach (var segment in path.Split('/'))
+        foreach (string segment in path.Split('/'))
         {
-            var decoded = Uri.UnescapeDataString(segment);
+            string decoded = Uri.UnescapeDataString(segment);
             if (decoded is "." or ".." || decoded.StartsWith('/') || decoded.Contains('\\') ||
                 decoded.Split('/').Any(part => part is "." or "..") || decoded.Any(char.IsControl))
             {
-                throw new ArgumentException("An API path cannot contain traversal, leading encoded separators or control characters.", nameof(relativePath));
+                throw new ArgumentException(
+                    "An API path cannot contain traversal, leading encoded separators or control characters.",
+                    nameof(relativePath));
             }
         }
     }

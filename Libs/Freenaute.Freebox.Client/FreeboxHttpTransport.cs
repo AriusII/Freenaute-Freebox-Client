@@ -1,17 +1,8 @@
-using System.Globalization;
-using System.Net.Http.Json;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
-using Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.Serialization;
-using Freenaute.Freebox.Mapper.ServerSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.ServerSide.General;
-
 namespace Freenaute.Freebox.Client;
 
-internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, FreeboxClientState state,
+internal sealed partial class FreeboxHttpTransport(
+    HttpClient httpClient,
+    FreeboxClientState state,
     TimeSpan? standaloneTimeout = null) : IFreeboxTransport, IFreeboxBinaryTransport, IFreeboxWebSocketTransport
 {
     internal const string AuthenticationHeader = "X-Fbx-App-Auth";
@@ -53,8 +44,10 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
     }
 
     public Task SendAsync(HttpMethod method, string relativePath, CancellationToken cancellationToken = default,
-        bool requiresAuthentication = true) =>
-        SendWithoutResultAsync(method, relativePath, null, requiresAuthentication, cancellationToken);
+        bool requiresAuthentication = true)
+    {
+        return SendWithoutResultAsync(method, relativePath, null, requiresAuthentication, cancellationToken);
+    }
 
     public Task SendAsync<TRequest>(HttpMethod method, string relativePath, TRequest request,
         JsonTypeInfo<TRequest> requestType, CancellationToken cancellationToken = default,
@@ -109,7 +102,8 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
             {
                 if (!state.Options.AuthenticateAutomatically)
                 {
-                    throw new FreeboxAuthenticationException("Open a session before making authenticated requests, or enable automatic authentication.");
+                    throw new FreeboxAuthenticationException(
+                        "Open a session before making authenticated requests, or enable automatic authentication.");
                 }
 
                 session = await OpenSessionAsync(cancellationToken).ConfigureAwait(false);
@@ -125,11 +119,11 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
 
         try
         {
-            return await SendDocumentAsync(request, cancellationToken, validateEnvelope: true).ConfigureAwait(false);
+            return await SendDocumentAsync(request, cancellationToken, true).ConfigureAwait(false);
         }
         catch (FreeboxApiException exception) when
-            (session is not null && (exception.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
-                                    exception.ErrorCode is "auth_required" or "invalid_session"))
+            (session is not null && (exception.StatusCode == HttpStatusCode.Unauthorized ||
+                                     exception.ErrorCode is "auth_required" or "invalid_session"))
         {
             // Invalidate this session only. In particular, never replay a mutation after an authentication failure.
             Interlocked.CompareExchange(ref state.Session, null, session);
@@ -153,7 +147,8 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
                 return existing;
             }
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, new Uri(state.Options.ServerAddress, "api_version"));
+            using var request =
+                new HttpRequestMessage(HttpMethod.Get, new Uri(state.Options.ServerAddress, "api_version"));
             using var document = await SendDocumentAsync(request, cancellationToken).ConfigureAwait(false);
             var version = document.RootElement.Deserialize(Json.ApiVersionResponse)
                           ?? throw new JsonException("The Freebox discovery response cannot be null.");
@@ -184,16 +179,19 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
         return state.ApiAddress!;
     }
 
-    private Uri CreateApiAddress(string basePath, int major) =>
-        new(state.Options.ServerAddress,
-            FreeboxApiPath.NormalizeBasePath(basePath).TrimStart('/') + $"v{major.ToString(CultureInfo.InvariantCulture)}/");
+    private Uri CreateApiAddress(string basePath, int major)
+    {
+        return new Uri(state.Options.ServerAddress,
+            FreeboxApiPath.NormalizeBasePath(basePath).TrimStart('/') +
+            $"v{major.ToString(CultureInfo.InvariantCulture)}/");
+    }
 
     private static int GetMajorVersion(string version)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(version);
-        var separator = version.IndexOf('.');
+        int separator = version.IndexOf('.');
         var majorPart = separator < 0 ? version.AsSpan() : version.AsSpan(0, separator);
-        if (!int.TryParse(majorPart, NumberStyles.None, CultureInfo.InvariantCulture, out var major) || major <= 0)
+        if (!int.TryParse(majorPart, NumberStyles.None, CultureInfo.InvariantCulture, out int major) || major <= 0)
         {
             throw new JsonException("The Freebox advertised an invalid API major version.");
         }
@@ -224,12 +222,13 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
             }
 
             var login = await SendAsync(HttpMethod.Get, "login/", Json.LoginResponse, cancellationToken,
-                requiresAuthentication: false).ConfigureAwait(false);
+                false).ConfigureAwait(false);
             ArgumentException.ThrowIfNullOrWhiteSpace(login.Challenge);
-            var password = CreateSessionPassword(options.AppToken, login.Challenge);
+            string password = CreateSessionPassword(options.AppToken, login.Challenge);
             var opened = await SendAsync(HttpMethod.Post, "login/session/",
-                new SessionStartRequest(options.ApplicationId, password, options.ApplicationVersion), Json.SessionStartRequest,
-                Json.SessionResponse, cancellationToken, requiresAuthentication: false).ConfigureAwait(false);
+                new SessionStartRequest(options.ApplicationId, password, options.ApplicationVersion),
+                Json.SessionStartRequest,
+                Json.SessionResponse, cancellationToken, false).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(opened.SessionToken) || opened.SessionToken.Any(char.IsControl))
             {
                 throw new JsonException("The Freebox returned an invalid session token.");
@@ -246,12 +245,12 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
 
     private static string CreateSessionPassword(string appToken, string challenge)
     {
-        var key = Encoding.UTF8.GetBytes(appToken);
-        var challengeBytes = Encoding.UTF8.GetBytes(challenge);
+        byte[] key = Encoding.UTF8.GetBytes(appToken);
+        byte[] challengeBytes = Encoding.UTF8.GetBytes(challenge);
         try
         {
             // HMAC-SHA1 is mandated by the Freebox authentication wire protocol.
-            var digest = HMACSHA1.HashData(key, challengeBytes);
+            byte[] digest = HMACSHA1.HashData(key, challengeBytes);
             try
             {
                 return Convert.ToHexStringLower(digest);
@@ -280,7 +279,7 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
             }
 
             using var result = await SendEnvelopeAsync(HttpMethod.Post, "login/logout/", null,
-                requiresAuthentication: false, cancellationToken, explicitSession: session).ConfigureAwait(false);
+                false, cancellationToken, session).ConfigureAwait(false);
         }
         finally
         {
@@ -307,7 +306,8 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
         JsonDocument document;
         try
         {
-            document = await JsonDocument.ParseAsync(stream, cancellationToken: operationCancellation).ConfigureAwait(false);
+            document = await JsonDocument.ParseAsync(stream, cancellationToken: operationCancellation)
+                .ConfigureAwait(false);
         }
         catch (JsonException) when (!response.IsSuccessStatusCode)
         {
@@ -338,7 +338,7 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
         return document;
     }
 
-    private static void EnsureEnvelopeSuccess(JsonElement root, System.Net.HttpStatusCode statusCode)
+    private static void EnsureEnvelopeSuccess(JsonElement root, HttpStatusCode statusCode)
     {
         if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("success", out var success) ||
             success.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
@@ -352,7 +352,7 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
         }
     }
 
-    private static FreeboxApiException CreateApiException(System.Net.HttpStatusCode statusCode, JsonElement root)
+    private static FreeboxApiException CreateApiException(HttpStatusCode statusCode, JsonElement root)
     {
         if (root.ValueKind != JsonValueKind.Object)
         {
@@ -364,8 +364,10 @@ internal sealed partial class FreeboxHttpTransport(HttpClient httpClient, Freebo
             ReadString(root, "uid"), details);
     }
 
-    private static string? ReadString(JsonElement root, string property) =>
-        root.TryGetProperty(property, out var value) && value.ValueKind == JsonValueKind.String
+    private static string? ReadString(JsonElement root, string property)
+    {
+        return root.TryGetProperty(property, out var value) && value.ValueKind == JsonValueKind.String
             ? value.GetString()
             : null;
+    }
 }

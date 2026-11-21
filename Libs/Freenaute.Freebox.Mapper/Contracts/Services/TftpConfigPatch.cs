@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of TftpConfig; unset fields are omitted and explicit null is rejected.</summary>
@@ -19,9 +16,19 @@ public sealed record TftpConfigPatch
 
     public void Validate()
     {
-        if (Enabled.IsNull) throw new ArgumentException("Explicit null is not documented for TftpConfig.Enabled.", nameof(Enabled));
-        if (Root.IsNull) throw new ArgumentException("Explicit null is not documented for TftpConfig.Root.", nameof(Root));
+        if (Enabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for TftpConfig.Enabled.", nameof(Enabled));
+        }
+
+        if (Root.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for TftpConfig.Root.", nameof(Root));
+        }
     }
 
-    public override string ToString() => nameof(TftpConfigPatch);
+    public override string ToString()
+    {
+        return nameof(TftpConfigPatch);
+    }
 }

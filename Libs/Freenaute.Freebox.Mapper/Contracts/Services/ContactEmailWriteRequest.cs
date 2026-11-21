@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of ContactEmail; unset fields are omitted and explicit null is rejected.</summary>
@@ -24,10 +21,25 @@ public sealed record ContactEmailWriteRequest
 
     public void Validate()
     {
-        if (ContactId.IsNull) throw new ArgumentException("Explicit null is not documented for ContactEmail.ContactId.", nameof(ContactId));
-        if (Type.IsNull) throw new ArgumentException("Explicit null is not documented for ContactEmail.Type.", nameof(Type));
-        if (Email.IsNull) throw new ArgumentException("Explicit null is not documented for ContactEmail.Email.", nameof(Email));
+        if (ContactId.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactEmail.ContactId.",
+                nameof(ContactId));
+        }
+
+        if (Type.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactEmail.Type.", nameof(Type));
+        }
+
+        if (Email.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactEmail.Email.", nameof(Email));
+        }
     }
 
-    public override string ToString() => nameof(ContactEmailWriteRequest);
+    public override string ToString()
+    {
+        return nameof(ContactEmailWriteRequest);
+    }
 }

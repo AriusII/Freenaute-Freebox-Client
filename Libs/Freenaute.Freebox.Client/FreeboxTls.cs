@@ -1,15 +1,11 @@
-using System.Net.Security;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-
 namespace Freenaute.Freebox.Client;
 
 /// <summary>Creates a Freebox HTTP handler with the certificate roots published by the Freebox Server SDK.</summary>
 public static class FreeboxTls
 {
     /// <summary>
-    /// Creates an owned HTTP handler that validates certificate chains, server authentication and hostnames.
-    /// Certificate revocation follows the default .NET HTTP policy unless explicitly configured.
+    ///     Creates an owned HTTP handler that validates certificate chains, server authentication and hostnames.
+    ///     Certificate revocation follows the default .NET HTTP policy unless explicitly configured.
     /// </summary>
     public static HttpMessageHandler CreateHandler(X509RevocationMode revocationMode = X509RevocationMode.NoCheck)
     {
@@ -35,10 +31,11 @@ public static class FreeboxTls
             {
                 var certificate = X509Certificate2.CreateFromPem(root.Pem);
                 certificates.Add(certificate);
-                var fingerprint = Convert.ToHexStringLower(SHA256.HashData(certificate.RawData));
+                string fingerprint = Convert.ToHexStringLower(SHA256.HashData(certificate.RawData));
                 if (!StringComparer.Ordinal.Equals(fingerprint, root.Sha256))
                 {
-                    throw new CryptographicException("A Freebox certificate root does not match its verified SDK fingerprint.");
+                    throw new CryptographicException(
+                        "A Freebox certificate root does not match its verified SDK fingerprint.");
                 }
 
                 policy.CustomTrustStore.Add(certificate);
@@ -70,7 +67,7 @@ public static class FreeboxTls
     private sealed class CertificateOwnerHandler(HttpMessageHandler innerHandler, X509Certificate2[] certificates)
         : DelegatingHandler(innerHandler)
     {
-        private int disposed;
+        private int _disposed;
 
         protected override void Dispose(bool disposing)
         {
@@ -80,7 +77,7 @@ public static class FreeboxTls
             }
             finally
             {
-                if (disposing && Interlocked.Exchange(ref disposed, 1) == 0)
+                if (disposing && Interlocked.Exchange(ref _disposed, 1) == 0)
                 {
                     foreach (var certificate in certificates)
                     {

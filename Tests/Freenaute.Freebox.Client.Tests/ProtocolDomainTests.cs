@@ -1,8 +1,3 @@
-using System.Text.Json;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Contracts.Protocol;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class ProtocolDomainTests
@@ -11,9 +6,9 @@ public sealed class ProtocolDomainTests
     public async Task CameraSelectionPreservesOpaqueIdAndStreamAddress()
     {
         using var handler = FixtureHandler.AuthenticatedConstant("""
-            {"success":true,"result":{"id":"012345678901","node_id":0,"name":"Salon",
-            "stream_url":"/camera/stream/012345678901/stream.m3u8","lan_gid":"ether-3c:98:72:fa:36:15"}}
-            """);
+                                                                 {"success":true,"result":{"id":"012345678901","node_id":0,"name":"Salon",
+                                                                 "stream_url":"/camera/stream/012345678901/stream.m3u8","lan_gid":"ether-3c:98:72:fa:36:15"}}
+                                                                 """);
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var camera = await client.Cameras.Camera("012345678901").GetAsync();
@@ -32,8 +27,8 @@ public sealed class ProtocolDomainTests
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var detail = await client.Notifications.Target("001").GetAsync();
-        var json = JsonSerializer.Serialize(detail,
-            Freenaute.Freebox.Mapper.Serialization.ProtocolJsonSerializerContext.Default.ObjectOrArrayNotificationTarget);
+        string json = JsonSerializer.Serialize(detail,
+            ProtocolJsonSerializerContext.Default.ObjectOrArrayNotificationTarget);
         using var roundTrip = JsonDocument.Parse(json);
         Assert.Equal(expectedShape, roundTrip.RootElement.ValueKind);
         Assert.Equal("001", detail.Items.Single().Id);

@@ -1,15 +1,10 @@
-using Freenaute.Freebox.Mapper.Contracts.Network;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-
 namespace Freenaute.Freebox.Client.Domains.Network;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
 public sealed class FreeboxWifiBss
 {
-    private readonly IFreeboxTransport _transport;
-    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
     private readonly string _id;
+    private readonly IFreeboxTransport _transport;
 
     public FreeboxWifiBss(IFreeboxTransport transport, string id)
     {
@@ -17,6 +12,8 @@ public sealed class FreeboxWifiBss
         _transport = transport;
         _id = FreeboxApiPath.EncodeSegment(id);
     }
+
+    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
 
 
     /// <summary>Get a particular BSS.</summary>
@@ -32,7 +29,8 @@ public sealed class FreeboxWifiBss
     {
         ArgumentNullException.ThrowIfNull(request);
         NetworkWriteValidation.Validate(request);
-        return _transport.SendAsync(HttpMethod.Put, $"wifi/bss/{_id}", request, Json.WifiBssPatch, Json.WifiBss, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Put, $"wifi/bss/{_id}", request, Json.WifiBssPatch, Json.WifiBss,
+            cancellationToken);
     }
 
     /// <summary>Config reset value of a BSS.</summary>
@@ -55,21 +53,23 @@ public sealed class FreeboxWifiBss
     {
         ArgumentNullException.ThrowIfNull(request);
         NetworkWriteValidation.Validate(request);
-        return _transport.SendAsync(HttpMethod.Post, $"wifi/bss/{_id}/diag", request, Json.StringArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Post, $"wifi/bss/{_id}/diag", request, Json.StringArray,
+            cancellationToken);
     }
 
     /// <summary>Available partner.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v14-wifi-bss-id-mlo-allowed_comb</remarks>
     public Task<long[][]> GetAllowedMloPartnersAsync(CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(HttpMethod.Get, $"wifi/bss/{_id}/mlo/allowed_comb", Json.Int64ArrayArray, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Get, $"wifi/bss/{_id}/mlo/allowed_comb", Json.Int64ArrayArray,
+            cancellationToken);
     }
 
     /// <summary>Getting the MLO config.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v14-wifi-bss-id-mlo-config</remarks>
     public Task<WifiMLOConfiguration> GetMloConfigurationAsync(CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(HttpMethod.Get, $"wifi/bss/{_id}/mlo/config", Json.WifiMLOConfiguration, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Get, $"wifi/bss/{_id}/mlo/config", Json.WifiMLOConfiguration,
+            cancellationToken);
     }
-
 }

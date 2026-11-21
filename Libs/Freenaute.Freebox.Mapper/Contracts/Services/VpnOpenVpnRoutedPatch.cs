@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of VPNServerConfig; unset fields are omitted and explicit null is rejected.</summary>
@@ -34,13 +31,43 @@ public sealed record VpnOpenVpnRoutedPatch
 
     public void Validate()
     {
-        if (Enabled.IsNull) throw new ArgumentException("Explicit null is not documented for VPNServerConfig.Enabled.", nameof(Enabled));
-        if (EnableIpv4.IsNull) throw new ArgumentException("Explicit null is not documented for VPNServerConfig.EnableIpv4.", nameof(EnableIpv4));
-        if (EnableIpv6.IsNull) throw new ArgumentException("Explicit null is not documented for VPNServerConfig.EnableIpv6.", nameof(EnableIpv6));
-        if (Port.IsNull) throw new ArgumentException("Explicit null is not documented for VPNServerConfig.Port.", nameof(Port));
-        if (ConfOpenVpn.IsNull) throw new ArgumentException("Explicit null is not documented for VPNServerConfig.ConfOpenVpn.", nameof(ConfOpenVpn));
-        if (ConfOpenVpn.HasValue) ConfOpenVpn.Value.Validate();
+        if (Enabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNServerConfig.Enabled.",
+                nameof(Enabled));
+        }
+
+        if (EnableIpv4.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNServerConfig.EnableIpv4.",
+                nameof(EnableIpv4));
+        }
+
+        if (EnableIpv6.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNServerConfig.EnableIpv6.",
+                nameof(EnableIpv6));
+        }
+
+        if (Port.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNServerConfig.Port.", nameof(Port));
+        }
+
+        if (ConfOpenVpn.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNServerConfig.ConfOpenVpn.",
+                nameof(ConfOpenVpn));
+        }
+
+        if (ConfOpenVpn.HasValue)
+        {
+            ConfOpenVpn.Value.Validate();
+        }
     }
 
-    public override string ToString() => nameof(VpnOpenVpnRoutedPatch);
+    public override string ToString()
+    {
+        return nameof(VpnOpenVpnRoutedPatch);
+    }
 }

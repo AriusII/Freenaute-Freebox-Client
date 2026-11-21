@@ -1,6 +1,3 @@
-using System.Text.Json;
-using Freenaute.Freebox.Mapper.ServerSide.Authentication.Login;
-
 namespace Freenaute.Freebox.Client;
 
 internal sealed partial class FreeboxHttpTransport
@@ -13,7 +10,11 @@ internal sealed partial class FreeboxHttpTransport
         cancellationToken.ThrowIfCancellationRequested();
         var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var timeout = standaloneTimeout ?? httpClient.Timeout;
-        if (timeout != Timeout.InfiniteTimeSpan) lifetime.CancelAfter(timeout);
+        if (timeout != Timeout.InfiniteTimeSpan)
+        {
+            lifetime.CancelAfter(timeout);
+        }
+
         HttpResponseMessage? response = null;
         SessionResponse? session = null;
         try
@@ -25,18 +26,27 @@ internal sealed partial class FreeboxHttpTransport
                 if (session is null)
                 {
                     if (!state.Options.AuthenticateAutomatically)
-                        throw new FreeboxAuthenticationException("Open a session before making authenticated requests, or enable automatic authentication.");
+                    {
+                        throw new FreeboxAuthenticationException(
+                            "Open a session before making authenticated requests, or enable automatic authentication.");
+                    }
+
                     session = await OpenSessionAsync(lifetime.Token).ConfigureAwait(false);
                 }
             }
 
             using var request = new HttpRequestMessage(method, FreeboxApiPath.Resolve(apiAddress, relativePath));
-            if (session is not null) request.Headers.Add(AuthenticationHeader, session.SessionToken);
+            if (session is not null)
+            {
+                request.Headers.Add(AuthenticationHeader, session.SessionToken);
+            }
+
             response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead,
                 lifetime.Token).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
-                await using var errorBody = await response.Content.ReadAsStreamAsync(lifetime.Token).ConfigureAwait(false);
+                await using var errorBody =
+                    await response.Content.ReadAsStreamAsync(lifetime.Token).ConfigureAwait(false);
                 try
                 {
                     using var error = await JsonDocument.ParseAsync(errorBody, cancellationToken: lifetime.Token)
@@ -55,8 +65,8 @@ internal sealed partial class FreeboxHttpTransport
             return download;
         }
         catch (FreeboxApiException exception) when (session is not null &&
-            (exception.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
-             exception.ErrorCode is "auth_required" or "invalid_session"))
+                                                    (exception.StatusCode == HttpStatusCode.Unauthorized ||
+                                                     exception.ErrorCode is "auth_required" or "invalid_session"))
         {
             Interlocked.CompareExchange(ref state.Session, null, session);
             response?.Dispose();

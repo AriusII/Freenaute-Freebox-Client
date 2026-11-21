@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of ContactNumber; unset fields are omitted and explicit null is rejected.</summary>
@@ -34,12 +31,36 @@ public sealed record ContactNumberWriteRequest
 
     public void Validate()
     {
-        if (ContactId.IsNull) throw new ArgumentException("Explicit null is not documented for ContactNumber.ContactId.", nameof(ContactId));
-        if (Type.IsNull) throw new ArgumentException("Explicit null is not documented for ContactNumber.Type.", nameof(Type));
-        if (Number.IsNull) throw new ArgumentException("Explicit null is not documented for ContactNumber.Number.", nameof(Number));
-        if (IsDefault.IsNull) throw new ArgumentException("Explicit null is not documented for ContactNumber.IsDefault.", nameof(IsDefault));
-        if (IsOwn.IsNull) throw new ArgumentException("Explicit null is not documented for ContactNumber.IsOwn.", nameof(IsOwn));
+        if (ContactId.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactNumber.ContactId.",
+                nameof(ContactId));
+        }
+
+        if (Type.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactNumber.Type.", nameof(Type));
+        }
+
+        if (Number.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactNumber.Number.", nameof(Number));
+        }
+
+        if (IsDefault.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactNumber.IsDefault.",
+                nameof(IsDefault));
+        }
+
+        if (IsOwn.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactNumber.IsOwn.", nameof(IsOwn));
+        }
     }
 
-    public override string ToString() => nameof(ContactNumberWriteRequest);
+    public override string ToString()
+    {
+        return nameof(ContactNumberWriteRequest);
+    }
 }

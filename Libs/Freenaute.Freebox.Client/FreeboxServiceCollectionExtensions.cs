@@ -1,12 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Freenaute.Freebox.Client;
 
 public static class FreeboxServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers a transient facade, an HTTP client factory, and session state shared for one configured Freebox.
-    /// The returned standard builder supports HTTP configuration and delegating handlers.
+    ///     Registers a transient facade, an HTTP client factory, and session state shared for one configured Freebox.
+    ///     The returned standard builder supports HTTP configuration and delegating handlers.
     /// </summary>
     public static IHttpClientBuilder AddFreeboxClient(this IServiceCollection services,
         Action<FreeboxClientOptions> configure)
@@ -15,7 +13,8 @@ public static class FreeboxServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configure);
         if (services.Any(descriptor => descriptor.ServiceType == typeof(FreeboxClientState)))
         {
-            throw new InvalidOperationException("AddFreeboxClient registers one Freebox per service collection and cannot be called twice.");
+            throw new InvalidOperationException(
+                "AddFreeboxClient registers one Freebox per service collection and cannot be called twice.");
         }
 
         var options = new FreeboxClientOptions();

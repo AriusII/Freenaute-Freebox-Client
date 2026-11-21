@@ -1,12 +1,3 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using Freenaute.Freebox.Client.Domains.Files;
-using Freenaute.Freebox.Mapper.Contracts.Files;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class FilesApiTests
@@ -40,7 +31,8 @@ public sealed class FilesApiTests
         Assert.Equal(path, entry.Path);
         var request = ResourceRequests(handler).Single();
         Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal("https://fixture.example/api/v16/fs/ls/L9%2B%2Fw6k%3D?onlyFolder=false&countSubFolder=true&exifMode=light&limit=100&cursor=opaque%2F%2B%26%3D%25",
+        Assert.Equal(
+            "https://fixture.example/api/v16/fs/ls/L9%2B%2Fw6k%3D?onlyFolder=false&countSubFolder=true&exifMode=light&limit=100&cursor=opaque%2F%2B%26%3D%25",
             request.Address.AbsoluteUri);
     }
 
@@ -110,13 +102,14 @@ public sealed class FilesApiTests
         using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"id":[42,43]}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
-        var urls = new[] { "https://one.example/?q=a&b=2", "magnet:?xt=urn:btih:fixture" };
+        string[] urls = new[] { "https://one.example/?q=a&b=2", "magnet:?xt=urn:btih:fixture" };
 
         var result = await Create(client).Downloads.FromUrls(urls).AddAsync();
 
         Assert.True(result.WasMultiple);
         Assert.Equal(new long[] { 42, 43 }, result.Ids);
-        Assert.Equal(string.Join('\n', urls), DecodeForm(Assert.Single(ResourceRequests(handler)).Body!)["download_url_list"]);
+        Assert.Equal(string.Join('\n', urls),
+            DecodeForm(Assert.Single(ResourceRequests(handler)).Body!)["download_url_list"]);
     }
 
     [Theory]
@@ -155,7 +148,8 @@ public sealed class FilesApiTests
             DownloadUrl = "https://one.example/",
             DownloadUrls = ["https://two.example/"]
         }));
-        await Assert.ThrowsAsync<ArgumentException>(() => downloads.FromUrls("https://one.example/", "https://two.example/")
+        await Assert.ThrowsAsync<ArgumentException>(() => downloads
+            .FromUrls("https://one.example/", "https://two.example/")
             .WithFileName("one-file").AddAsync());
         await Assert.ThrowsAsync<ArgumentException>(() => downloads.FromUrl("https://one.example/").Recursively()
             .WithHash("sha256:fixture").AddAsync());
@@ -173,7 +167,8 @@ public sealed class FilesApiTests
 
         var request = Assert.Single(ResourceRequests(handler));
         Assert.Equal(HttpMethod.Delete, request.Method);
-        Assert.Equal("https://fixture.example/api/v16/downloads/42/trackers/https%3A%2F%2Ftracker.example%2Fannounce%3Fkey%3Da%2Bb%26pass%3Dx",
+        Assert.Equal(
+            "https://fixture.example/api/v16/downloads/42/trackers/https%3A%2F%2Ftracker.example%2Fannounce%3Fkey%3Da%2Bb%26pass%3Dx",
             request.Address.AbsoluteUri);
     }
 
@@ -196,23 +191,30 @@ public sealed class FilesApiTests
     public void ContradictoryFieldKindsRemainDistinctWithGeneratedJson()
     {
         Assert.False(JsonSerializer.IsReflectionEnabledByDefault);
-        var disk = JsonSerializer.Deserialize("""{"id":1,"table_type":"gpt","total_bytes":6000000000000}""", FilesJsonSerializerContext.Default.StorageDisk)!;
-        var file = JsonSerializer.Deserialize("""{"id":"opaque","task_id":"42","filepath":"Lw==","path":"deprecated"}""", FilesJsonSerializerContext.Default.DownloadFile)!;
+        var disk = JsonSerializer.Deserialize("""{"id":1,"table_type":"gpt","total_bytes":6000000000000}""",
+            FilesJsonSerializerContext.Default.StorageDisk)!;
+        var file = JsonSerializer.Deserialize(
+            """{"id":"opaque","task_id":"42","filepath":"Lw==","path":"deprecated"}""",
+            FilesJsonSerializerContext.Default.DownloadFile)!;
         var peer = JsonSerializer.Deserialize("""{"requests":{}}""", FilesJsonSerializerContext.Default.DownloadPeer)!;
         Assert.Equal("gpt", disk.TableType?.String);
         Assert.Equal(6_000_000_000_000, disk.TotalBytes);
         Assert.Equal("42", file.TaskId?.String);
         Assert.Equal(EncodedFreeboxPath.FromEncoded("Lw=="), file.Filepath);
         Assert.Equal(EmptyObjectOrInt32ArrayKind.EmptyObject, peer.Requests?.Kind);
-        using var serialized = JsonDocument.Parse(JsonSerializer.Serialize(file, FilesJsonSerializerContext.Default.DownloadFile));
+        using var serialized =
+            JsonDocument.Parse(JsonSerializer.Serialize(file, FilesJsonSerializerContext.Default.DownloadFile));
         Assert.False(serialized.RootElement.TryGetProperty("path", out _));
-        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize("""{"requests":{"invented":42}}""", FilesJsonSerializerContext.Default.DownloadPeer));
+        Assert.Throws<JsonException>(() =>
+            JsonSerializer.Deserialize("""{"requests":{"invented":42}}""",
+                FilesJsonSerializerContext.Default.DownloadPeer));
     }
 
     [Fact]
     public async Task ConfigurationPatchKeepsFalseAndZeroWhileOmittingUnsetAndReadOnlyFields()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"use_watch_dir":false}}""");
+        using var handler =
+            FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"use_watch_dir":false}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
 
@@ -220,7 +222,8 @@ public sealed class FilesApiTests
         {
             UseWatchDir = false,
             MaxDownloadingTasks = 0,
-            News = new UpdateDlNewsConfig { Password = "fixture-password", Ssl = false, Port = StringOrInteger.FromString("119") }
+            News = new UpdateDlNewsConfig
+                { Password = "fixture-password", Ssl = false, Port = StringOrInteger.FromString("119") }
         });
 
         using var body = JsonDocument.Parse(Assert.Single(ResourceRequests(handler)).Body!);
@@ -230,20 +233,23 @@ public sealed class FilesApiTests
         Assert.Equal("119", body.RootElement.GetProperty("news").GetProperty("port").GetString());
         Assert.False(body.RootElement.TryGetProperty("download_dir", out _));
         Assert.False(body.RootElement.TryGetProperty("blocklist", out _));
-        await Assert.ThrowsAsync<ArgumentException>(() => Create(client).Downloads.UpdateConfigurationAsync(new UpdateDownloadConfiguration
-        {
-            Dns1 = Optional<string>.Null
-        }));
+        await Assert.ThrowsAsync<ArgumentException>(() => Create(client).Downloads.UpdateConfigurationAsync(
+            new UpdateDownloadConfiguration
+            {
+                Dns1 = Optional<string>.Null
+            }));
     }
 
     [Fact]
     public async Task FeedMutationIdIsNotSilentlyCoalescedIntoReadId()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"feed_id":42,"title":"Fixture"}}""");
+        using var handler =
+            FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"feed_id":42,"title":"Fixture"}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
 
-        var feed = await Create(client).Downloads.Feeds.CreateAsync(new CreateDownloadFeedRequest { Url = "https://feed.example/rss" });
+        var feed = await Create(client).Downloads.Feeds
+            .CreateAsync(new CreateDownloadFeedRequest { Url = "https://feed.example/rss" });
 
         Assert.Equal(42, feed.FeedId);
         Assert.Null(feed.Id);
@@ -255,7 +261,9 @@ public sealed class FilesApiTests
     [Fact]
     public async Task StorageQueriesOmitUnspecifiedValuesAndKeepExplicitFalse()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"fstype":"xfs","partitions_to_delete":[]}}""");
+        using var handler =
+            FixtureHandler.AuthenticatedConstant(
+                """{"success":true,"result":{"fstype":"xfs","partitions_to_delete":[]}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var storage = Create(client).Storage;
@@ -263,20 +271,25 @@ public sealed class FilesApiTests
         await storage.GetFileSystemAdviceAsync(1);
         await storage.GetFileSystemAdviceAsync(1, 2, false);
 
-        Assert.Equal(new[] { "https://fixture.example/api/v16/storage/disk/1/fsadvice",
-            "https://fixture.example/api/v16/storage/disk/1/fsadvice?partition_id=2&dedicated_disk=false" },
+        Assert.Equal(new[]
+            {
+                "https://fixture.example/api/v16/storage/disk/1/fsadvice",
+                "https://fixture.example/api/v16/storage/disk/1/fsadvice?partition_id=2&dedicated_disk=false"
+            },
             ResourceRequests(handler).Select(request => request.Address.AbsoluteUri).ToArray());
     }
 
     [Fact]
     public async Task RaidMutationsEmitOnlyDefinedRequestFieldsAndIgnoreUndocumentedResults()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"unknown_future":true}}""");
+        using var handler =
+            FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"unknown_future":true}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var raid = Create(client).Raid;
 
-        await raid.CreateAsync(new CreateRaidRequest { Level = RaidLevel.Raid1, Name = "Fixture", Members = [new(1), new(2)] });
+        await raid.CreateAsync(new CreateRaidRequest
+            { Level = RaidLevel.Raid1, Name = "Fixture", Members = [new RaidMemberId(1), new RaidMemberId(2)] });
         await raid.SetStateAsync(5, new SetRaidStateRequest { Id = 5, State = RaidState.Running });
 
         var requests = ResourceRequests(handler).ToArray();
@@ -294,7 +307,9 @@ public sealed class FilesApiTests
     public async Task ExplicitVmActionsAndTaskReadDoNotIntroduceAutomaticPolling()
     {
         using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
-            request.Method == HttpMethod.Get ? """{"success":true,"result":{"id":42,"type":"create","done":false,"error":false}}""" : """{"success":true}""")));
+            request.Method == HttpMethod.Get
+                ? """{"success":true,"result":{"id":42,"type":"create","done":false,"error":false}}"""
+                : """{"success":true}""")));
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var vm = Create(client).VirtualMachines;
@@ -303,7 +318,8 @@ public sealed class FilesApiTests
         var task = await vm.GetDiskTaskAsync(42);
 
         Assert.False(task.Done);
-        Assert.Equal(new[] { "/api/v16/vm/1/start", "/api/v16/vm/disk/task/42" }, ResourceRequests(handler).Select(request => request.Address.AbsolutePath));
+        Assert.Equal(new[] { "/api/v16/vm/1/start", "/api/v16/vm/disk/task/42" },
+            ResourceRequests(handler).Select(request => request.Address.AbsolutePath));
     }
 
     [Fact]
@@ -315,7 +331,8 @@ public sealed class FilesApiTests
         using var client = HttpClientTests.CreateClient(http);
         var statistics = Create(client).Statistics;
 
-        var result = await statistics.FetchAsync(new FetchRrdRequest { Db = RrdDatabase.Temp, Fields = new[] { "cpum", "hdd" }, Precision = 100 });
+        var result = await statistics.FetchAsync(new FetchRrdRequest
+            { Db = RrdDatabase.Temp, Fields = new[] { "cpum", "hdd" }, Precision = 100 });
 
         Assert.Equal(4250, result.Data![0]["cpum"]); // The documented precision multiplier stays on the wire value.
         Assert.Null(result.Data[0]["hdd"]);
@@ -324,21 +341,24 @@ public sealed class FilesApiTests
         using var body = JsonDocument.Parse(request.Body!);
         Assert.Equal("temp", body.RootElement.GetProperty("db").GetString());
         Assert.False(body.RootElement.TryGetProperty("date_start", out _));
-        await Assert.ThrowsAsync<ArgumentException>(() => statistics.FetchAsync(new FetchRrdRequest { Db = RrdDatabase.Temp, Fields = new[] { "temp1" } }));
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            statistics.FetchAsync(new FetchRrdRequest { Db = RrdDatabase.Temp, Fields = new[] { "temp1" } }));
     }
 
     [Fact]
     public async Task BinaryFileUsesEscapedOpaquePathAndReturnsOwnedResponse()
     {
         var stream = new MemoryStream("binary fixture"u8.ToArray());
-        using var handler = FixtureHandler.Authenticated((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StreamContent(stream)
-        }));
+        using var handler = FixtureHandler.Authenticated((_, _) => Task.FromResult(
+            new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StreamContent(stream)
+            }));
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
 
-        await using (var download = await Create(client).FileSystem.At(EncodedFreeboxPath.FromEncoded("L9+/w6k=")).DownloadAsync())
+        await using (var download =
+                     await Create(client).FileSystem.At(EncodedFreeboxPath.FromEncoded("L9+/w6k=")).DownloadAsync())
         {
             using var buffer = new MemoryStream();
             await download.Content.CopyToAsync(buffer);
@@ -346,12 +366,25 @@ public sealed class FilesApiTests
         }
 
         Assert.False(stream.CanRead);
-        Assert.Equal("https://fixture.example/api/v16/dl/L9%2B%2Fw6k%3D", Assert.Single(ResourceRequests(handler)).Address.AbsoluteUri);
+        Assert.Equal("https://fixture.example/api/v16/dl/L9%2B%2Fw6k%3D",
+            Assert.Single(ResourceRequests(handler)).Address.AbsoluteUri);
     }
 
-    private static FreeboxFilesApi Create(FreeboxClient client) => new(client.Transport, client.BinaryTransport);
-    private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler) => handler.Requests.Where(request =>
-        !request.Address.AbsolutePath.Contains("/login/", StringComparison.Ordinal));
-    private static Dictionary<string, string> DecodeForm(string body) => body.Split('&').Select(field => field.Split('=', 2))
-        .ToDictionary(field => Uri.UnescapeDataString(field[0].Replace('+', ' ')), field => Uri.UnescapeDataString(field[1].Replace('+', ' ')));
+    private static FreeboxFilesApi Create(FreeboxClient client)
+    {
+        return new FreeboxFilesApi(client.Transport, client.BinaryTransport);
+    }
+
+    private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)
+    {
+        return handler.Requests.Where(request =>
+            !request.Address.AbsolutePath.Contains("/login/", StringComparison.Ordinal));
+    }
+
+    private static Dictionary<string, string> DecodeForm(string body)
+    {
+        return body.Split('&').Select(field => field.Split('=', 2))
+            .ToDictionary(field => Uri.UnescapeDataString(field[0].Replace('+', ' ')),
+                field => Uri.UnescapeDataString(field[1].Replace('+', ' ')));
+    }
 }

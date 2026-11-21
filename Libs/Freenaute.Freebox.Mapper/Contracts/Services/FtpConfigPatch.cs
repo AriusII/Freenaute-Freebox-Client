@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of FtpConfig; unset fields are omitted and explicit null is rejected.</summary>
@@ -49,15 +46,53 @@ public sealed record FtpConfigPatch
 
     public void Validate()
     {
-        if (Enabled.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.Enabled.", nameof(Enabled));
-        if (AllowAnonymous.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.AllowAnonymous.", nameof(AllowAnonymous));
-        if (AllowAnonymousWrite.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.AllowAnonymousWrite.", nameof(AllowAnonymousWrite));
-        if (Password.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.Password.", nameof(Password));
-        if (AllowRemoteAccess.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.AllowRemoteAccess.", nameof(AllowRemoteAccess));
-        if (PortCtrl.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.PortCtrl.", nameof(PortCtrl));
-        if (PortData.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.PortData.", nameof(PortData));
-        if (RemoteDomain.IsNull) throw new ArgumentException("Explicit null is not documented for FtpConfig.RemoteDomain.", nameof(RemoteDomain));
+        if (Enabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.Enabled.", nameof(Enabled));
+        }
+
+        if (AllowAnonymous.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.AllowAnonymous.",
+                nameof(AllowAnonymous));
+        }
+
+        if (AllowAnonymousWrite.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.AllowAnonymousWrite.",
+                nameof(AllowAnonymousWrite));
+        }
+
+        if (Password.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.Password.", nameof(Password));
+        }
+
+        if (AllowRemoteAccess.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.AllowRemoteAccess.",
+                nameof(AllowRemoteAccess));
+        }
+
+        if (PortCtrl.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.PortCtrl.", nameof(PortCtrl));
+        }
+
+        if (PortData.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.PortData.", nameof(PortData));
+        }
+
+        if (RemoteDomain.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for FtpConfig.RemoteDomain.",
+                nameof(RemoteDomain));
+        }
     }
 
-    public override string ToString() => nameof(FtpConfigPatch);
+    public override string ToString()
+    {
+        return nameof(FtpConfigPatch);
+    }
 }

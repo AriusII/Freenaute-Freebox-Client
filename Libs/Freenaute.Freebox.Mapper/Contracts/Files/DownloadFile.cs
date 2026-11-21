@@ -1,10 +1,9 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
-/// <summary>Read contract from http://mafreebox.freebox.fr/doc/index.html#DownloadFile. Unknown enum strings are preserved.</summary>
+/// <summary>
+///     Read contract from http://mafreebox.freebox.fr/doc/index.html#DownloadFile. Unknown enum strings are
+///     preserved.
+/// </summary>
 public sealed record DownloadFile
 {
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadFile.id</summary>
@@ -50,5 +49,4 @@ public sealed record DownloadFile
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadFile.preview_url</summary>
     [JsonPropertyName("preview_url")]
     public string? PreviewUrl { get; init; }
-
 }

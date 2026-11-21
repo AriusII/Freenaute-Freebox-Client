@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of SambaConfig; unset fields are omitted and explicit null is rejected.</summary>
@@ -44,14 +41,51 @@ public sealed record SambaConfigPatch
 
     public void Validate()
     {
-        if (FileShareEnabled.IsNull) throw new ArgumentException("Explicit null is not documented for SambaConfig.FileShareEnabled.", nameof(FileShareEnabled));
-        if (PrintShareEnabled.IsNull) throw new ArgumentException("Explicit null is not documented for SambaConfig.PrintShareEnabled.", nameof(PrintShareEnabled));
-        if (LogonEnabled.IsNull) throw new ArgumentException("Explicit null is not documented for SambaConfig.LogonEnabled.", nameof(LogonEnabled));
-        if (LogonUser.IsNull) throw new ArgumentException("Explicit null is not documented for SambaConfig.LogonUser.", nameof(LogonUser));
-        if (LogonPassword.IsNull) throw new ArgumentException("Explicit null is not documented for SambaConfig.LogonPassword.", nameof(LogonPassword));
-        if (Workgroup.IsNull) throw new ArgumentException("Explicit null is not documented for SambaConfig.Workgroup.", nameof(Workgroup));
-        if (Smbv2Enabled.IsNull) throw new ArgumentException("Explicit null is not documented for SambaConfig.Smbv2Enabled.", nameof(Smbv2Enabled));
+        if (FileShareEnabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for SambaConfig.FileShareEnabled.",
+                nameof(FileShareEnabled));
+        }
+
+        if (PrintShareEnabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for SambaConfig.PrintShareEnabled.",
+                nameof(PrintShareEnabled));
+        }
+
+        if (LogonEnabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for SambaConfig.LogonEnabled.",
+                nameof(LogonEnabled));
+        }
+
+        if (LogonUser.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for SambaConfig.LogonUser.",
+                nameof(LogonUser));
+        }
+
+        if (LogonPassword.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for SambaConfig.LogonPassword.",
+                nameof(LogonPassword));
+        }
+
+        if (Workgroup.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for SambaConfig.Workgroup.",
+                nameof(Workgroup));
+        }
+
+        if (Smbv2Enabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for SambaConfig.Smbv2Enabled.",
+                nameof(Smbv2Enabled));
+        }
     }
 
-    public override string ToString() => nameof(SambaConfigPatch);
+    public override string ToString()
+    {
+        return nameof(SambaConfigPatch);
+    }
 }

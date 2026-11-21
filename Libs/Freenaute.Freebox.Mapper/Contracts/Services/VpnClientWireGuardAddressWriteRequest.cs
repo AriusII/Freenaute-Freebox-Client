@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of VPNClientConfigWireGuardIP; unset fields are omitted and explicit null is rejected.</summary>
@@ -19,9 +16,21 @@ public sealed record VpnClientWireGuardAddressWriteRequest
 
     public void Validate()
     {
-        if (Ip.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuardIP.Ip.", nameof(Ip));
-        if (Len.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuardIP.Len.", nameof(Len));
+        if (Ip.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuardIP.Ip.",
+                nameof(Ip));
+        }
+
+        if (Len.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuardIP.Len.",
+                nameof(Len));
+        }
     }
 
-    public override string ToString() => nameof(VpnClientWireGuardAddressWriteRequest);
+    public override string ToString()
+    {
+        return nameof(VpnClientWireGuardAddressWriteRequest);
+    }
 }

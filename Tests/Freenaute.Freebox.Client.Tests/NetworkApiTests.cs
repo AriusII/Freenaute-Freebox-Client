@@ -1,10 +1,3 @@
-using System.Text.Json;
-using Freenaute.Freebox.Client.Domains.Network;
-using Freenaute.Freebox.Mapper.Contracts.Network;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class NetworkApiTests
@@ -36,7 +29,8 @@ public sealed class NetworkApiTests
     [Fact]
     public async Task AccessPointPatchKeepsNestedFalseAndZeroWithoutOtherConfigurationFields()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"id":0,"config":{"channel_width":"20"},"capabilities":{"2d4g":{"n":true,"future":false}}}}""");
+        using var handler = FixtureHandler.AuthenticatedConstant(
+            """{"success":true,"result":{"id":0,"config":{"channel_width":"20"},"capabilities":{"2d4g":{"n":true,"future":false}}}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var network = new FreeboxNetworkApi(client.Transport);
@@ -65,7 +59,8 @@ public sealed class NetworkApiTests
     [Fact]
     public async Task LanSelectorsRetainIndependentEncodedInterfaceAndHostIdentifiers()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"id":"fixture","l2ident":{"id":"00:11:22:33:44:55","type":"mac_address"}}}""");
+        using var handler = FixtureHandler.AuthenticatedConstant(
+            """{"success":true,"result":{"id":"fixture","l2ident":{"id":"00:11:22:33:44:55","type":"mac_address"}}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var network = new FreeboxNetworkApi(client.Transport);
@@ -76,9 +71,12 @@ public sealed class NetworkApiTests
         Assert.Empty(handler.Requests);
         var host = await first.GetAsync();
         await second.GetAsync();
-        var requests = handler.Requests.Where(r => r.Address.AbsolutePath.Contains("/lan/", StringComparison.Ordinal)).ToArray();
-        Assert.Equal("https://fixture.example/api/v16/lan/browser/r%C3%A9seau%20%26%3F/host%231/", requests[0].Address.AbsoluteUri);
-        Assert.Equal("https://fixture.example/api/v16/lan/browser/r%C3%A9seau%20%26%3F/host%252/", requests[1].Address.AbsoluteUri);
+        var requests = handler.Requests.Where(r => r.Address.AbsolutePath.Contains("/lan/", StringComparison.Ordinal))
+            .ToArray();
+        Assert.Equal("https://fixture.example/api/v16/lan/browser/r%C3%A9seau%20%26%3F/host%231/",
+            requests[0].Address.AbsoluteUri);
+        Assert.Equal("https://fixture.example/api/v16/lan/browser/r%C3%A9seau%20%26%3F/host%252/",
+            requests[1].Address.AbsoluteUri);
         Assert.Equal(ObjectOrArrayKind.Object, host.L2Ident!.Value.Kind);
         Assert.Equal("mac_address", host.L2Ident.Value.Object.Type);
     }
@@ -86,7 +84,8 @@ public sealed class NetworkApiTests
     [Theory]
     [InlineData("{\"id\":\"02:00:00:00:00:08\",\"phy_id\":0}", StringOrIntegerKind.String, StringOrIntegerKind.Integer)]
     [InlineData("{\"id\":1,\"phy_id\":\"0\"}", StringOrIntegerKind.Integer, StringOrIntegerKind.String)]
-    public async Task BssIdentifiersPreserveBothDocumentedKinds(string resultJson, StringOrIntegerKind idKind, StringOrIntegerKind phyKind)
+    public async Task BssIdentifiersPreserveBothDocumentedKinds(string resultJson, StringOrIntegerKind idKind,
+        StringOrIntegerKind phyKind)
     {
         using var handler = FixtureHandler.AuthenticatedConstant("{\"success\":true,\"result\":" + resultJson + "}");
         using var http = new HttpClient(handler);
@@ -111,24 +110,29 @@ public sealed class NetworkApiTests
 
         Assert.Equal(kind, state.Kind);
         Assert.Equal("future_state", state.GetSingle().State);
-        using var roundtrip = JsonDocument.Parse(JsonSerializer.Serialize(state, NetworkJsonSerializerContext.Default.ObjectOrArrayWifiGlobalState));
-        Assert.Equal(kind == ObjectOrArrayKind.Object ? JsonValueKind.Object : JsonValueKind.Array, roundtrip.RootElement.ValueKind);
+        using var roundtrip = JsonDocument.Parse(JsonSerializer.Serialize(state,
+            NetworkJsonSerializerContext.Default.ObjectOrArrayWifiGlobalState));
+        Assert.Equal(kind == ObjectOrArrayKind.Object ? JsonValueKind.Object : JsonValueKind.Array,
+            roundtrip.RootElement.ValueKind);
     }
 
     [Fact]
     public async Task GuestCreateSendsDirectParametersAndRetainsStringMaxUseCount()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"id":11,"params":{"max_use_count":100}}}""");
+        using var handler =
+            FixtureHandler.AuthenticatedConstant(
+                """{"success":true,"result":{"id":11,"params":{"max_use_count":100}}}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
-        var result = await new FreeboxNetworkApi(client.Transport).Wifi.GuestAccess.CreateKeyAsync(new CreateWifiCustomKeyRequest
-        {
-            Description = "Guest",
-            Key = "fixture-secret",
-            MaxUseCount = StringOrInteger.FromString("100"),
-            Duration = 0,
-            AccessType = "net_only"
-        });
+        var result = await new FreeboxNetworkApi(client.Transport).Wifi.GuestAccess.CreateKeyAsync(
+            new CreateWifiCustomKeyRequest
+            {
+                Description = "Guest",
+                Key = "fixture-secret",
+                MaxUseCount = StringOrInteger.FromString("100"),
+                Duration = 0,
+                AccessType = "net_only"
+            });
 
         var request = handler.Requests.Last();
         Assert.Equal(HttpMethod.Post, request.Method);
@@ -148,21 +152,25 @@ public sealed class NetworkApiTests
         using var client = HttpClientTests.CreateClient(http);
         var network = new FreeboxNetworkApi(client.Transport);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => network.Wifi.UpdateConfigurationAsync(new WifiGlobalConfigurationPatch
-        {
-            Enabled = Optional<bool>.Null
-        }));
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => network.Wifi.GuestAccess.CreateKeyAsync(new CreateWifiCustomKeyRequest
-        {
-            MaxUseCount = StringOrInteger.FromInteger(128)
-        }));
+        await Assert.ThrowsAsync<ArgumentException>(() => network.Wifi.UpdateConfigurationAsync(
+            new WifiGlobalConfigurationPatch
+            {
+                Enabled = Optional<bool>.Null
+            }));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => network.Wifi.GuestAccess.CreateKeyAsync(
+            new CreateWifiCustomKeyRequest
+            {
+                MaxUseCount = StringOrInteger.FromInteger(128)
+            }));
         Assert.Empty(handler.Requests);
     }
 
     [Fact]
     public async Task RouteReplacementUsesArrayBodyAndPreservesDocumentedTrailingSlash()
     {
-        using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":[{"prefix":"192.168.42.0/24","enabled":false}]}""");
+        using var handler =
+            FixtureHandler.AuthenticatedConstant(
+                """{"success":true,"result":[{"prefix":"192.168.42.0/24","enabled":false}]}""");
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         var network = new FreeboxNetworkApi(client.Transport);
@@ -189,7 +197,8 @@ public sealed class NetworkApiTests
         using var http = new HttpClient(handler);
         using var client = HttpClientTests.CreateClient(http);
         using var cancellation = new CancellationTokenSource();
-        var pending = new FreeboxNetworkApi(client.Transport).Wifi.AccessPoint(0).ScanNeighborsAsync(cancellation.Token);
+        var pending = new FreeboxNetworkApi(client.Transport).Wifi.AccessPoint(0)
+            .ScanNeighborsAsync(cancellation.Token);
         await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
         cancellation.Cancel();
 
@@ -209,9 +218,11 @@ public sealed class NetworkApiTests
     [Fact]
     public void SourceGeneratedContractsIgnoreDeprecatedBssFlagsAndRetainCurrentReplacement()
     {
-        var bss = JsonSerializer.Deserialize("""{"use_shared_params":false,"status":{"is_main_bss":true},"config":{"use_default_config":true,"hide_ssid":false}}""",
+        var bss = JsonSerializer.Deserialize(
+            """{"use_shared_params":false,"status":{"is_main_bss":true},"config":{"use_default_config":true,"hide_ssid":false}}""",
             NetworkJsonSerializerContext.Default.WifiBss)!;
-        using var serialized = JsonDocument.Parse(JsonSerializer.Serialize(bss, NetworkJsonSerializerContext.Default.WifiBss));
+        using var serialized =
+            JsonDocument.Parse(JsonSerializer.Serialize(bss, NetworkJsonSerializerContext.Default.WifiBss));
 
         Assert.False(bss.UseSharedParams);
         Assert.False(bss.Config!.HideSsid!.Value.Boolean);

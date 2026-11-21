@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of ContactAddress; unset fields are omitted and explicit null is rejected.</summary>
@@ -49,15 +46,50 @@ public sealed record ContactAddressWriteRequest
 
     public void Validate()
     {
-        if (ContactId.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.ContactId.", nameof(ContactId));
-        if (Type.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.Type.", nameof(Type));
-        if (Number.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.Number.", nameof(Number));
-        if (Street.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.Street.", nameof(Street));
-        if (Street2.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.Street2.", nameof(Street2));
-        if (City.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.City.", nameof(City));
-        if (Zipcode.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.Zipcode.", nameof(Zipcode));
-        if (Country.IsNull) throw new ArgumentException("Explicit null is not documented for ContactAddress.Country.", nameof(Country));
+        if (ContactId.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.ContactId.",
+                nameof(ContactId));
+        }
+
+        if (Type.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.Type.", nameof(Type));
+        }
+
+        if (Number.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.Number.", nameof(Number));
+        }
+
+        if (Street.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.Street.", nameof(Street));
+        }
+
+        if (Street2.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.Street2.", nameof(Street2));
+        }
+
+        if (City.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.City.", nameof(City));
+        }
+
+        if (Zipcode.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.Zipcode.", nameof(Zipcode));
+        }
+
+        if (Country.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for ContactAddress.Country.", nameof(Country));
+        }
     }
 
-    public override string ToString() => nameof(ContactAddressWriteRequest);
+    public override string ToString()
+    {
+        return nameof(ContactAddressWriteRequest);
+    }
 }

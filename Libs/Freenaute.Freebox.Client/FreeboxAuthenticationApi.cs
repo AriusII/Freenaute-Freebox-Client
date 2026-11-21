@@ -1,9 +1,3 @@
-using System.Globalization;
-using Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.Common.Types;
-using Freenaute.Freebox.Mapper.Serialization;
-using Freenaute.Freebox.Mapper.ServerSide.Authentication.Login;
-
 namespace Freenaute.Freebox.Client;
 
 internal sealed class FreeboxAuthenticationApi(FreeboxHttpTransport transport) : IFreeboxAuthenticationApi
@@ -18,7 +12,7 @@ internal sealed class FreeboxAuthenticationApi(FreeboxHttpTransport transport) :
         ArgumentException.ThrowIfNullOrWhiteSpace(request.AppVersion);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.DeviceName);
         return transport.SendAsync(HttpMethod.Post, "login/authorize/", request, Json.TokenRequest,
-            Json.AuthorizeResponse, cancellationToken, requiresAuthentication: false);
+            Json.AuthorizeResponse, cancellationToken, false);
     }
 
     public Task<AuthorizeTrackResponse> TrackAuthorizationAsync(int trackId,
@@ -26,7 +20,7 @@ internal sealed class FreeboxAuthenticationApi(FreeboxHttpTransport transport) :
     {
         ArgumentOutOfRangeException.ThrowIfNegative(trackId);
         return transport.SendAsync(HttpMethod.Get, $"login/authorize/{trackId.ToString(CultureInfo.InvariantCulture)}/",
-            Json.AuthorizeTrackResponse, cancellationToken, requiresAuthentication: false);
+            Json.AuthorizeTrackResponse, cancellationToken, false);
     }
 
     public async Task<AuthorizeTrackResponse> WaitForAuthorizationAsync(int trackId, TimeSpan? pollInterval = null,
@@ -50,13 +44,19 @@ internal sealed class FreeboxAuthenticationApi(FreeboxHttpTransport transport) :
         }
     }
 
-    public Task<LoginResponse> GetLoginAsync(CancellationToken cancellationToken = default) =>
-        transport.SendAsync(HttpMethod.Get, "login/", Json.LoginResponse, cancellationToken,
-            requiresAuthentication: false);
+    public Task<LoginResponse> GetLoginAsync(CancellationToken cancellationToken = default)
+    {
+        return transport.SendAsync(HttpMethod.Get, "login/", Json.LoginResponse, cancellationToken,
+            false);
+    }
 
-    public Task<SessionResponse> OpenSessionAsync(CancellationToken cancellationToken = default) =>
-        transport.OpenSessionAsync(cancellationToken);
+    public Task<SessionResponse> OpenSessionAsync(CancellationToken cancellationToken = default)
+    {
+        return transport.OpenSessionAsync(cancellationToken);
+    }
 
-    public Task CloseSessionAsync(CancellationToken cancellationToken = default) =>
-        transport.CloseSessionAsync(cancellationToken);
+    public Task CloseSessionAsync(CancellationToken cancellationToken = default)
+    {
+        return transport.CloseSessionAsync(cancellationToken);
+    }
 }

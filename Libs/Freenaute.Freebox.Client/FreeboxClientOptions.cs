@@ -7,7 +7,7 @@ public sealed class FreeboxClientOptions
     public Uri ServerAddress { get; set; } = new("https://mafreebox.freebox.fr/");
 
     /// <summary>
-    /// An explicit API major version override. Leave unset to discover the latest version from the server.
+    ///     An explicit API major version override. Leave unset to discover the latest version from the server.
     /// </summary>
     public int? ApiVersion { get; set; }
 
@@ -63,7 +63,9 @@ public sealed class FreeboxClientOptions
             !string.IsNullOrEmpty(ServerAddress.Query) || !string.IsNullOrEmpty(ServerAddress.Fragment) ||
             ServerAddress.AbsolutePath != "/")
         {
-            throw new ArgumentException("ServerAddress must be an absolute HTTP(S) origin without a path, credentials, query or fragment.", nameof(ServerAddress));
+            throw new ArgumentException(
+                "ServerAddress must be an absolute HTTP(S) origin without a path, credentials, query or fragment.",
+                nameof(ServerAddress));
         }
 
         if (ApiVersion is <= 0)
@@ -77,7 +79,7 @@ public sealed class FreeboxClientOptions
             throw new ArgumentOutOfRangeException(nameof(Timeout));
         }
 
-        if ((ApplicationId is null) != (AppToken is null))
+        if (ApplicationId is null != AppToken is null)
         {
             throw new ArgumentException("ApplicationId and AppToken must be configured together.");
         }
@@ -93,7 +95,7 @@ public sealed class FreeboxClientOptions
             ArgumentException.ThrowIfNullOrWhiteSpace(ApplicationVersion);
         }
 
-        var basePath = FreeboxApiPath.NormalizeBasePath(ApiBasePath);
+        string basePath = FreeboxApiPath.NormalizeBasePath(ApiBasePath);
         return new FreeboxClientOptions
         {
             ServerAddress = ServerAddress,

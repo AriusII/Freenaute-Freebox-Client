@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of VPNClientConfigWireGuard; unset fields are omitted and explicit null is rejected.</summary>
@@ -44,15 +41,61 @@ public sealed record VpnClientWireGuardPatch
 
     public void Validate()
     {
-        if (RemoteAddr.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.RemoteAddr.", nameof(RemoteAddr));
-        if (RemotePort.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.RemotePort.", nameof(RemotePort));
-        if (RemotePublicKey.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.RemotePublicKey.", nameof(RemotePublicKey));
-        if (RemotePresharedKey.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.RemotePresharedKey.", nameof(RemotePresharedKey));
-        if (LocalPrivKey.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.LocalPrivKey.", nameof(LocalPrivKey));
-        if (LocalAddr.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.LocalAddr.", nameof(LocalAddr));
-        if (LocalAddr.HasValue) foreach (var item in LocalAddr.Value) { ArgumentNullException.ThrowIfNull(item); item.Validate(); }
-        if (Dns.IsNull) throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.Dns.", nameof(Dns));
+        if (RemoteAddr.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.RemoteAddr.",
+                nameof(RemoteAddr));
+        }
+
+        if (RemotePort.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.RemotePort.",
+                nameof(RemotePort));
+        }
+
+        if (RemotePublicKey.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.RemotePublicKey.",
+                nameof(RemotePublicKey));
+        }
+
+        if (RemotePresharedKey.IsNull)
+        {
+            throw new ArgumentException(
+                "Explicit null is not documented for VPNClientConfigWireGuard.RemotePresharedKey.",
+                nameof(RemotePresharedKey));
+        }
+
+        if (LocalPrivKey.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.LocalPrivKey.",
+                nameof(LocalPrivKey));
+        }
+
+        if (LocalAddr.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.LocalAddr.",
+                nameof(LocalAddr));
+        }
+
+        if (LocalAddr.HasValue)
+        {
+            foreach (var item in LocalAddr.Value)
+            {
+                ArgumentNullException.ThrowIfNull(item);
+                item.Validate();
+            }
+        }
+
+        if (Dns.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNClientConfigWireGuard.Dns.",
+                nameof(Dns));
+        }
     }
 
-    public override string ToString() => nameof(VpnClientWireGuardPatch);
+    public override string ToString()
+    {
+        return nameof(VpnClientWireGuardPatch);
+    }
 }

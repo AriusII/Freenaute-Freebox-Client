@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of Precord; unset fields are omitted and explicit null is rejected.</summary>
@@ -79,21 +76,85 @@ public sealed record ProgrammedRecordingWriteRequest
 
     public void Validate()
     {
-        if (Media.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.Media.", nameof(Media));
-        if (Path.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.Path.", nameof(Path));
-        if (Enabled.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.Enabled.", nameof(Enabled));
-        if (ChannelUuid.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.ChannelUuid.", nameof(ChannelUuid));
-        if (ChannelName.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.ChannelName.", nameof(ChannelName));
-        if (ChannelQuality.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.ChannelQuality.", nameof(ChannelQuality));
-        if (ChannelType.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.ChannelType.", nameof(ChannelType));
-        if (Name.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.Name.", nameof(Name));
-        if (Subname.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.Subname.", nameof(Subname));
-        if (BroadcastType.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.BroadcastType.", nameof(BroadcastType));
-        if (Start.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.Start.", nameof(Start));
-        if (End.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.End.", nameof(End));
-        if (LegacyUri.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.LegacyUri.", nameof(LegacyUri));
-        if (ForceChannelName.IsNull) throw new ArgumentException("Explicit null is not documented for Precord.ForceChannelName.", nameof(ForceChannelName));
+        if (Media.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.Media.", nameof(Media));
+        }
+
+        if (Path.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.Path.", nameof(Path));
+        }
+
+        if (Enabled.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.Enabled.", nameof(Enabled));
+        }
+
+        if (ChannelUuid.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.ChannelUuid.",
+                nameof(ChannelUuid));
+        }
+
+        if (ChannelName.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.ChannelName.",
+                nameof(ChannelName));
+        }
+
+        if (ChannelQuality.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.ChannelQuality.",
+                nameof(ChannelQuality));
+        }
+
+        if (ChannelType.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.ChannelType.",
+                nameof(ChannelType));
+        }
+
+        if (Name.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.Name.", nameof(Name));
+        }
+
+        if (Subname.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.Subname.", nameof(Subname));
+        }
+
+        if (BroadcastType.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.BroadcastType.",
+                nameof(BroadcastType));
+        }
+
+        if (Start.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.Start.", nameof(Start));
+        }
+
+        if (End.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.End.", nameof(End));
+        }
+
+        if (LegacyUri.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.LegacyUri.", nameof(LegacyUri));
+        }
+
+        if (ForceChannelName.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for Precord.ForceChannelName.",
+                nameof(ForceChannelName));
+        }
     }
 
-    public override string ToString() => nameof(ProgrammedRecordingWriteRequest);
+    public override string ToString()
+    {
+        return nameof(ProgrammedRecordingWriteRequest);
+    }
 }

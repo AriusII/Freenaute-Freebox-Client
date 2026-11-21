@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#RaidArray.level</summary>
@@ -10,5 +8,5 @@ public enum RaidLevel
     [JsonStringEnumMemberName("raid0")] Raid0,
     [JsonStringEnumMemberName("raid1")] Raid1,
     [JsonStringEnumMemberName("raid5")] Raid5,
-    [JsonStringEnumMemberName("raid10")] Raid10,
+    [JsonStringEnumMemberName("raid10")] Raid10
 }

@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Common.Types;
-
 namespace Freenaute.Freebox.Mapper.ServerSide.General;
 
 /// <summary>
@@ -83,21 +80,21 @@ public sealed record ApiVersionResponse(
                 throw new InvalidOperationException("Discovery did not advertise whether HTTPS is available.");
             }
 
-            var versionSeparator = ApiVersion.IndexOf('.');
+            int versionSeparator = ApiVersion.IndexOf('.');
             var majorVersion = versionSeparator < 0 ? ApiVersion.AsSpan() : ApiVersion.AsSpan(0, versionSeparator);
-            if (!int.TryParse(majorVersion, System.Globalization.NumberStyles.None,
-                    System.Globalization.CultureInfo.InvariantCulture, out var major) || major <= 0)
+            if (!int.TryParse(majorVersion, NumberStyles.None,
+                    CultureInfo.InvariantCulture, out int major) || major <= 0)
             {
                 throw new FormatException("The advertised API version must have a positive integer major version.");
             }
 
-            if (HttpsAvailable == true && (HttpsPort is null or < 1 or > 65535))
+            if (HttpsAvailable == true && HttpsPort is null or < 1 or > 65535)
             {
                 throw new ArgumentOutOfRangeException(nameof(HttpsPort), "The advertised HTTPS port is invalid.");
             }
 
-            var basePath = string.Join('/', ApiBaseUrl.Split('/', StringSplitOptions.RemoveEmptyEntries));
-            var path = basePath.Length == 0 ? $"/v{major}/" : $"/{basePath}/v{major}/";
+            string basePath = string.Join('/', ApiBaseUrl.Split('/', StringSplitOptions.RemoveEmptyEntries));
+            string path = basePath.Length == 0 ? $"/v{major}/" : $"/{basePath}/v{major}/";
             return new UriBuilder
             {
                 Scheme = HttpsAvailable == true ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,

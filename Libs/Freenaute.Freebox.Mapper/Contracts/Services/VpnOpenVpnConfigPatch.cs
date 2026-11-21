@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of VPNOpenVpnConfig; unset fields are omitted and explicit null is rejected.</summary>
@@ -24,10 +21,25 @@ public sealed record VpnOpenVpnConfigPatch
 
     public void Validate()
     {
-        if (Cipher.IsNull) throw new ArgumentException("Explicit null is not documented for VPNOpenVpnConfig.Cipher.", nameof(Cipher));
-        if (DisableFragment.IsNull) throw new ArgumentException("Explicit null is not documented for VPNOpenVpnConfig.DisableFragment.", nameof(DisableFragment));
-        if (UseTcp.IsNull) throw new ArgumentException("Explicit null is not documented for VPNOpenVpnConfig.UseTcp.", nameof(UseTcp));
+        if (Cipher.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNOpenVpnConfig.Cipher.", nameof(Cipher));
+        }
+
+        if (DisableFragment.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNOpenVpnConfig.DisableFragment.",
+                nameof(DisableFragment));
+        }
+
+        if (UseTcp.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNOpenVpnConfig.UseTcp.", nameof(UseTcp));
+        }
     }
 
-    public override string ToString() => nameof(VpnOpenVpnConfigPatch);
+    public override string ToString()
+    {
+        return nameof(VpnOpenVpnConfigPatch);
+    }
 }

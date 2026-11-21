@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <IsAotCompatible>true</IsAotCompatible>
-    <Description>Strongly typed Freebox Server wire contracts and source-generated JSON metadata.</Description>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="/" />
-  </ItemGroup>
+    <PropertyGroup>
+        <IsAotCompatible>true</IsAotCompatible>
+        <Description>Strongly typed Freebox Server wire contracts and source-generated JSON metadata.</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="../../README.md" Pack="true" PackagePath="/"/>
+    </ItemGroup>
 </Project>

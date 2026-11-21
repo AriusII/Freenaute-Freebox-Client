@@ -1,14 +1,9 @@
-using Freenaute.Freebox.Mapper.Contracts.Network;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-
 namespace Freenaute.Freebox.Client.Domains.Network;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
 public sealed class FreeboxNatApi
 {
     private readonly IFreeboxTransport _transport;
-    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
 
     public FreeboxNatApi(IFreeboxTransport transport)
     {
@@ -16,8 +11,17 @@ public sealed class FreeboxNatApi
         _transport = transport;
     }
 
-    public FreeboxPortForwarding Forwarding(long id) => new(_transport, id);
-    public FreeboxIncomingPort IncomingPort(string id) => new(_transport, id);
+    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
+
+    public FreeboxPortForwarding Forwarding(long id)
+    {
+        return new FreeboxPortForwarding(_transport, id);
+    }
+
+    public FreeboxIncomingPort IncomingPort(string id)
+    {
+        return new FreeboxIncomingPort(_transport, id);
+    }
 
     /// <summary>Get the current Dmz configuration.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-fw-dmz-</remarks>
@@ -32,7 +36,8 @@ public sealed class FreeboxNatApi
     {
         ArgumentNullException.ThrowIfNull(request);
         NetworkWriteValidation.Validate(request);
-        return _transport.SendAsync(HttpMethod.Put, "fw/dmz/", request, Json.DmzConfigurationPatch, Json.DmzConfig, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Put, "fw/dmz/", request, Json.DmzConfigurationPatch, Json.DmzConfig,
+            cancellationToken);
     }
 
     /// <summary>Getting the list of port forwarding.</summary>
@@ -44,11 +49,13 @@ public sealed class FreeboxNatApi
 
     /// <summary>Add a port forwarding.</summary>
     /// <remarks>http://mafreebox.freebox.fr/doc/index.html#post--api-v8-fw-redir-</remarks>
-    public Task<PortForwardingConfig> CreateForwardingAsync(CreatePortForwardingRequest request, CancellationToken cancellationToken = default)
+    public Task<PortForwardingConfig> CreateForwardingAsync(CreatePortForwardingRequest request,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         NetworkWriteValidation.Validate(request);
-        return _transport.SendAsync(HttpMethod.Post, "fw/redir/", request, Json.CreatePortForwardingRequest, Json.PortForwardingConfig, cancellationToken);
+        return _transport.SendAsync(HttpMethod.Post, "fw/redir/", request, Json.CreatePortForwardingRequest,
+            Json.PortForwardingConfig, cancellationToken);
     }
 
     /// <summary>Getting the list of incoming ports.</summary>
@@ -57,5 +64,4 @@ public sealed class FreeboxNatApi
     {
         return _transport.SendAsync(HttpMethod.Get, "fw/incoming/", Json.IncomingPortConfigArray, cancellationToken);
     }
-
 }

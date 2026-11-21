@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Freenaute.Freebox.Mapper.Common.Types;
 
 public sealed record AirMediaCapabilities(

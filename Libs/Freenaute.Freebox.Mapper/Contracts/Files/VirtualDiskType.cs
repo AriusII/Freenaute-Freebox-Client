@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#VM.disk_type</summary>
@@ -7,5 +5,5 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files;
 public enum VirtualDiskType
 {
     [JsonStringEnumMemberName("raw")] Raw,
-    [JsonStringEnumMemberName("qcow2")] Qcow2,
+    [JsonStringEnumMemberName("qcow2")] Qcow2
 }

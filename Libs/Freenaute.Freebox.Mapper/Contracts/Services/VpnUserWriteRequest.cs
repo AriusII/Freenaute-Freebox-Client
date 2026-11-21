@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Services;
 
 /// <summary>Write projection of VPNUser; unset fields are omitted and explicit null is rejected.</summary>
@@ -34,15 +31,52 @@ public sealed record VpnUserWriteRequest
 
     public void Validate()
     {
-        if (Login.IsNull) throw new ArgumentException("Explicit null is not documented for VPNUser.Login.", nameof(Login));
-        if (Type.IsNull) throw new ArgumentException("Explicit null is not documented for VPNUser.Type.", nameof(Type));
-        if (Password.IsNull) throw new ArgumentException("Explicit null is not documented for VPNUser.Password.", nameof(Password));
-        if (IpReservation.IsNull) throw new ArgumentException("Explicit null is not documented for VPNUser.IpReservation.", nameof(IpReservation));
-        if (ConfWireGuard.IsNull) throw new ArgumentException("Explicit null is not documented for VPNUser.ConfWireGuard.", nameof(ConfWireGuard));
-        if (ConfWireGuard.HasValue) ConfWireGuard.Value.Validate();
-        if (Password.HasValue && (Password.Value.Length < 8 || Password.Value.Length > 32)) throw new ArgumentException("VPN passwords must contain 8 to 32 characters.", nameof(Password));
-        if (Type.HasValue && Type.Value == VpnUserType.WireGuard && (!IpReservation.HasValue || string.IsNullOrEmpty(IpReservation.Value))) throw new ArgumentException("A WireGuard user requires an IP reservation.", nameof(IpReservation));
+        if (Login.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNUser.Login.", nameof(Login));
+        }
+
+        if (Type.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNUser.Type.", nameof(Type));
+        }
+
+        if (Password.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNUser.Password.", nameof(Password));
+        }
+
+        if (IpReservation.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNUser.IpReservation.",
+                nameof(IpReservation));
+        }
+
+        if (ConfWireGuard.IsNull)
+        {
+            throw new ArgumentException("Explicit null is not documented for VPNUser.ConfWireGuard.",
+                nameof(ConfWireGuard));
+        }
+
+        if (ConfWireGuard.HasValue)
+        {
+            ConfWireGuard.Value.Validate();
+        }
+
+        if (Password.HasValue && (Password.Value.Length < 8 || Password.Value.Length > 32))
+        {
+            throw new ArgumentException("VPN passwords must contain 8 to 32 characters.", nameof(Password));
+        }
+
+        if (Type.HasValue && Type.Value == VpnUserType.WireGuard &&
+            (!IpReservation.HasValue || string.IsNullOrEmpty(IpReservation.Value)))
+        {
+            throw new ArgumentException("A WireGuard user requires an IP reservation.", nameof(IpReservation));
+        }
     }
 
-    public override string ToString() => nameof(VpnUserWriteRequest);
+    public override string ToString()
+    {
+        return nameof(VpnUserWriteRequest);
+    }
 }

@@ -1,32 +1,19 @@
 namespace Freenaute.Freebox.Client.Domains.Files;
 
-/// <summary>Files, downloads, storage and VM HTTP resources using one shared authenticated transport.</summary>
-public interface IFreeboxFilesApi
-{
-    FreeboxDownloadsApi Downloads { get; }
-    FreeboxFileSystemApi FileSystem { get; }
-    FreeboxSharesApi Shares { get; }
-    FreeboxUploadsApi Uploads { get; }
-    FreeboxStorageApi Storage { get; }
-    FreeboxRaidApi Raid { get; }
-    FreeboxVirtualMachinesApi VirtualMachines { get; }
-    FreeboxStatisticsApi Statistics { get; }
-}
-
 public sealed class FreeboxFilesApi : IFreeboxFilesApi
 {
     public FreeboxFilesApi(IFreeboxTransport transport, IFreeboxBinaryTransport binaryTransport)
     {
         ArgumentNullException.ThrowIfNull(transport);
         ArgumentNullException.ThrowIfNull(binaryTransport);
-        Downloads = new(transport);
-        FileSystem = new(transport, binaryTransport);
-        Shares = new(transport);
-        Uploads = new(transport);
-        Storage = new(transport);
-        Raid = new(transport);
-        VirtualMachines = new(transport);
-        Statistics = new(transport);
+        Downloads = new FreeboxDownloadsApi(transport);
+        FileSystem = new FreeboxFileSystemApi(transport, binaryTransport);
+        Shares = new FreeboxSharesApi(transport);
+        Uploads = new FreeboxUploadsApi(transport);
+        Storage = new FreeboxStorageApi(transport);
+        Raid = new FreeboxRaidApi(transport);
+        VirtualMachines = new FreeboxVirtualMachinesApi(transport);
+        Statistics = new FreeboxStatisticsApi(transport);
     }
 
     public FreeboxDownloadsApi Downloads { get; }

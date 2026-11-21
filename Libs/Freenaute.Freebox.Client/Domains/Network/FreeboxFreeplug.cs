@@ -1,15 +1,10 @@
-using Freenaute.Freebox.Mapper.Contracts.Network;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-using Freenaute.Freebox.Mapper.Serialization;
-
 namespace Freenaute.Freebox.Client.Domains.Network;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
 public sealed class FreeboxFreeplug
 {
-    private readonly IFreeboxTransport _transport;
-    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
     private readonly string _id;
+    private readonly IFreeboxTransport _transport;
 
     public FreeboxFreeplug(IFreeboxTransport transport, string id)
     {
@@ -17,6 +12,8 @@ public sealed class FreeboxFreeplug
         _transport = transport;
         _id = FreeboxApiPath.EncodeSegment(id);
     }
+
+    private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
 
 
     /// <summary>Get a particular Freeplug information.</summary>
@@ -32,5 +29,4 @@ public sealed class FreeboxFreeplug
     {
         return _transport.SendAsync(HttpMethod.Post, $"freeplug/{_id}/reset/", cancellationToken);
     }
-
 }

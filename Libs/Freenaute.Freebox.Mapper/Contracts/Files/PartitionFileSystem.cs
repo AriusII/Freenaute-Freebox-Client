@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#DiskPartition.fstype</summary>
@@ -15,5 +13,5 @@ public enum PartitionFileSystem
     [JsonStringEnumMemberName("hf")] Hf,
     [JsonStringEnumMemberName("hfsplus")] Hfsplus,
     [JsonStringEnumMemberName("swap")] Swap,
-    [JsonStringEnumMemberName("exfat")] Exfat,
+    [JsonStringEnumMemberName("exfat")] Exfat
 }

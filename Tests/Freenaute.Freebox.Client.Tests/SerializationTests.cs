@@ -1,11 +1,3 @@
-using System.Text.Json;
-using Freenaute.Freebox.Mapper.ClientSide.Api.AirMedia;
-using Freenaute.Freebox.Mapper.ClientSide.Authentication.Login;
-using Freenaute.Freebox.Mapper.Common.Types;
-using Freenaute.Freebox.Mapper.Serialization;
-using Freenaute.Freebox.Mapper.ServerSide.General;
-using Xunit;
-
 namespace Freenaute.Freebox.Client.Tests;
 
 public sealed class SerializationTests

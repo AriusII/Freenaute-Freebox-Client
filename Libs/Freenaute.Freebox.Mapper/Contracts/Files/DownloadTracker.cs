@@ -1,10 +1,9 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Freenaute.Freebox.Mapper.Contracts.Primitives;
-
 namespace Freenaute.Freebox.Mapper.Contracts.Files;
 
-/// <summary>Read contract from http://mafreebox.freebox.fr/doc/index.html#DownloadTracker. Unknown enum strings are preserved.</summary>
+/// <summary>
+///     Read contract from http://mafreebox.freebox.fr/doc/index.html#DownloadTracker. Unknown enum strings are
+///     preserved.
+/// </summary>
 public sealed record DownloadTracker
 {
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadTracker.announce</summary>
@@ -42,5 +41,4 @@ public sealed record DownloadTracker
     /// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadTracker.is_enabled</summary>
     [JsonPropertyName("is_enabled")]
     public bool? IsEnabled { get; init; }
-
 }
