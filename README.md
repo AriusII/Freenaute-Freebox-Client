@@ -1,92 +1,101 @@
-# Freenaute — Freebox Server SDK
+<p align="center">
+  <img src="logo.svg" alt="Freenaute logo" width="120"/>
+</p>
 
-Typed .NET 11 libraries for the Freebox Server API, with standard dependency injection, in-memory session coordination,
-source-generated JSON, and Native AOT gates.
+<h1 align="center">Freenaute — Freebox Server SDK</h1>
 
-Packages:
+<p align="center">
+  Typed <b>C# 15 / .NET 11</b> client for the <a href="https://dev.freebox.fr/sdk/os/">FreeboxOS API</a> —<br/>
+  <b>dependency-injection friendly</b>, <b>Native AOT compatible</b>, one clean NuGet package for <b>Windows x64 &amp; Linux x64</b>.
+</p>
 
-- `Freenaute.Freebox.Client` — HTTP, WebSocket, discovery, authentication, DI, and domain facades.
-- `Freenaute.Freebox.Mapper` — typed wire contracts and generated `System.Text.Json` metadata.
+<p align="center">
+  <a href="https://github.com/AriusII/Freenaute-Freebox-Api/actions/workflows/release.yml"><img src="https://github.com/AriusII/Freenaute-Freebox-Api/actions/workflows/release.yml/badge.svg" alt="Release"/></a>
+  <a href="https://www.nuget.org/packages/Freenaute.Freebox.Client"><img src="https://img.shields.io/nuget/v/Freenaute.Freebox.Client?color=blue" alt="NuGet"/></a>
+  <a href="https://www.nuget.org/packages/Freenaute.Freebox.Client"><img src="https://img.shields.io/nuget/dt/Freenaute.Freebox.Client" alt="Downloads"/></a>
+  <img src="https://img.shields.io/badge/.NET-11-512BD4" alt=".NET 11"/>
+  <img src="https://img.shields.io/badge/platforms-win--x64%20%7C%20linux--x64-blue" alt="Platforms"/>
+</p>
 
-[English documentation](docs/en/README.md) · [Documentation française](docs/fr/README.md)
+---
 
-## Important security requirement
+## ✨ What is it?
 
-Initial pairing always requires the user to **physically approve the application on the Freebox**. The durable
-`app_token` belongs in an explicit secure credential store. Session tokens, challenges, and HMAC-derived values remain
-memory-only and must never be logged or committed. The built-in in-memory store is for development/tests and is not a
-secure persistence fallback.
+Freenaute is a **strongly typed .NET client** for the Freebox Server (FreeboxOS) REST & WebSocket API:
+discovery, pairing/authentication, and typed facades for network, Wi-Fi, files, downloads, calls, contacts,
+AirMedia, parental control, system… — all through standard `Microsoft.Extensions.DependencyInjection`.
 
-## Install
+| ✨ Feature | Detail |
+|---|---|
+| 💉 DI-native | `services.AddFreeboxClient(...)`, named/keyed clients, options validation on start |
+| 🚀 AOT-ready | `IsAotCompatible`/`IsTrimmable`, source-generated JSON only (zero reflection), NativeAOT smoke gate in CI |
+| 🔌 Transports split | JSON `IFreeboxTransport`, binary `IFreeboxBinaryTransport`, WebSocket `IFreeboxWebSocketTransport` |
+| 🔍 Discovery | mDNS/DNS-SD `_fbx-api._tcp` with validation, HTTP fallback |
+| 🔐 Auth done right | LCD pairing → `app_token` in a secure `IFreeboxCredentialStore`, HMAC-SHA1 sessions, `X-Fbx-App-Auth` |
+| 🧩 One package | `Freenaute.Freebox.Client` embeds the Mapper contracts — nothing else to install |
+| 🎯 Stable only | documented, stable endpoints only — no unstable/deprecated APIs |
 
-Prerequisites: .NET 11 SDK and, for initial pairing, a Freebox Server reachable on the local network.
+## 📦 Install
 
 ```bash
 dotnet add package Freenaute.Freebox.Client
 ```
 
-## Minimal dependency injection
+or in your `.csproj`:
+
+```xml
+<PackageReference Include="Freenaute.Freebox.Client" Version="1.0.0" />
+```
+
+## 🚀 Quick start
 
 ```csharp
 using Freenaute.Freebox.Client;
 using Microsoft.Extensions.DependencyInjection;
 
 var services = new ServiceCollection();
-services.AddFreeboxClient(options => options
+services.AddFreeboxClient(o => o
     .UseApplication("org.example.my-app")
     .WithApplicationVersion("1.0.0"));
 
 using var provider = services.BuildServiceProvider();
-var coordinator = provider.GetRequiredService<IFreeboxAuthorizationCoordinator>();
-var registration = await coordinator.BeginPairingAsync(cancellationToken);
 
-// Tell the user to approve this request physically on the Freebox.
-var credentials = await coordinator.WaitForApprovalAsync(cancellationToken: cancellationToken);
+// Pairing: the user approves the app once, physically, on the Freebox LCD.
+var auth = provider.GetRequiredService<IFreeboxAuthorizationCoordinator>();
+await auth.BeginPairingAsync(cancellationToken);
+var creds = await auth.WaitForApprovalAsync(cancellationToken: cancellationToken);
 
 var freebox = provider.GetRequiredService<IFreeboxClient>();
-var version = await freebox.Discovery.GetApiVersionAsync(cancellationToken);
+var status = await freebox.Connection.GetStatusAsync(cancellationToken);
+var hosts  = await freebox.Lan.GetHostsAsync("eth0", cancellationToken);
 ```
 
-In production, register an `IFreeboxCredentialStore` backed by user-scoped OS protection or an application-owned
-encrypted/external secret system. Do not put a real app token in ordinary configuration, environment variables, samples,
-or logs. See [authentication and credentials](docs/en/authentication-and-credentials.md).
+> ⚠️ **Security**: the durable `app_token` must live in an OS-protected/encrypted `IFreeboxCredentialStore` —
+> never in config files, environment variables, logs or source. Session tokens stay memory-only.
 
-Named clients are registered by passing a name to `AddFreeboxClient` and resolved through keyed DI. Named clients own
-isolated session state. The method returns `IHttpClientBuilder` for handler configuration. Resilience is opt-in;
-mutations are not replayed automatically. Details: [dependency injection](docs/en/dependency-injection.md).
+## 📚 Documentation
 
-## Supported scope
+- 🇬🇧 [English docs](docs/en/README.md) — quickstart, authentication, DI, discovery, supported API, AOT & packaging
+- 🇫🇷 [Documentation française](docs/fr/README.md) — démarrage rapide, authentification, DI, découverte, API supportées, AOT & packaging
 
-The SDK provides typed discovery/authentication, AirMedia, camera, notification, network, service, file, system, and
-modern WebSocket facades. It deliberately excludes RRD, storage/RAID/VM, PVR, VPN, download trackers/peers/blacklist,
-and undocumented Home APIs, plus explicitly unstable Wi-Fi fields. See [supported API](docs/en/supported-api.md).
+## 🗂️ Repository layout
 
-Discovery prefers DNS-SD/mDNS when available and uses HTTP fallback subject to origin, UID, HTTPS, and endpoint
-validation. The initial pairing is LAN-only policy; containers, VPNs, firewalls, and multiple interfaces can affect
-multicast. See [discovery and networking](docs/en/discovery-and-networking.md).
+| Path | What |
+|---|---|
+| [`Libs/Freenaute.Freebox.Client`](Libs/Freenaute.Freebox.Client/README.md) | the published package: client, auth, discovery, transports, domain facades |
+| [`Libs/Freenaute.Freebox.Mapper`](Libs/Freenaute.Freebox.Mapper/README.md) | wire contracts + source-gen JSON (embedded in the package) |
+| [`Tests/`](Tests) | xUnit v3 tests + NativeAOT smoke (`Client.Tests`, `Mapper.Tests`, `AotSmoke`) |
+| `.github/workflows/` | `pr.yml` (tests on MR) · `release.yml` (pack + NuGet on main/tags) · `_build-test.yml` / `_aot.yml` templates |
 
-## Build, test, pack, and AOT
+Build outputs are gitignored under `.artifacts/` (`build/`, `nuget/`, `test/`, `aot/`).
 
-The repository uses `Freenaute.Freebox.slnx`, .NET 11 MTP tests, locked restores, and `.artifacts/` output:
+## 🛠️ Build & test
 
 ```bash
 dotnet restore Freenaute.Freebox.slnx --locked-mode
-dotnet build Freenaute.Freebox.slnx -c Release --no-restore -warnaserror
-dotnet test --solution Freenaute.Freebox.slnx -c Release --no-build --no-restore
-
-dotnet pack Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj -c Release --no-build --no-restore
-dotnet pack Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj -c Release --no-build --no-restore
-pwsh .github/scripts/Validate-Packages.ps1
-
-# Publish on the matching OS; use win-x64 on Windows.
-dotnet restore Tests/Freenaute.Freebox.AotSmoke/Freenaute.Freebox.AotSmoke.csproj --locked-mode
-dotnet publish Tests/Freenaute.Freebox.AotSmoke/Freenaute.Freebox.AotSmoke.csproj -c Release -r linux-x64 --no-restore -warnaserror -o .artifacts/aot/linux-x64
-.artifacts/aot/linux-x64/Freenaute.Freebox.AotSmoke
+dotnet build Freenaute.Freebox.slnx -c Release -warnaserror
+dotnet test --solution Freenaute.Freebox.slnx -c Release
+dotnet pack Libs/Freenaute.Freebox.Client -c Release        # → .artifacts/nuget/
 ```
 
-The libraries remain AnyCPU; Native AOT executables are RID-specific. CI validates managed tests, package
-contents/symbols/local-feed consumption, and native smoke artifacts on both `linux-x64` and `win-x64`. No NuGet
-publishing occurs automatically.
-
-Official Freebox API documentation is the runtime and protocol authority: <https://dev.freebox.fr/sdk/os/>. More
-details: [AOT and packaging](docs/en/aot-and-packaging.md).
+Official API reference (protocol authority): <https://dev.freebox.fr/sdk/os/>

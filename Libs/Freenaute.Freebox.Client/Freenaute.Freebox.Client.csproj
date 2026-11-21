@@ -7,19 +7,32 @@
         <PackageId>Freenaute.Freebox.Client</PackageId>
         <Description>Fluent Freebox Server HTTP client with dependency injection and NativeAOT-compatible contracts.</Description>
         <PackageTags>freebox;http;dotnet;nativeaot</PackageTags>
+        <PackageIcon>logo.png</PackageIcon>
+        <!-- Single package: the Mapper dll is embedded in lib/net11.0 via EmbedMapperAssembly below. -->
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);EmbedMapperAssembly</TargetsForTfmSpecificBuildOutput>
         <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
         <!-- MA0015 flags required validation of nested wire-model members, not just API method parameters. -->
         <!-- MA0051 is intentionally scoped out: protocol state machines and multipart/WebSocket loops are clearer as cohesive units. -->
         <NoWarn>$(NoWarn);MA0015;MA0051</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj"/>
+        <!-- PrivateAssets="all": no nuspec dependency on the Mapper package; the assembly is embedded instead. -->
+        <ProjectReference Include="../Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder"/>
         <PackageReference Include="Microsoft.Extensions.Http"/>
         <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
         <PackageReference Include="Microsoft.Extensions.Options"/>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
         <None Include="../../README.md" Pack="true" PackagePath="/"/>
+        <None Include="../../logo.png" Pack="true" PackagePath="/"/>
         <PackageReference Remove="ZeroAlloc.Analyzers"/>
     </ItemGroup>
+    <!-- Embeds the referenced Mapper assembly (dll + pdb) into lib/net11.0 of this package. -->
+    <Target Name="EmbedMapperAssembly" DependsOnTargets="ResolveReferences">
+        <ItemGroup>
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths)"
+                                  Condition="'%(ReferenceCopyLocalPaths.FileName)' == 'Freenaute.Freebox.Mapper'"
+                                  TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)"/>
+        </ItemGroup>
+    </Target>
 </Project>

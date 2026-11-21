@@ -4,7 +4,7 @@
 
 `Freenaute.Freebox.Client` and `Freenaute.Freebox.Mapper` target `net11.0` as AnyCPU libraries. JSON contracts are source generated; reflection-based `System.Text.Json` is disabled in the tests and AOT smoke. Consumers must use the generated `JsonTypeInfo<T>` metadata for additional transport contracts.
 
-The mapper's shared options are frozen. The client package depends on Mapper. Analyzer packages are build-only private assets and do not become consumer dependencies.
+The mapper's shared options are frozen. The Mapper assembly is **embedded** in the `Freenaute.Freebox.Client` package (`lib/net11.0/`) — there is no separate Mapper package. Analyzer packages are build-only private assets and do not become consumer dependencies.
 
 ## Local validation
 
@@ -13,7 +13,6 @@ dotnet restore Freenaute.Freebox.slnx --locked-mode
 dotnet build Freenaute.Freebox.slnx -c Release --no-restore -warnaserror
 dotnet test --solution Freenaute.Freebox.slnx -c Release --no-build --no-restore
 
-dotnet pack Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj -c Release --no-build --no-restore
 dotnet pack Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj -c Release --no-build --no-restore
 pwsh .github/scripts/Validate-Packages.ps1
 

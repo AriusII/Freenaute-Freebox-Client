@@ -2,17 +2,13 @@
     <PropertyGroup>
         <IsAotCompatible>true</IsAotCompatible>
         <IsTrimmable>true</IsTrimmable>
-        <PackageId>Freenaute.Freebox.Mapper</PackageId>
-        <Description>Strongly typed Freebox Server wire contracts and source-generated JSON metadata.</Description>
+        <!-- Single-package strategy: only Freenaute.Freebox.Client is published; this assembly is embedded in it. -->
+        <IsPackable>false</IsPackable>
         <!-- Preserve wire-contract/public signatures until the dedicated API cleanup and compatibility review. -->
         <NoWarn>$(NoWarn);MA0015;MA0016</NoWarn>
         <!-- The reported generated-style contract/converter code is reviewed by the mapper/conversion workstream. -->
         <NoWarn>$(NoWarn);MA0051;MA0074</NoWarn>
-        <PackageTags>freebox;dotnet;json;sourcegenerator;nativeaot</PackageTags>
     </PropertyGroup>
-    <ItemGroup>
-        <None Include="../../README.md" Pack="true" PackagePath="/"/>
-    </ItemGroup>
     <ItemGroup>
         <PackageReference Remove="ZeroAlloc.Analyzers"/>
     </ItemGroup>

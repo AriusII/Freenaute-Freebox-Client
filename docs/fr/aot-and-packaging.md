@@ -4,7 +4,7 @@
 
 `Freenaute.Freebox.Client` et `Freenaute.Freebox.Mapper` ciblent `net11.0` en bibliothèques AnyCPU. Les contrats JSON sont générés à la compilation ; le mode réflexif de `System.Text.Json` est désactivé dans les tests et le smoke AOT. Les contrats additionnels passés au transport utilisent les `JsonTypeInfo<T>` générés.
 
-Les options partagées du mapper sont gelées. Le package client dépend de Mapper. Les packages d'analyse restent des dépendances privées de build et ne deviennent pas des dépendances consommateur.
+Les options partagées du mapper sont gelées. L'assembly Mapper est **embarqué** dans le package `Freenaute.Freebox.Client` (`lib/net11.0/`) — il n'existe pas de package Mapper séparé. Les packages d'analyse restent des dépendances privées de build et ne deviennent pas des dépendances consommateur.
 
 ## Validation locale
 
@@ -13,7 +13,6 @@ dotnet restore Freenaute.Freebox.slnx --locked-mode
 dotnet build Freenaute.Freebox.slnx -c Release --no-restore -warnaserror
 dotnet test --solution Freenaute.Freebox.slnx -c Release --no-build --no-restore
 
-dotnet pack Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj -c Release --no-build --no-restore
 dotnet pack Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj -c Release --no-build --no-restore
 pwsh .github/scripts/Validate-Packages.ps1
 

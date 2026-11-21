@@ -1,0 +1,18 @@
+# Pull request validation: build + full test suite ONLY on MRs.
+# No packing/publishing here — just the reusable build-test template.
+name: PR
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    uses: ./.github/workflows/_build-test.yml

@@ -4,7 +4,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$expected = @("Freenaute.Freebox.Client", "Freenaute.Freebox.Mapper")
+# Single published package: Freenaute.Freebox.Client (Freenaute.Freebox.Mapper.dll is embedded in lib/net11.0).
+$expected = @("Freenaute.Freebox.Client")
+if (Get-ChildItem $root -Filter "Freenaute.Freebox.Mapper.*.nupkg" -File) {
+    throw "Freenaute.Freebox.Mapper must not be published as its own package."
+}
 $root = (Resolve-Path $PackagePath).Path
 if (Test-Path $WorkspacePath) {
     Remove-Item $WorkspacePath -Recurse -Force
@@ -25,6 +29,9 @@ foreach ($id in $expected) {
     finally { $packageArchive.Dispose() }
     if (-not ($entries | Where-Object { $_ -match "^lib/net11\.0/.+\.dll$" })) {
         throw "$id does not contain a net11.0 library."
+    }
+    if ($id -eq "Freenaute.Freebox.Client" -and -not ($entries | Where-Object { $_ -ieq "lib/net11.0/Freenaute.Freebox.Mapper.dll" })) {
+        throw "$id does not embed the Freenaute.Freebox.Mapper assembly."
     }
     if (-not ($entries | Where-Object { $_ -ieq "README.md" })) {
         throw "$id does not contain README.md."

@@ -1,58 +1,18 @@
-name: .NET
+# Reusable template: NativeAOT smoke publish for both target RIDs.
+# Called by release.yml.
+#
+# Runner paths:
+#   .artifacts/aot/linux-x64/  = native ELF smoke binary (ubuntu-24.04)
+#   .artifacts/aot/win-x64/    = native PE smoke binary (windows-2025)
+name: aot
 
 on:
-  push:
-    branches: [main, 'feature/**']
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  managed-build:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v5
-        with:
-          global-json-file: global.json
-          cache: true
-          cache-dependency-path: '**/packages.lock.json'
-      - name: Restore locked solution
-        run: dotnet restore Freenaute.Freebox.slnx --locked-mode
-      - name: Build release
-        run: dotnet build Freenaute.Freebox.slnx -c Release --no-restore -warnaserror
-      - name: Run MTP tests
-        run: |
-          mkdir -p .artifacts/test
-          dotnet test --solution Freenaute.Freebox.slnx -c Release --no-build --no-restore 2>&1 | tee .artifacts/test/managed-tests.log
-      - name: Pack libraries
-        run: |
-          dotnet pack Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj -c Release --no-build --no-restore -warnaserror
-          dotnet pack Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj -c Release --no-build --no-restore -warnaserror
-      - name: Validate package candidates
-        shell: pwsh
-        run: ./.github/scripts/Validate-Packages.ps1
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: .artifacts/test
-          if-no-files-found: warn
-      - name: Upload NuGet candidates
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuget-candidates
-          path: .artifacts/nuget
-          if-no-files-found: error
-
   aot-linux:
     runs-on: ubuntu-24.04
     steps:
@@ -123,35 +83,3 @@ jobs:
           name: aot-win-x64
           path: .artifacts/aot/win-x64
           if-no-files-found: error
-
-  # Publish NuGet via OIDC trusted publishing (no long-lived API key).
-  # Manual setup required once on nuget.org: Trusted Publishing policy for
-  # owner `AriusII`, repository `Freenaute-Freebox-Api`, workflow `dotnet.yml`,
-  # environment `nuget-publish`. The OIDC token is exchanged for a short-lived
-  # NuGet API key (~1 h) inside this same job, so login and push must stay together.
-  publish-nuget:
-    needs: [managed-build, aot-linux, aot-windows]
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-24.04
-    environment: nuget-publish
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v5
-        with:
-          global-json-file: global.json
-      - name: Download NuGet candidates
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-candidates
-          path: .artifacts/nuget
-      - name: NuGet login (OIDC trusted publishing)
-        uses: NuGet/login@v1
-        with:
-          user: ${{ secrets.NUGET_USER }}
-      - name: Push packages and symbols
-        run: |
-          dotnet nuget push .artifacts/nuget/*.nupkg --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
-          dotnet nuget push .artifacts/nuget/*.snupkg --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

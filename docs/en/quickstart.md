@@ -6,7 +6,7 @@
 - A Freebox Server reachable on the local network for initial pairing.
 - Physical access to approve the application on the Freebox.
 
-Install the client package (Mapper is installed as its dependency):
+Install the single client package (the Mapper wire contracts are embedded in it):
 
 ```bash
 dotnet add package Freenaute.Freebox.Client
@@ -32,6 +32,6 @@ After approval, authenticated calls reuse the stored application token. The sess
 
 ## Use the client
 
-Resolve `IFreeboxClient` (or its keyed named client), then use a facade such as `Discovery`, `Network`, `Files`, or `WebSockets`. Pass cancellation tokens for network operations. `Authentication.CloseSessionAsync` logs out the in-memory session without deleting the reusable app token; coordinator `ForgetAsync` deletes local credentials. Remote revocation is a separate administrative action when supported by the Freebox configuration.
+Resolve `IFreeboxClient` (or its keyed named client), then use a facade such as `Discovery`, `Connection`, `Lan`, `Files`, or `WebSockets`. Pass cancellation tokens for network operations. `Authentication.CloseSessionAsync` logs out the in-memory session without deleting the reusable app token; coordinator `ForgetAsync` deletes local credentials. Remote revocation is a separate administrative action when supported by the Freebox configuration.
 
 Continue with [authentication and credentials](authentication-and-credentials.md) and [discovery and networking](discovery-and-networking.md).

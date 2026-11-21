@@ -6,7 +6,7 @@
 - Une Freebox Server accessible sur le réseau local pour l'association initiale.
 - Un accès physique à la Freebox afin d'approuver l'application.
 
-Installez le client (Mapper est installé comme dépendance) :
+Installez le package client unique (les contrats wire du Mapper y sont embarqués) :
 
 ```bash
 dotnet add package Freenaute.Freebox.Client
@@ -32,6 +32,6 @@ Après approbation, les appels authentifiés réutilisent le token applicatif st
 
 ## Utiliser le client
 
-Résolvez `IFreeboxClient` (ou son client nommé), puis utilisez par exemple `Discovery`, `Network`, `Files` ou `WebSockets`. Transmettez l'annulation aux opérations réseau. `Authentication.CloseSessionAsync` ferme la session mémoire sans supprimer le token applicatif réutilisable ; `ForgetAsync` du coordinateur supprime les identifiants locaux. La révocation distante reste une opération administrative distincte.
+Résolvez `IFreeboxClient` (ou son client nommé), puis utilisez par exemple `Discovery`, `Connection`, `Lan`, `Files` ou `WebSockets`. Transmettez l'annulation aux opérations réseau. `Authentication.CloseSessionAsync` ferme la session mémoire sans supprimer le token applicatif réutilisable ; `ForgetAsync` du coordinateur supprime les identifiants locaux. La révocation distante reste une opération administrative distincte.
 
 Consultez [authentification et identifiants](authentication-and-credentials.md) puis [découverte et réseau](discovery-and-networking.md).

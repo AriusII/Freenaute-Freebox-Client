@@ -14,5 +14,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../Libs/Freenaute.Freebox.Client/Freenaute.Freebox.Client.csproj"/>
+        <!-- Direct reference: Client embeds Mapper for packing, so it no longer flows transitively. -->
+        <ProjectReference Include="../../Libs/Freenaute.Freebox.Mapper/Freenaute.Freebox.Mapper.csproj"/>
     </ItemGroup>
 </Project>
