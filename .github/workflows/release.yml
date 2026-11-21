@@ -52,11 +52,28 @@ jobs:
         with:
           name: nuget-candidates
           path: .artifacts/nuget
+      # OIDC trusted publishing: the job's OIDC token is exchanged for a short-lived
+      # NuGet API key (~1h). No long-lived key is stored. The `id: login` is REQUIRED
+      # so that steps.login.outputs.NUGET_API_KEY is populated.
       - name: NuGet login (OIDC trusted publishing)
         uses: NuGet/login@v1
+        id: login
         with:
-          user: ${{ secrets.NUGET_USER }}
-      - name: Push packages and symbols
+          user: ${{ secrets.NUGET_USER }}   # nuget.org profile name, e.g. AriusII
+      - name: Guard - API key must be issued
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         run: |
-          dotnet nuget push .artifacts/nuget/*.nupkg --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
-          dotnet nuget push .artifacts/nuget/*.snupkg --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::error::OIDC login did not issue an API key. Check: NUGET_USER secret exists, Trusted Publishing policy matches workflow 'release.yml' + environment 'nuget-publish', job has id-token: write."
+            exit 1
+          fi
+          echo "Temporary API key issued (masked)."
+      - name: Push packages and symbols (v3)
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push .artifacts/nuget/*.nupkg  --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push .artifacts/nuget/*.snupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
