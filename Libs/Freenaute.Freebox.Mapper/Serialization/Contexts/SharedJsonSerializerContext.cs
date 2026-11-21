@@ -18,4 +18,4 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(Optional<decimal>), TypeInfoPropertyName = "OptionalDecimal")]
 [JsonSerializable(typeof(StringOrInteger))]
 [JsonSerializable(typeof(EncodedFreeboxPath))]
-public sealed partial class SharedJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class SharedJsonSerializerContext : JsonSerializerContext;

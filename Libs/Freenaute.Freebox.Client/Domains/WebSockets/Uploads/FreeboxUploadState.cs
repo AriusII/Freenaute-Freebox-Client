@@ -1,6 +1,6 @@
 namespace Freenaute.Freebox.Client.Domains.WebSockets.Uploads;
 
-public enum FreeboxUploadState
+public enum FreeboxUploadState : byte
 {
 	Starting,
 	Ready,

@@ -3,7 +3,7 @@ namespace Freenaute.Freebox.Mapper.Adapter;
 /// <summary>
 ///     Adapter contract for converting between client-facing DTOs and Freebox wire contracts.
 /// </summary>
-public interface IFreeboxMapper
+internal interface IFreeboxMapper
 {
 	/// <summary>The frozen serializer options used by this mapper.</summary>
 	JsonSerializerOptions Options { get; }

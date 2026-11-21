@@ -4,7 +4,7 @@ namespace Freenaute.Freebox.Client.Domains.Services;
 ///     Freebox Server services using the discovered server API major. Player proxy paths retain their documented
 ///     internal v6 API.
 /// </summary>
-public sealed class FreeboxServicesApi : IFreeboxServicesApi
+internal sealed class FreeboxServicesApi : IFreeboxServicesApi
 {
 	public FreeboxServicesApi(IFreeboxTransport transport, IFreeboxBinaryTransport? binaryTransport = null)
 	{

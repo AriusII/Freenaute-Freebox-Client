@@ -35,6 +35,16 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(FtpConfigPatch))]
 [JsonSerializable(typeof(FtpConfig[]))]
 [JsonSerializable(typeof(JsonElement))]
+[JsonSerializable(typeof(ParentalFilter))]
+[JsonSerializable(typeof(ParentalFilter[]))]
+[JsonSerializable(typeof(ParentalFilterConfig))]
+[JsonSerializable(typeof(ParentalFilterConfigPatch))]
+[JsonSerializable(typeof(ParentalFilterPlanning))]
+[JsonSerializable(typeof(ParentalFilterPlanningPatch))]
+[JsonSerializable(typeof(ParentalFilterState))]
+[JsonSerializable(typeof(ParentalFilterState[]))]
+[JsonSerializable(typeof(ParentalFilterWriteRequest))]
+[JsonSerializable(typeof(ParentalSchedulingMode))]
 [JsonSerializable(typeof(Player))]
 [JsonSerializable(typeof(PlayerMediaCommand))]
 [JsonSerializable(typeof(PlayerMediaCommandName))]
@@ -72,4 +82,4 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(long[]))]
 [JsonSerializable(typeof(string))]
 [JsonSerializable(typeof(string[]))]
-public sealed partial class ServicesJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class ServicesJsonSerializerContext : JsonSerializerContext;

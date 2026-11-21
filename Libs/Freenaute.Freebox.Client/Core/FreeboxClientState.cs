@@ -1,6 +1,6 @@
 namespace Freenaute.Freebox.Client.Core;
 
-internal sealed class FreeboxClientState : IDisposable
+public sealed class FreeboxClientState : IDisposable
 {
 	internal Uri? ApiAddress;
 	internal Uri? ApiOrigin;

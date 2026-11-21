@@ -1,6 +1,6 @@
 namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.NetworkControls;
 
-public enum NetworkControlHostsKind
+public enum NetworkControlHostsKind : byte
 {
 	Empty,
 	Names,

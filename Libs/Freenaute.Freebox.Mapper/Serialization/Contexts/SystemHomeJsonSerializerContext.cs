@@ -46,4 +46,4 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(ImmutableArray<bool>), TypeInfoPropertyName = "BooleanArray")]
 [JsonSerializable(typeof(ImmutableArray<string>), TypeInfoPropertyName = "StringArray")]
 [JsonSerializable(typeof(StringOrInteger))]
-public sealed partial class SystemHomeJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class SystemHomeJsonSerializerContext : JsonSerializerContext;

@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Client.Credentials.Stores;
 
 /// <summary>Thread-safe development/test store kept only in process memory.</summary>
-public sealed class InMemoryFreeboxCredentialStore : IFreeboxCredentialStore
+internal sealed class InMemoryFreeboxCredentialStore : IFreeboxCredentialStore
 {
 	private readonly ConcurrentDictionary<string, FreeboxAppCredentials> _credentials = new(StringComparer.Ordinal);
 

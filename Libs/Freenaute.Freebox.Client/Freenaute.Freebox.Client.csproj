@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <IsAotCompatible>true</IsAotCompatible>
+        <IsTrimmable>true</IsTrimmable>
         <!-- Direct Microsoft.Extensions package references are intentional public package dependencies. -->
         <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
         <PackageId>Freenaute.Freebox.Client</PackageId>

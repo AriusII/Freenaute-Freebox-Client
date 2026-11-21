@@ -196,6 +196,7 @@ public static class FreeboxServiceCollectionExtensions
 			services.AddTransient(static sp => sp.GetRequiredService<IFreeboxClient>().Cameras);
 			services.AddTransient(static sp => sp.GetRequiredService<IFreeboxClient>().Notifications);
 			services.AddTransient(static sp => sp.GetRequiredService<IFreeboxClient>().Network);
+			services.AddTransient(static sp => sp.GetRequiredService<IFreeboxClient>().Parental);
 			services.AddTransient(static sp => sp.GetRequiredService<IFreeboxClient>().Services);
 			services.AddTransient(static sp => sp.GetRequiredService<IFreeboxClient>().Files);
 			services.AddTransient(static sp => sp.GetRequiredService<IFreeboxClient>().SystemHome);
@@ -224,6 +225,8 @@ public static class FreeboxServiceCollectionExtensions
 			(sp, key) => sp.GetRequiredKeyedService<IFreeboxClient>(key).Notifications);
 		services.AddKeyedTransient<IFreeboxNetworkApi>(keyedName,
 			(sp, key) => sp.GetRequiredKeyedService<IFreeboxClient>(key).Network);
+		services.AddKeyedTransient<IFreeboxParentalApi>(keyedName,
+			(sp, key) => sp.GetRequiredKeyedService<IFreeboxClient>(key).Parental);
 		services.AddKeyedTransient<IFreeboxServicesApi>(keyedName,
 			(sp, key) => sp.GetRequiredKeyedService<IFreeboxClient>(key).Services);
 		services.AddKeyedTransient<IFreeboxFilesApi>(keyedName,

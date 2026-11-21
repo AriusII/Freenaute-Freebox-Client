@@ -2,7 +2,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files.Downloads;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#DlBtConfig.crypto_support</summary>
 [JsonConverter(typeof(JsonStringEnumConverter<DownloadCryptoSupport>))]
-public enum DownloadCryptoSupport
+public enum DownloadCryptoSupport : byte
 {
 	[JsonStringEnumMemberName("unsupported")]
 	Unsupported,

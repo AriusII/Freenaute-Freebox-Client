@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Mapper.Adapter;
 
 /// <summary>Explicit extension helpers for wire conversion (no reflection).</summary>
-public static class FreeboxMapperExtensions
+internal static class FreeboxMapperExtensions
 {
 	public static string ToWire<T>(this T value, JsonTypeInfo<T> typeInfo) =>
 		FreeboxMapper.Default.ToWire(value, typeInfo);

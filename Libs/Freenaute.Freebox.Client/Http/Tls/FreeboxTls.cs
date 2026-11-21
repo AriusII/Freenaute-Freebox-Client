@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Client.Http.Tls;
 
 /// <summary>Creates a Freebox HTTP handler with the certificate roots published by the Freebox Server SDK.</summary>
-public static class FreeboxTls
+internal static class FreeboxTls
 {
 	/// <summary>
 	///     Creates an owned HTTP handler that validates certificate chains, server authentication and hostnames.

@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Client.Domains.SystemHome;
 
 /// <summary>System facades sharing one injected transport and its session coordinator.</summary>
-public sealed class FreeboxSystemHomeApi : IFreeboxSystemHomeApi
+internal sealed class FreeboxSystemHomeApi : IFreeboxSystemHomeApi
 {
 	public FreeboxSystemHomeApi(IFreeboxTransport transport)
 	{

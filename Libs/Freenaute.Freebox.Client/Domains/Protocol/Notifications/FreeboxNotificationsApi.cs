@@ -1,6 +1,6 @@
 namespace Freenaute.Freebox.Client.Domains.Protocol.Notifications;
 
-public sealed class FreeboxNotificationsApi(IFreeboxTransport transport) : IFreeboxNotificationsApi
+internal sealed class FreeboxNotificationsApi(IFreeboxTransport transport) : IFreeboxNotificationsApi
 {
 	public Task<NotificationTarget[]> ListTargetsAsync(CancellationToken cancellationToken = default)
 	{

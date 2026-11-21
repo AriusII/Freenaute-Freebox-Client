@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Mapper.Adapter;
 
 /// <summary>Default source-gen/AOT-friendly implementation of <see cref="IFreeboxMapper" />.</summary>
-public sealed class FreeboxMapper : IFreeboxMapper
+internal sealed class FreeboxMapper : IFreeboxMapper
 {
 	private readonly ConcurrentDictionary<Type, JsonTypeInfo> _typeInfoCache = new();
 

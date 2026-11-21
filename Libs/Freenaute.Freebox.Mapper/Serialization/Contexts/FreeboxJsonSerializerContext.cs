@@ -44,4 +44,4 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(SuccessfulResponse<JsonElement>))]
 [JsonSerializable(typeof(ErrorResponse<SessionFailedModel>))]
 [JsonSerializable(typeof(ErrorResponse<JsonElement>))]
-public sealed partial class FreeboxJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class FreeboxJsonSerializerContext : JsonSerializerContext;

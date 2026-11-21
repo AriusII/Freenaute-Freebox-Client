@@ -83,4 +83,4 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(long), TypeInfoPropertyName = "Int64")]
 [JsonSerializable(typeof(string), TypeInfoPropertyName = "String")]
 [JsonSerializable(typeof(string[]), TypeInfoPropertyName = "stringArray")]
-public sealed partial class FilesJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class FilesJsonSerializerContext : JsonSerializerContext;

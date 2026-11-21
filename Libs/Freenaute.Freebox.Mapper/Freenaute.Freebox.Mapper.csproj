@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <IsAotCompatible>true</IsAotCompatible>
+        <IsTrimmable>true</IsTrimmable>
         <PackageId>Freenaute.Freebox.Mapper</PackageId>
         <Description>Strongly typed Freebox Server wire contracts and source-generated JSON metadata.</Description>
         <!-- Preserve wire-contract/public signatures until the dedicated API cleanup and compatibility review. -->

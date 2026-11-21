@@ -5,7 +5,7 @@ public sealed class FileUploadStartRequest
 {
 	[JsonPropertyName("request_id")] public long RequestId { get; init; }
 
-	[JsonPropertyName("action")] public static string Action => "upload_start";
+	[JsonPropertyName("action")] public string Action => "upload_start";
 
 	[JsonPropertyName("size")] public long? Size { get; init; }
 

@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Client.Domains.Network;
 
 /// <summary>Freebox Server network domains. Every facade shares the supplied transport and its box-scoped session.</summary>
-public sealed class FreeboxNetworkApi : IFreeboxNetworkApi
+internal sealed class FreeboxNetworkApi : IFreeboxNetworkApi
 {
 	public FreeboxNetworkApi(IFreeboxTransport transport)
 	{

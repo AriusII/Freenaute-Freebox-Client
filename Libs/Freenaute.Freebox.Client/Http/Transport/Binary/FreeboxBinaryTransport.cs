@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Client.Http.Transport.Binary;
 
 /// <summary>Streams raw responses (file downloads) over the shared HTTP transport core.</summary>
-internal sealed class FreeboxBinaryTransport(FreeboxHttpTransportCore core) : IFreeboxBinaryTransport
+public sealed class FreeboxBinaryTransport(FreeboxHttpTransportCore core) : IFreeboxBinaryTransport
 {
 	public async Task<FreeboxDownload> DownloadAsync(HttpMethod method, string relativePath,
 		CancellationToken cancellationToken = default, bool requiresAuthentication = true)

@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Mapper.Common.Types;
 
 [JsonConverter(typeof(JsonStringEnumConverter<AirMediaErrorCodeEnum>))]
-public enum AirMediaErrorCodeEnum
+public enum AirMediaErrorCodeEnum : byte
 {
 	[JsonStringEnumMemberName("unknown_target")]
 	UnknownTarget,

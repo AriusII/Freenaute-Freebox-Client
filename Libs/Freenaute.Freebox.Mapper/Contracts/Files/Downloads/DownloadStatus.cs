@@ -2,7 +2,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files.Downloads;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#Download.status</summary>
 [JsonConverter(typeof(JsonStringEnumConverter<DownloadStatus>))]
-public enum DownloadStatus
+public enum DownloadStatus : byte
 {
 	[JsonStringEnumMemberName("stopped")] Stopped,
 	[JsonStringEnumMemberName("queued")] Queued,

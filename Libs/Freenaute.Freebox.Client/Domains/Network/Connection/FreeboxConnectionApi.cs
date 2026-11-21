@@ -58,11 +58,6 @@ public sealed class FreeboxConnectionApi
 			Json.ConnectionIpv6ConfigurationPatch, Json.ConnectionIpv6Configuration, cancellationToken);
 	}
 
-	/// <summary>Get the current xDSL infos.</summary>
-	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v11-connection-xdsl-</remarks>
-	public Task<XdslInfos> GetXdslAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, "connection/xdsl/", Json.XdslInfos, cancellationToken);
-
 	/// <summary>Get the current xDSL/LTE aggregation infos.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v11-connection-aggregation</remarks>
 	public Task<LteAggregationResult> GetAggregationAsync(CancellationToken cancellationToken = default)
@@ -80,9 +75,4 @@ public sealed class FreeboxConnectionApi
 		return _transport.SendAsync(HttpMethod.Put, "connection/aggregation", request, Json.LteAggregationUpdate,
 			cancellationToken);
 	}
-
-	/// <summary>Get the current FTTH status.</summary>
-	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v11-connection-ftth-</remarks>
-	public Task<FtthStatus> GetFtthAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, "connection/ftth/", Json.FtthStatus, cancellationToken);
 }

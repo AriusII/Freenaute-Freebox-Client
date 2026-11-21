@@ -1,6 +1,6 @@
 namespace Freenaute.Freebox.Client.Authentication;
 
-internal sealed class FreeboxAuthorizationCoordinator(
+public sealed class FreeboxAuthorizationCoordinator(
 	IFreeboxClient client,
 	FreeboxClientOptions options,
 	IFreeboxCredentialStore credentialStore) : IFreeboxAuthorizationCoordinator

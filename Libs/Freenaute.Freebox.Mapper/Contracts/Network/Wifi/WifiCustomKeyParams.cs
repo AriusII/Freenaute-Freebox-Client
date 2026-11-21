@@ -12,6 +12,7 @@ public sealed class WifiCustomKeyParams
 
 	/// <summary>Wi-Fi password for this custom access “ **** ” will be returned when insufficient permission</summary>
 	[JsonPropertyName("key")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWriting)]
 	public string? Key { get; init; }
 
 	/// <summary>

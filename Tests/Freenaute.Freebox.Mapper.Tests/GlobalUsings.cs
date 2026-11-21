@@ -33,6 +33,7 @@ global using Freenaute.Freebox.Mapper.Contracts.Protocol.Notifications;
 global using Freenaute.Freebox.Mapper.Contracts.Services.Calls;
 global using Freenaute.Freebox.Mapper.Contracts.Services.Contacts;
 global using Freenaute.Freebox.Mapper.Contracts.Services.Contacts.JsonConverters;
+global using Freenaute.Freebox.Mapper.Contracts.Services.Parental;
 global using Freenaute.Freebox.Mapper.Contracts.Services.Players;
 global using Freenaute.Freebox.Mapper.Contracts.Services.ServerConfigs;
 global using Freenaute.Freebox.Mapper.Contracts.Services.Voicemail;

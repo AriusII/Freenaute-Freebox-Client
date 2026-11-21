@@ -2,7 +2,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files.FileSystem;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#FsTask.state</summary>
 [JsonConverter(typeof(JsonStringEnumConverter<FileTaskState>))]
-public enum FileTaskState
+public enum FileTaskState : byte
 {
 	[JsonStringEnumMemberName("queued")] Queued,
 	[JsonStringEnumMemberName("running")] Running,

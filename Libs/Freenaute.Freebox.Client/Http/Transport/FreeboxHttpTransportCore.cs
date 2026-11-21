@@ -5,7 +5,7 @@ namespace Freenaute.Freebox.Client.Http.Transport;
 ///     error mapping. The JSON, binary and WebSocket transports are thin capability slices over this core so a
 ///     single client instance shares one session, one origin and one <see cref="HttpClient" />.
 /// </summary>
-internal sealed class FreeboxHttpTransportCore(
+public sealed class FreeboxHttpTransportCore(
 	HttpClient httpClient,
 	FreeboxClientState state,
 	TimeSpan? standaloneTimeout = null)
@@ -63,15 +63,17 @@ internal sealed class FreeboxHttpTransportCore(
 		}
 
 		var session = Volatile.Read(ref state.Session);
-		if (session is null)
+		if (session is not null)
 		{
-			if (!state.Options.AuthenticateAutomatically)
-			{
-				throw new FreeboxAuthenticationException(unauthenticatedMessage);
-			}
-
-			session = await OpenSessionAsync(cancellationToken).ConfigureAwait(false);
+			return session;
 		}
+
+		if (!state.Options.AuthenticateAutomatically)
+		{
+			throw new FreeboxAuthenticationException(unauthenticatedMessage);
+		}
+
+		session = await OpenSessionAsync(cancellationToken).ConfigureAwait(false);
 
 		return session;
 	}
@@ -190,7 +192,7 @@ internal sealed class FreeboxHttpTransportCore(
 		origin = null;
 		apiAddress = null;
 		var version = result.ApiVersion;
-		if (version is null || result.Origin is null || !result.Origin.IsAbsoluteUri ||
+		if (!result.Origin.IsAbsoluteUri ||
 		    !string.Equals(result.Origin.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) ||
 		    !string.IsNullOrEmpty(result.Origin.UserInfo) || !string.IsNullOrEmpty(result.Origin.Query) ||
 		    !string.IsNullOrEmpty(result.Origin.Fragment) ||
@@ -328,12 +330,9 @@ internal sealed class FreeboxHttpTransportCore(
 				: "No approved reusable application credentials are available. Begin Freebox pairing first.");
 		}
 
-		if (!StringComparer.Ordinal.Equals(credentials.ApplicationId, state.Options.ApplicationId))
-		{
-			throw new FreeboxAuthenticationException("Stored credentials belong to a different application identity.");
-		}
-
-		return credentials;
+		return !StringComparer.Ordinal.Equals(credentials.ApplicationId, state.Options.ApplicationId)
+			? throw new FreeboxAuthenticationException("Stored credentials belong to a different application identity.")
+			: credentials;
 	}
 
 	private static string CreateSessionPassword(string appToken, string challenge)
@@ -416,17 +415,19 @@ internal sealed class FreeboxHttpTransportCore(
 			}
 		}
 
-		if (validateEnvelope)
+		if (!validateEnvelope)
 		{
-			try
-			{
-				EnsureEnvelopeSuccess(document.RootElement, response.StatusCode);
-			}
-			catch
-			{
-				document.Dispose();
-				throw;
-			}
+			return document;
+		}
+
+		try
+		{
+			EnsureEnvelopeSuccess(document.RootElement, response.StatusCode);
+		}
+		catch
+		{
+			document.Dispose();
+			throw;
 		}
 
 		return document;

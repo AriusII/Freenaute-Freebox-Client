@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Client.Http;
 
 /// <summary>Utilities for constructing API paths without interpreting user input as a route.</summary>
-public static class FreeboxApiPath
+internal static class FreeboxApiPath
 {
 	public static string EncodeSegment(string value)
 	{
@@ -77,11 +77,13 @@ public static class FreeboxApiPath
 			bool hasControlCharacter = false;
 			foreach (char character in decoded)
 			{
-				if (char.IsControl(character))
+				if (!char.IsControl(character))
 				{
-					hasControlCharacter = true;
-					break;
+					continue;
 				}
+
+				hasControlCharacter = true;
+				break;
 			}
 
 			if (decoded is "." or ".." || decoded.StartsWith('/', StringComparison.OrdinalIgnoreCase) ||
@@ -99,11 +101,8 @@ public static class FreeboxApiPath
 	{
 		ValidateRelativePath(relativePath);
 		var resolved = new Uri(apiAddress, relativePath);
-		if (!resolved.AbsoluteUri.StartsWith(apiAddress.AbsoluteUri, StringComparison.Ordinal))
-		{
-			throw new ArgumentException("An API path must stay within the versioned API root.", nameof(relativePath));
-		}
-
-		return resolved;
+		return !resolved.AbsoluteUri.StartsWith(apiAddress.AbsoluteUri, StringComparison.Ordinal)
+			? throw new ArgumentException("An API path must stay within the versioned API root.", nameof(relativePath))
+			: resolved;
 	}
 }

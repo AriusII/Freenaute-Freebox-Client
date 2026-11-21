@@ -33,35 +33,6 @@ public static class NetworkWireValues
 		public const string AnyMedia = "any_media";
 	}
 
-	public static class XdslStatusStatus
-	{
-		public const string Down = "down";
-		public const string Training = "training";
-		public const string Started = "started";
-		public const string ChanAnalysis = "chan_analysis";
-		public const string MsgExchange = "msg_exchange";
-		public const string Showtime = "showtime";
-		public const string Disabled = "disabled";
-	}
-
-	public static class XdslStatusProtocol
-	{
-		public const string T1413 = "t1413";
-		public const string Adsl1A = "adsl1_a";
-		public const string Adsl2A = "adsl2_a";
-		public const string Adsl2plusA = "adsl2plus_a";
-		public const string Readsl2 = "readsl2";
-		public const string Adsl2M = "adsl2_m";
-		public const string Adsl2plusM = "adsl2plus_m";
-		public const string Unknown = "unknown";
-	}
-
-	public static class XdslStatusModulation
-	{
-		public const string Adsl = "adsl";
-		public const string Vdsl = "vdsl";
-	}
-
 	public static class DDNSStatusStatus
 	{
 		public const string Disabled = "disabled";

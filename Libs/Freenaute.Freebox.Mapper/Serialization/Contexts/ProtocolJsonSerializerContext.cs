@@ -11,4 +11,4 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(NotificationRegistrationCallback))]
 [JsonSerializable(typeof(NotificationDeliveryCallback))]
 [JsonSerializable(typeof(NotificationDeliveryResult))]
-public sealed partial class ProtocolJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class ProtocolJsonSerializerContext : JsonSerializerContext;

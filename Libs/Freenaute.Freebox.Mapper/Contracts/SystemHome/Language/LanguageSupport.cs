@@ -7,5 +7,8 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.Language;
 public sealed record LanguageSupport
 {
 	[JsonPropertyName("lang")] public string? Lang { get; init; }
-	[JsonPropertyName("avalaible")] public ImmutableArray<string>? AvailableLanguages { get; init; }
+
+	/// <summary>Wire name is the server-side typo "avalaible" (sic) — kept verbatim on purpose; do not "fix".</summary>
+	[JsonPropertyName("avalaible")]
+	public ImmutableArray<string>? AvailableLanguages { get; init; }
 }

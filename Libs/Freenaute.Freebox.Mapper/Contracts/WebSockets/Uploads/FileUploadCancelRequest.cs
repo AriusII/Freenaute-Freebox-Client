@@ -5,5 +5,5 @@ public sealed class FileUploadCancelRequest
 {
 	[JsonPropertyName("request_id")] public long RequestId { get; init; }
 
-	[JsonPropertyName("action")] public static string Action => "upload_cancel";
+	[JsonPropertyName("action")] public string Action => "upload_cancel";
 }

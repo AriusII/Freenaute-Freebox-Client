@@ -64,6 +64,7 @@ public sealed class FreeboxClient : IFreeboxClient, IDisposable
 		Cameras = new FreeboxCamerasApi(transport);
 		Notifications = new FreeboxNotificationsApi(transport);
 		Network = new FreeboxNetworkApi(transport);
+		Parental = new FreeboxParentalApi(transport);
 		Services = new FreeboxServicesApi(transport, binaryTransport);
 		Files = new FreeboxFilesApi(transport, binaryTransport);
 		SystemHome = new FreeboxSystemHomeApi(transport);
@@ -89,6 +90,7 @@ public sealed class FreeboxClient : IFreeboxClient, IDisposable
 	public IFreeboxCamerasApi Cameras { get; }
 	public IFreeboxNotificationsApi Notifications { get; }
 	public IFreeboxNetworkApi Network { get; }
+	public IFreeboxParentalApi Parental { get; }
 	public IFreeboxServicesApi Services { get; }
 	public IFreeboxFilesApi Files { get; }
 	public IFreeboxSystemHomeApi SystemHome { get; }

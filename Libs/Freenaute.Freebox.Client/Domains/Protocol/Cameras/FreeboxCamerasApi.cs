@@ -1,6 +1,6 @@
 namespace Freenaute.Freebox.Client.Domains.Protocol.Cameras;
 
-public sealed class FreeboxCamerasApi(IFreeboxTransport transport) : IFreeboxCamerasApi
+internal sealed class FreeboxCamerasApi(IFreeboxTransport transport) : IFreeboxCamerasApi
 {
 	public Task<Camera[]> ListAsync(CancellationToken cancellationToken = default)
 	{

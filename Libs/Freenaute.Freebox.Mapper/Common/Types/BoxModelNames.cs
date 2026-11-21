@@ -1,7 +1,7 @@
 namespace Freenaute.Freebox.Mapper.Common.Types;
 
 /// <summary>Classifies known discovery model names while preserving the server's original string.</summary>
-public static class BoxModelNames
+internal static class BoxModelNames
 {
 	public static BoxModels? Classify(string? value)
 	{

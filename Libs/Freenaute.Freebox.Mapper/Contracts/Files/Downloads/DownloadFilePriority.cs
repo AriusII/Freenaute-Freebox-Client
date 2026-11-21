@@ -2,7 +2,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files.Downloads;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadFile.priority</summary>
 [JsonConverter(typeof(JsonStringEnumConverter<DownloadFilePriority>))]
-public enum DownloadFilePriority
+public enum DownloadFilePriority : byte
 {
 	[JsonStringEnumMemberName("no_dl")] NoDl,
 	[JsonStringEnumMemberName("low")] Low,

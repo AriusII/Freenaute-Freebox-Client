@@ -1,6 +1,6 @@
 namespace Freenaute.Freebox.Client.Domains.Files.Api;
 
-public sealed class FreeboxFilesApi : IFreeboxFilesApi
+internal sealed class FreeboxFilesApi : IFreeboxFilesApi
 {
 	public FreeboxFilesApi(IFreeboxTransport transport, IFreeboxBinaryTransport binaryTransport)
 	{

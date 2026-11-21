@@ -31,12 +31,4 @@ public sealed class FreeboxSwitchPort
 		return _transport.SendAsync(HttpMethod.Put, $"switch/port/{_id}", request, Json.SwitchPortConfigurationPatch,
 			Json.SwitchPortConfig, cancellationToken);
 	}
-
-	/// <summary>Get a port stats.</summary>
-	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-switch-port-id-stats</remarks>
-	public Task<SwitchPortStats> GetStatisticsAsync(CancellationToken cancellationToken = default)
-	{
-		return _transport.SendAsync(HttpMethod.Get, $"switch/port/{_id}/stats", Json.SwitchPortStats,
-			cancellationToken);
-	}
 }

@@ -2,7 +2,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files.FileSystem;
 
 /// <summary>http://mafreebox.freebox.fr/doc/index.html#conflict-resolution</summary>
 [JsonConverter(typeof(JsonStringEnumConverter<FileConflictMode>))]
-public enum FileConflictMode
+public enum FileConflictMode : byte
 {
 	[JsonStringEnumMemberName("overwrite")]
 	Overwrite,

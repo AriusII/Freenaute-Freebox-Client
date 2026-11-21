@@ -3,7 +3,7 @@ namespace Freenaute.Freebox.Mapper.Adapter;
 /// <summary>
 ///     Frozen (read-only) <see cref="JsonSerializerOptions" /> instances shared by the mapper.
 /// </summary>
-public static class FreeboxMapperOptions
+internal static class FreeboxMapperOptions
 {
 	/// <summary>A frozen options instance backed only by retained source-generated contexts.</summary>
 	public static JsonSerializerOptions Default { get; } = CreateDefault();

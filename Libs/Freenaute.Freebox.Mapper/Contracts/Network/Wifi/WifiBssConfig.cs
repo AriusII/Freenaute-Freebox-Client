@@ -37,6 +37,7 @@ public sealed class WifiBssConfig
 
 	/// <summary>wifi key “ **** ” will be returned when insufficient permission</summary>
 	[JsonPropertyName("key")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWriting)]
 	public string? Key { get; init; }
 
 	/// <summary>eapol version</summary>

@@ -12,4 +12,4 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(FileUploadControlResponse))]
 [JsonSerializable(typeof(EncodedFreeboxPath))]
 [JsonSerializable(typeof(JsonElement))]
-public sealed partial class WebSocketJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class WebSocketJsonSerializerContext : JsonSerializerContext;
