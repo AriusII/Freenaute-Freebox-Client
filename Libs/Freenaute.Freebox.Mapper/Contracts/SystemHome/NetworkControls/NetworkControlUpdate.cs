@@ -32,7 +32,7 @@ public sealed record NetworkControlUpdate : ISystemHomeRequest
 		SystemHomeRequestValidation.NoNull(OverrideMode, nameof(OverrideMode));
 		if (OverrideMode.HasValue && OverrideMode.Value.Value is null)
 		{
-			throw new ArgumentException("Undefined token.", nameof(OverrideMode));
+			throw new ArgumentException(MapperConstants.ExceptionMessages.Validation.UndefinedToken, nameof(OverrideMode));
 		}
 
 		SystemHomeRequestValidation.NoNull(OverrideUntil, nameof(OverrideUntil));
@@ -52,12 +52,12 @@ public sealed record NetworkControlUpdate : ISystemHomeRequest
 	public NetworkControlUpdate WithMacs(IEnumerable<string> values)
 	{
 		ArgumentNullException.ThrowIfNull(values);
-		return this with { Macs = Optional<ImmutableArray<string>>.FromValue(values.ToImmutableArray()) };
+		return this with { Macs = Optional<ImmutableArray<string>>.FromValue([.. values]) };
 	}
 
 	public NetworkControlUpdate WithCustomDayRanges(IEnumerable<string> values)
 	{
 		ArgumentNullException.ThrowIfNull(values);
-		return this with { CustomDayRanges = Optional<ImmutableArray<string>>.FromValue(values.ToImmutableArray()) };
+		return this with { CustomDayRanges = Optional<ImmutableArray<string>>.FromValue([.. values]) };
 	}
 }

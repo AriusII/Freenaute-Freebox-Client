@@ -60,6 +60,12 @@ public sealed class SystemHomeContractTests
 			SystemHomeJsonSerializerContext.Default.NetworkControlRule);
 
 	[Fact]
+	public void NetworkControlRuleUpdate_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"name":"rule","mode":"allowed","start_time":0,"end_time":3600,"weekdays":[true,false,true,false,true,false,false],"enabled":false}""",
+			SystemHomeJsonSerializerContext.Default.NetworkControlRuleUpdate);
+
+	[Fact]
 	public void NetworkControlUpdate_RoundTripsByteIdentical() =>
 		AssertRoundTrip(
 			"""{"override_mode":"allowed","override_until":1700003600,"override":false,"macs":["aa:bb:cc:dd:ee:ff"],"cdayranges":["mon 00:00-08:00"]}""",

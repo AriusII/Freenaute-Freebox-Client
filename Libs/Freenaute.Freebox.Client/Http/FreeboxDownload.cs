@@ -29,7 +29,7 @@ public sealed class FreeboxDownload : IDisposable, IAsyncDisposable
 
 	public void Dispose()
 	{
-		var response = Interlocked.Exchange(ref _response, null);
+		var response = Interlocked.Exchange(ref _response, value: null);
 		if (response is null)
 		{
 			return;
@@ -92,9 +92,9 @@ public sealed class FreeboxDownload : IDisposable, IAsyncDisposable
 			}
 		}
 
-		public override Task<int>
+		public override async Task<int>
 			ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-			ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+			await ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask().ConfigureAwait(false);
 
 		public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
 			CancellationToken cancellationToken = default)

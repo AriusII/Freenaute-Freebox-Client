@@ -49,4 +49,9 @@ public sealed record DownloadFile
 	/// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadFile.preview_url</summary>
 	[JsonPropertyName("preview_url")]
 	public string? PreviewUrl { get; init; }
+
+	/// <summary>Deprecated download-file path field. Prefer <see cref="Filepath" />.</summary>
+	[Obsolete("Deprecated by Freebox API documentation. Use Filepath instead.")]
+	[JsonIgnore]
+	public string? Path { get; init; }
 }

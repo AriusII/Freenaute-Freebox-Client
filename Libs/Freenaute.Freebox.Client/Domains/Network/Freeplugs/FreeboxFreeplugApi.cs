@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Freeplugs;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -17,6 +19,7 @@ public sealed class FreeboxFreeplugApi
 
 	/// <summary>Get the current Freeplugs networks.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-freeplug-</remarks>
-	public Task<FreeplugNetwork[]> GetNetworksAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, "freeplug/", Json.FreeplugNetworkArray, cancellationToken);
+	public async Task<FreeplugNetwork[]> GetNetworksAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Freeplug.Base, Json.FreeplugNetworkArray, cancellationToken)
+			.ConfigureAwait(false);
 }

@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Ddns;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -18,28 +20,28 @@ public sealed class FreeboxDdnsProvider
 
 	/// <summary>Get the status of a DynDNS service.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v11-connection-ddns-provider-status-</remarks>
-	public Task<DDNSStatus> GetStatusAsync(CancellationToken cancellationToken = default)
+	public async Task<DdnsStatus> GetStatusAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"connection/ddns/{_provider}/status/", Json.DDNSStatus,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Connection.DdnsProviderStatus(_provider), Json.DdnsStatus,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Get the config of a DynDNS service.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v11-connection-ddns-provider-</remarks>
-	public Task<DDNSConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
+	public Task<DdnsConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"connection/ddns/{_provider}/", Json.DDNSConfig,
+		return _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Connection.DdnsProvider(_provider), Json.DdnsConfig,
 			cancellationToken);
 	}
 
 	/// <summary>Set the config of a DynDNS service.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#put--api-v11-connection-ddns-provider-</remarks>
-	public Task<DDNSConfig> UpdateConfigurationAsync(DdnsConfigurationPatch request,
+	public async Task<DdnsConfig> UpdateConfigurationAsync(DdnsConfigurationPatch request,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, $"connection/ddns/{_provider}/", request,
-			Json.DdnsConfigurationPatch, Json.DDNSConfig, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Connection.DdnsProvider(_provider), request,
+			Json.DdnsConfigurationPatch, Json.DdnsConfig, cancellationToken).ConfigureAwait(false);
 	}
 }

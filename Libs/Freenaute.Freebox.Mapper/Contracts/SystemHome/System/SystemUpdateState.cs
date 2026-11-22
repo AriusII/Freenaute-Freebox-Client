@@ -4,11 +4,21 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.System;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<SystemUpdateState>))]
 public readonly record struct SystemUpdateState(string Value) : ISystemHomeWireToken<SystemUpdateState>
 {
-	public bool IsKnown => Value is "initializing" or "upgrading" or "up_to_date" or "error";
-	public static SystemUpdateState Initializing { get; } = new("initializing");
-	public static SystemUpdateState Upgrading { get; } = new("upgrading");
-	public static SystemUpdateState UpToDate { get; } = new("up_to_date");
-	public static SystemUpdateState Error { get; } = new("error");
+	public bool IsKnown => Value is MapperConstants.SystemHomeWireTokens.SystemUpdateState.Initializing
+		or MapperConstants.SystemHomeWireTokens.SystemUpdateState.Upgrading
+		or MapperConstants.SystemHomeWireTokens.SystemUpdateState.UpToDate
+		or MapperConstants.SystemHomeWireTokens.SystemUpdateState.Error;
+
+	public static SystemUpdateState Initializing { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemUpdateState.Initializing);
+
+	public static SystemUpdateState Upgrading { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemUpdateState.Upgrading);
+
+	public static SystemUpdateState UpToDate { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemUpdateState.UpToDate);
+
+	public static SystemUpdateState Error { get; } = new(MapperConstants.SystemHomeWireTokens.SystemUpdateState.Error);
 
 	public static SystemUpdateState FromWire(string value)
 	{

@@ -16,7 +16,10 @@ public sealed class FtpApiTests
 		var config = await ftp.GetConfigurationAsync();
 		var updated = await ftp.UpdateConfigurationAsync(new FtpConfigPatch
 		{
-			Enabled = true, AllowAnonymous = false, PortCtrl = 0, Password = "write-only-secret"
+			Enabled = true,
+			AllowAnonymous = false,
+			PortCtrl = 0,
+			Password = "write-only-secret"
 		});
 
 		Assert.False(config.Enabled);
@@ -63,7 +66,7 @@ public sealed class FtpApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => new FreeboxFtpApi(client.Transport)
+		await Assert.ThrowsAsync<ArgumentException>(async () => await new FreeboxFtpApi(client.Transport)
 			.UpdateConfigurationAsync(new FtpConfigPatch { Enabled = Optional<bool>.Null }));
 
 		Assert.Empty(ResourceRequests(handler));
@@ -77,8 +80,8 @@ public sealed class FtpApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxFtpApi(client.Transport).GetConfigurationAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxFtpApi(client.Transport).GetConfigurationAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -101,9 +104,9 @@ public sealed class FtpApiTests
 
 		var pending = new FreeboxFtpApi(client.Transport).GetConfigurationAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

@@ -40,7 +40,9 @@ public sealed class DdnsApiTests
 
 		var config = await ddns.UpdateConfigurationAsync(new DdnsConfigurationPatch
 		{
-			Enabled = false, Hostname = "updated.fbxos.fr", Password = "write-only-secret"
+			Enabled = false,
+			Hostname = "updated.fbxos.fr",
+			Password = "write-only-secret"
 		});
 
 		Assert.False(config.Enabled);
@@ -62,9 +64,25 @@ public sealed class DdnsApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var ddns = new FreeboxConnectionApi(client.Transport).Ddns("noip");
 
-		await Assert.ThrowsAsync<ArgumentException>(() => ddns.UpdateConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await ddns.UpdateConfigurationAsync(
 			new DdnsConfigurationPatch { Hostname = Optional<string>.Null }));
 
+		Assert.Empty(ResourceRequests(handler));
+	}
+
+	[Theory]
+	[InlineData("")]
+	[InlineData(" ")]
+	[InlineData("provider/name")]
+	[InlineData("..")]
+	public void InvalidProviderIsRejectedBeforeRequests(string provider)
+	{
+		using var handler = FixtureHandler.Constant("{}");
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+
+		Assert.ThrowsAny<ArgumentException>(() =>
+			new FreeboxConnectionApi(client.Transport).Ddns(provider));
 		Assert.Empty(ResourceRequests(handler));
 	}
 
@@ -76,8 +94,8 @@ public sealed class DdnsApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxConnectionApi(client.Transport).Ddns("dyndns").GetStatusAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxConnectionApi(client.Transport).Ddns("dyndns").GetStatusAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -101,9 +119,9 @@ public sealed class DdnsApiTests
 		var pending = new FreeboxConnectionApi(client.Transport).Ddns("dyndns")
 			.GetConfigurationAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

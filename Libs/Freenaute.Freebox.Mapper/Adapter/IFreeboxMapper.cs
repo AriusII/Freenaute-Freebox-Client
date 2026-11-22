@@ -20,7 +20,11 @@ internal interface IFreeboxMapper
 		{
 			string name = type.FullName ?? type.Name;
 			throw new NotSupportedException(
-				$"The type '{name}' is not registered in the Freebox source-generated JSON contexts.", exception);
+				string.Format(
+					CultureInfo.InvariantCulture,
+					MapperConstants.ExceptionMessages.Adapter.TypeNotRegisteredInSourceGeneratedContextsFormat,
+					name),
+				exception);
 		}
 	}
 

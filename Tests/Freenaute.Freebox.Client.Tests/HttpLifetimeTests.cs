@@ -8,7 +8,8 @@ public sealed class HttpLifetimeTests
 		using var handler = FixtureHandler.Constant("""{"success":true,"result":{"value":"accepted"}}""");
 		using var http = new HttpClient(handler)
 		{
-			BaseAddress = new Uri("http://caller.example/"), Timeout = TimeSpan.FromSeconds(13)
+			BaseAddress = new Uri("http://caller.example/"),
+			Timeout = TimeSpan.FromSeconds(13)
 		};
 		http.DefaultRequestHeaders.Add("X-Fixture", "caller-configuration");
 		using var previousResponse = await http.GetAsync("probe/");
@@ -51,11 +52,11 @@ public sealed class HttpLifetimeTests
 	{
 		using var handler = FixtureHandler.Constant("{}");
 		using var http = new HttpClient(handler);
-		var client = new FreeboxClient(http, new FreeboxClientOptions { ApiVersion = 16 }, true);
+		var client = new FreeboxClient(http, new FreeboxClientOptions { ApiVersion = 16 }, disposeHttpClient: true);
 
 		client.Dispose();
 
-		await Assert.ThrowsAsync<ObjectDisposedException>(() => http.GetAsync("http://fixture.example/probe/"));
+		await Assert.ThrowsAsync<ObjectDisposedException>(async () => await http.GetAsync("http://fixture.example/probe/"));
 		Assert.Empty(handler.Requests);
 	}
 
@@ -86,8 +87,8 @@ public sealed class HttpLifetimeTests
 		try
 		{
 			await bothEntered.Task.WaitAsync(TimeSpan.FromSeconds(10));
-			await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-				shortCall.WaitAsync(TimeSpan.FromSeconds(10)));
+			await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+				await shortCall.WaitAsync(TimeSpan.FromSeconds(10)));
 			Assert.False(longCall.IsCompleted);
 		}
 		finally
@@ -104,7 +105,9 @@ public sealed class HttpLifetimeTests
 			return new FreeboxClient(http,
 				new FreeboxClientOptions
 				{
-					ServerAddress = new Uri("http://fixture.example/"), ApiVersion = 16, Timeout = timeout
+					ServerAddress = new Uri("http://fixture.example/"),
+					ApiVersion = 16,
+					Timeout = timeout
 				});
 		}
 	}
@@ -128,7 +131,7 @@ public sealed class HttpLifetimeTests
 			requiresAuthentication: false);
 		await body.ReadStarted.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => call.WaitAsync(TimeSpan.FromSeconds(10)));
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await call.WaitAsync(TimeSpan.FromSeconds(10)));
 		Assert.True(body.IsDisposed);
 		Assert.Single(handler.Requests);
 	}
@@ -154,7 +157,7 @@ public sealed class HttpLifetimeTests
 		}
 		else
 		{
-			var error = await Assert.ThrowsAsync<FreeboxApiException>(() => client.Transport.SendAsync(
+			var error = await Assert.ThrowsAsync<FreeboxApiException>(async () => await client.Transport.SendAsync(
 				HttpMethod.Get, "fixture/", TestJsonContext.Default.FixtureResult, requiresAuthentication: false));
 			Assert.Equal("diagnostic", error.Details?.GetProperty("value").GetString());
 		}
@@ -197,9 +200,9 @@ public sealed class HttpLifetimeTests
 			return 0;
 		}
 
-		public override Task<int>
+		public override async Task<int>
 			ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-			ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+			await ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
 
 		public override void Flush() => throw new NotSupportedException();
 

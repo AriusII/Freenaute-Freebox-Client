@@ -37,6 +37,25 @@ public sealed class SwitchApiTests
 	}
 
 	[Fact]
+	public async Task SwitchPortStatisticsUseStatsRoute()
+	{
+		using var handler = FixtureHandler.AuthenticatedConstant(
+			"""{"success":true,"result":{"rx_bytes_rate":42,"tx_packets":166266,"tx_unicast_packets":112409}}""");
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var network = new FreeboxNetworkApi(client.Transport);
+
+		var stats = await network.Switch.Port(7).GetStatisticsAsync();
+
+		Assert.Equal(42, stats.RxBytesRate);
+		Assert.Equal(166266, stats.TxPackets);
+		Assert.Equal(112409, stats.TxUnicastPackets);
+		var request = Assert.Single(ResourceRequests(handler));
+		Assert.Equal(HttpMethod.Get, request.Method);
+		Assert.Equal("/api/v16/switch/port/7/stats", request.Address.AbsolutePath);
+	}
+
+	[Fact]
 	public async Task SfpUsesSlashlessStatusAndConfigRoutes()
 	{
 		using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
@@ -53,7 +72,8 @@ public sealed class SwitchApiTests
 		var config = await sfp.GetConfigurationAsync();
 		var updated = await sfp.UpdateConfigurationAsync(new SfpConfigurationPatch
 		{
-			SfpTypeForced = true, SfpTypeForcedValue = "ethernet"
+			SfpTypeForced = true,
+			SfpTypeForcedValue = "ethernet"
 		});
 
 		Assert.True(status.Present);
@@ -80,9 +100,9 @@ public sealed class SwitchApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var network = new FreeboxNetworkApi(client.Transport);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => network.Switch.Port(2)
+		await Assert.ThrowsAsync<ArgumentException>(async () => await network.Switch.Port(2)
 			.UpdateConfigurationAsync(new SwitchPortConfigurationPatch { Duplex = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => network.Sfp.UpdateConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await network.Sfp.UpdateConfigurationAsync(
 			new SfpConfigurationPatch { SfpTypeForcedValue = Optional<string>.Null }));
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -95,8 +115,8 @@ public sealed class SwitchApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxNetworkApi(client.Transport).Switch.GetStatusAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxNetworkApi(client.Transport).Switch.GetStatusAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -119,9 +139,9 @@ public sealed class SwitchApiTests
 
 		var pending = new FreeboxSfpApi(client.Transport).GetStatusAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

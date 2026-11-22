@@ -34,7 +34,9 @@ public sealed class ConnectionApiTests
 		await connection.GetConfigurationAsync();
 		var updated = await connection.UpdateConfigurationAsync(new ConnectionConfigurationPatch
 		{
-			Ping = false, RemoteAccessPort = 0, SipAlg = "direct_media"
+			Ping = false,
+			RemoteAccessPort = 0,
+			SipAlg = "direct_media"
 		});
 
 		Assert.False(updated.Ping);
@@ -105,6 +107,57 @@ public sealed class ConnectionApiTests
 	}
 
 	[Fact]
+	public async Task FtthAndXdslUseDocumentedUnstableRoutes()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
+			request.Address.AbsolutePath.EndsWith("/ftth/", StringComparison.Ordinal)
+				? """{"success":true,"result":{"sfp_present":true,"link":false,"sfp_model":"SPBD-1250E4H2RDB"}}"""
+				: """{"success":true,"result":{"status":{"status":"showtime","protocol":"adsl2plus_a","modulation":"adsl","uptime":5017},"down":{"rate":28031},"up":{"rate":1022}}}""")));
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var connection = new FreeboxConnectionApi(client.Transport);
+
+		var ftth = await connection.GetFtthAsync();
+		var xdsl = await connection.GetXdslAsync();
+
+		Assert.True(ftth.SfpPresent);
+		Assert.False(ftth.Link);
+		Assert.Equal("SPBD-1250E4H2RDB", ftth.SfpModel);
+		Assert.Equal("showtime", xdsl.Status?.Status);
+		Assert.Equal(28031, xdsl.Down?.Rate);
+		Assert.Equal(1022, xdsl.Up?.Rate);
+
+		var requests = ResourceRequests(handler).ToArray();
+		Assert.Equal(2, requests.Length);
+		Assert.Equal(HttpMethod.Get, requests[0].Method);
+		Assert.Equal("/api/v16/connection/ftth/", requests[0].Address.AbsolutePath);
+		Assert.Equal("/api/v16/connection/xdsl/", requests[1].Address.AbsolutePath);
+	}
+
+	[Fact]
+	public async Task UnstableFtthAndXdslAcceptDownOrPartialPayloads()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
+			request.Address.AbsolutePath.EndsWith("/ftth/", StringComparison.Ordinal)
+				? """{"success":true,"result":{"sfp_present":false,"link":false,"sfp_pwr_tx":null,"sfp_pwr_rx":null}}"""
+				: """{"success":true,"result":{"status":{"status":"down","protocol":"unknown","modulation":"adsl","uptime":0},"down":null,"up":null}}""")));
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var connection = new FreeboxConnectionApi(client.Transport);
+
+		var ftth = await connection.GetFtthAsync();
+		var xdsl = await connection.GetXdslAsync();
+
+		Assert.False(ftth.SfpPresent);
+		Assert.False(ftth.Link);
+		Assert.Null(ftth.SfpPowerTx);
+		Assert.Null(ftth.SfpPowerRx);
+		Assert.Equal(NetworkWireValues.XdslStatusStatus.Down, xdsl.Status?.Status);
+		Assert.Null(xdsl.Down);
+		Assert.Null(xdsl.Up);
+	}
+
+	[Fact]
 	public async Task ValidationFailsBeforeAnyHttpRequest()
 	{
 		using var handler = FixtureHandler.Constant("{}");
@@ -112,14 +165,14 @@ public sealed class ConnectionApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var connection = new FreeboxConnectionApi(client.Transport);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => connection.UpdateConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await connection.UpdateConfigurationAsync(
 			new ConnectionConfigurationPatch { Ping = Optional<bool>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => connection.UpdateIpv6ConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await connection.UpdateIpv6ConfigurationAsync(
 			new ConnectionIpv6ConfigurationPatch
 			{
 				Delegations = Enumerable.Repeat(new ConnectionIpv6DelegationPatch(), 7).ToArray()
 			}));
-		await Assert.ThrowsAsync<ArgumentException>(() => connection.UpdateAggregationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await connection.UpdateAggregationAsync(
 			new LteAggregationUpdate { Enabled = Optional<bool>.Null }));
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -133,8 +186,8 @@ public sealed class ConnectionApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxConnectionApi(client.Transport).GetStatusAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxConnectionApi(client.Transport).GetStatusAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -159,9 +212,9 @@ public sealed class ConnectionApiTests
 
 		var pending = new FreeboxConnectionApi(client.Transport).GetStatusAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

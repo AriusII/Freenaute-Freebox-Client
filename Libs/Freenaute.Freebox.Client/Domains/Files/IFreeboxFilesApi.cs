@@ -6,5 +6,7 @@ public interface IFreeboxFilesApi
 	FreeboxDownloadsApi Downloads { get; }
 	FreeboxFileSystemApi FileSystem { get; }
 	FreeboxSharesApi Shares { get; }
+
+	[Obsolete("Deprecated by Freebox API documentation. Prefer WebSocket upload via WebSockets.Uploads (/ws/upload).")]
 	FreeboxFileUploadsApi Uploads { get; }
 }

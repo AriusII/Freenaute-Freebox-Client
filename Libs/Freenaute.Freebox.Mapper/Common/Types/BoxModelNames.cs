@@ -7,15 +7,16 @@ internal static class BoxModelNames
 	{
 		return value switch
 		{
-			"fbxgw-r1/full" => BoxModels.FreeboxServerV6R1,
-			"fbxgw-r2/full" => BoxModels.FreeboxServerV6R2,
-			"fbxgw-r1/mini" => BoxModels.FreeboxMiniR1,
-			"fbxgw-r2/mini" => BoxModels.FreeboxMiniR2,
-			"fbxgw-r1/one" => BoxModels.FreeboxOneR1,
-			"fbxgw-r2/one" => BoxModels.FreeboxOneR2,
-			"fbxgw7-r1/full" => BoxModels.FreeboxV7R1,
-			"fbxgw8-r1/full" => BoxModels.FreeboxV8R1,
-			"fbxgw9-r1/full" or "fbxgw9-r1" => BoxModels.FreeboxV9R1,
+			MapperConstants.BoxModels.FreeboxServerV6R1 => BoxModels.FreeboxServerV6R1,
+			MapperConstants.BoxModels.FreeboxServerV6R2 => BoxModels.FreeboxServerV6R2,
+			MapperConstants.BoxModels.FreeboxMiniR1 => BoxModels.FreeboxMiniR1,
+			MapperConstants.BoxModels.FreeboxMiniR2 => BoxModels.FreeboxMiniR2,
+			MapperConstants.BoxModels.FreeboxOneR1 => BoxModels.FreeboxOneR1,
+			MapperConstants.BoxModels.FreeboxOneR2 => BoxModels.FreeboxOneR2,
+			MapperConstants.BoxModels.FreeboxV7R1 => BoxModels.FreeboxV7R1,
+			MapperConstants.BoxModels.FreeboxV8R1 => BoxModels.FreeboxV8R1,
+			MapperConstants.BoxModels.FreeboxV9R1 or MapperConstants.BoxModels.FreeboxV9R1Compact => BoxModels
+				.FreeboxV9R1,
 			_ => null
 		};
 	}
@@ -24,15 +25,15 @@ internal static class BoxModelNames
 	{
 		return value switch
 		{
-			BoxModels.FreeboxServerV6R1 => "fbxgw-r1/full",
-			BoxModels.FreeboxServerV6R2 => "fbxgw-r2/full",
-			BoxModels.FreeboxMiniR1 => "fbxgw-r1/mini",
-			BoxModels.FreeboxMiniR2 => "fbxgw-r2/mini",
-			BoxModels.FreeboxOneR1 => "fbxgw-r1/one",
-			BoxModels.FreeboxOneR2 => "fbxgw-r2/one",
-			BoxModels.FreeboxV7R1 => "fbxgw7-r1/full",
-			BoxModels.FreeboxV8R1 => "fbxgw8-r1/full",
-			BoxModels.FreeboxV9R1 => "fbxgw9-r1/full",
+			BoxModels.FreeboxServerV6R1 => MapperConstants.BoxModels.FreeboxServerV6R1,
+			BoxModels.FreeboxServerV6R2 => MapperConstants.BoxModels.FreeboxServerV6R2,
+			BoxModels.FreeboxMiniR1 => MapperConstants.BoxModels.FreeboxMiniR1,
+			BoxModels.FreeboxMiniR2 => MapperConstants.BoxModels.FreeboxMiniR2,
+			BoxModels.FreeboxOneR1 => MapperConstants.BoxModels.FreeboxOneR1,
+			BoxModels.FreeboxOneR2 => MapperConstants.BoxModels.FreeboxOneR2,
+			BoxModels.FreeboxV7R1 => MapperConstants.BoxModels.FreeboxV7R1,
+			BoxModels.FreeboxV8R1 => MapperConstants.BoxModels.FreeboxV8R1,
+			BoxModels.FreeboxV9R1 => MapperConstants.BoxModels.FreeboxV9R1,
 			_ => throw new ArgumentOutOfRangeException(nameof(value))
 		};
 	}

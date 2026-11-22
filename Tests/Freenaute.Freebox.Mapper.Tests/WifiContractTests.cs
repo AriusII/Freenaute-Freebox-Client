@@ -89,4 +89,21 @@ public sealed class WifiContractTests
 		AssertRoundTrip(
 			"""{"enabled":false,"mac_filter_state":"disabled"}""",
 			NetworkJsonSerializerContext.Default.WifiGlobalConfigurationPatch);
+
+	[Fact]
+	public void WifiUnstableContracts_RoundTripByteIdentical()
+	{
+		AssertRoundTrip(
+			"""{"ac_enabled":true}""",
+			NetworkJsonSerializerContext.Default.WifiApHtConfig);
+		AssertRoundTrip(
+			"""{"legacy":false,"ht":true,"vht":true,"he":true,"authorized":true}""",
+			NetworkJsonSerializerContext.Default.WifiStationFlags);
+		AssertRoundTrip(
+			"""{"bitrate":360,"mcs":7,"vht_mcs":9,"width":"80","shortgi":true}""",
+			NetworkJsonSerializerContext.Default.WifiStationStats);
+		AssertRoundTrip(
+			"""{"2d4g":{"ax":true,"he":false},"5g":7,"60g":{}}""",
+			NetworkJsonSerializerContext.Default.WifiApCapabilities);
+	}
 }

@@ -7,64 +7,68 @@ namespace Freenaute.Freebox.Client.Http.Transport;
 /// </summary>
 internal sealed class FreeboxHttpTransport(FreeboxHttpTransportCore core) : IFreeboxTransport
 {
-	public Task<TResponse> SendContentAsync<TResponse>(HttpMethod method, string relativePath,
+	public async Task<TResponse> SendContentAsync<TResponse>(HttpMethod method, string relativePath,
 		HttpContent content, JsonTypeInfo<TResponse> responseType,
 		CancellationToken cancellationToken = default, bool requiresAuthentication = true)
 	{
 		ArgumentNullException.ThrowIfNull(content);
 		ArgumentNullException.ThrowIfNull(responseType);
-		return core.SendTypedAsync(method, relativePath, content, responseType, requiresAuthentication,
-			cancellationToken);
+		return await core.SendTypedAsync(method, relativePath, content, responseType, requiresAuthentication,
+			cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task SendContentAsync(HttpMethod method, string relativePath, HttpContent content,
+	public async Task SendContentAsync(HttpMethod method, string relativePath, HttpContent content,
 		CancellationToken cancellationToken = default, bool requiresAuthentication = true)
 	{
 		ArgumentNullException.ThrowIfNull(content);
-		return core.SendWithoutResultAsync(method, relativePath, content, requiresAuthentication, cancellationToken);
+		await core.SendWithoutResultAsync(method, relativePath, content, requiresAuthentication, cancellationToken)
+			.ConfigureAwait(false);
 	}
 
-	public Task<TResponse> SendAsync<TResponse>(HttpMethod method, string relativePath,
+	public async Task<TResponse> SendAsync<TResponse>(HttpMethod method, string relativePath,
 		JsonTypeInfo<TResponse> responseType, CancellationToken cancellationToken = default,
 		bool requiresAuthentication = true)
 	{
 		ArgumentNullException.ThrowIfNull(responseType);
-		return core.SendTypedAsync(method, relativePath, null, responseType, requiresAuthentication, cancellationToken);
+		return await core
+			.SendTypedAsync(method, relativePath, content: null, responseType, requiresAuthentication, cancellationToken)
+			.ConfigureAwait(false);
 	}
 
-	public Task<TResponse> SendAsync<TRequest, TResponse>(HttpMethod method, string relativePath,
+	public async Task<TResponse> SendAsync<TRequest, TResponse>(HttpMethod method, string relativePath,
 		TRequest request, JsonTypeInfo<TRequest> requestType, JsonTypeInfo<TResponse> responseType,
 		CancellationToken cancellationToken = default, bool requiresAuthentication = true)
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		ArgumentNullException.ThrowIfNull(requestType);
 		ArgumentNullException.ThrowIfNull(responseType);
-		return core.SendTypedAsync(method, relativePath,
+		return await core.SendTypedAsync(method, relativePath,
 			FreeboxHttpTransportCore.CreateJsonContent(request, requestType), responseType,
-			requiresAuthentication, cancellationToken);
+			requiresAuthentication, cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task SendAsync(HttpMethod method, string relativePath, CancellationToken cancellationToken = default,
+	public async Task SendAsync(HttpMethod method, string relativePath, CancellationToken cancellationToken = default,
 		bool requiresAuthentication = true) =>
-		core.SendWithoutResultAsync(method, relativePath, null, requiresAuthentication, cancellationToken);
+		await core.SendWithoutResultAsync(method, relativePath, content: null, requiresAuthentication, cancellationToken)
+			.ConfigureAwait(false);
 
-	public Task SendAsync<TRequest>(HttpMethod method, string relativePath, TRequest request,
+	public async Task SendAsync<TRequest>(HttpMethod method, string relativePath, TRequest request,
 		JsonTypeInfo<TRequest> requestType, CancellationToken cancellationToken = default,
 		bool requiresAuthentication = true)
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		ArgumentNullException.ThrowIfNull(requestType);
-		return core.SendWithoutResultAsync(method, relativePath,
+		await core.SendWithoutResultAsync(method, relativePath,
 			FreeboxHttpTransportCore.CreateJsonContent(request, requestType),
-			requiresAuthentication, cancellationToken);
+			requiresAuthentication, cancellationToken).ConfigureAwait(false);
 	}
 
-	internal Task<ApiVersionResponse> GetApiVersionAsync(CancellationToken cancellationToken) =>
-		core.GetApiVersionAsync(cancellationToken);
+	internal async Task<ApiVersionResponse> GetApiVersionAsync(CancellationToken cancellationToken) =>
+		await core.GetApiVersionAsync(cancellationToken).ConfigureAwait(false);
 
-	internal Task<SessionResponse> OpenSessionAsync(CancellationToken cancellationToken) =>
-		core.OpenSessionAsync(cancellationToken);
+	internal async Task<SessionResponse> OpenSessionAsync(CancellationToken cancellationToken) =>
+		await core.OpenSessionAsync(cancellationToken).ConfigureAwait(false);
 
-	internal Task CloseSessionAsync(CancellationToken cancellationToken) =>
-		core.CloseSessionAsync(cancellationToken);
+	internal async Task CloseSessionAsync(CancellationToken cancellationToken) =>
+		await core.CloseSessionAsync(cancellationToken).ConfigureAwait(false);
 }

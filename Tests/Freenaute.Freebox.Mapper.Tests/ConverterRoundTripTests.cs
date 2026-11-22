@@ -8,7 +8,7 @@ public sealed class ConverterRoundTripTests
 	public void OptionalValues_PreserveNullFalseZeroAnd64BitBoundaries()
 	{
 		Assert.Equal("null", _mapper.ToWire(Optional<bool>.Null));
-		Assert.Equal("false", _mapper.ToWire(Optional<bool>.FromValue(false)));
+		Assert.Equal("false", _mapper.ToWire(Optional<bool>.FromValue(value: false)));
 		Assert.Equal("0", _mapper.ToWire(Optional<int>.FromValue(0)));
 		Assert.Equal("-9223372036854775808", _mapper.ToWire(Optional<long>.FromValue(long.MinValue)));
 		Assert.Equal("9223372036854775807", _mapper.ToWire(Optional<long>.FromValue(long.MaxValue)));

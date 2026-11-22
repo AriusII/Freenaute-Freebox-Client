@@ -10,6 +10,15 @@ public interface IFreeboxAuthenticationApi
 		CancellationToken cancellationToken = default);
 
 	Task<LoginResponse> GetLoginAsync(CancellationToken cancellationToken = default);
+
+	/// <summary>Lists the active Freebox login sessions.</summary>
+	Task<JsonElement[]> GetSessionsAsync(CancellationToken cancellationToken = default);
+
 	Task<SessionResponse> OpenSessionAsync(CancellationToken cancellationToken = default);
+
+	/// <summary>Closes the current session.</summary>
+	Task LogoutAsync(CancellationToken cancellationToken = default);
+
+	/// <summary>Closes the current session.</summary>
 	Task CloseSessionAsync(CancellationToken cancellationToken = default);
 }

@@ -66,6 +66,17 @@ public sealed class AuthContractTests
 			"""{"success":true,"result":{"logged_in":true,"challenge":"c1"}}""");
 
 	[Fact]
+	public void ApiVersionResponse_IncludesDeviceTypeAndRoundTrips()
+	{
+		const string wire =
+			"""{"uid":"u1","device_name":"Freebox","api_version":"5.0","api_base_url":"/api/","device_type":"freebox_delta","api_domain":"example.freebox.fr","https_available":true,"https_port":443}""";
+		var value = _mapper.FromWire<ApiVersionResponse>(wire);
+
+		Assert.NotNull(value);
+		Assert.Equal("freebox_delta", value.DeviceType);
+	}
+
+	[Fact]
 	public void ErrorResponse_OfSessionFailedModel_RoundTripsByteIdentical() =>
 		WireRoundTrip.AssertByteIdentical<ErrorResponse<SessionFailedModel>>(_mapper,
 			"""{"success":false,"error_code":"invalid_token","msg":"bad token","result":{"challenge":"c2"},"uid":"u1"}""");

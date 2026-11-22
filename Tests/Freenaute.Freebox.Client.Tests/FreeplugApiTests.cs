@@ -54,8 +54,8 @@ public sealed class FreeplugApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxFreeplugApi(client.Transport).GetNetworksAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxFreeplugApi(client.Transport).GetNetworksAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -78,9 +78,9 @@ public sealed class FreeplugApiTests
 
 		var pending = new FreeboxFreeplugApi(client.Transport).GetNetworksAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

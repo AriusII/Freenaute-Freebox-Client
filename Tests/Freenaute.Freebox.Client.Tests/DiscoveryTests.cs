@@ -11,7 +11,8 @@ public sealed class DiscoveryTests
 		using var client = new FreeboxClient(http,
 			new FreeboxClientOptions
 			{
-				ServerAddress = new Uri("https://fallback.example/"), MdnsTimeout = TimeSpan.FromSeconds(1)
+				ServerAddress = new Uri("https://fallback.example/"),
+				MdnsTimeout = TimeSpan.FromSeconds(1)
 			}, resolver);
 
 		var result = await client.Discovery.GetApiVersionAsync();
@@ -58,8 +59,8 @@ public sealed class DiscoveryTests
 		using var client = new FreeboxClient(http, new FreeboxClientOptions(), resolver);
 		using var cancellation = new CancellationTokenSource(20);
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-			client.Discovery.GetApiVersionAsync(cancellation.Token));
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+			await client.Discovery.GetApiVersionAsync(cancellation.Token));
 
 		Assert.Empty(handler.Requests);
 	}
@@ -110,7 +111,7 @@ public sealed class DiscoveryTests
 			options.ServerAddress = new Uri("https://fallback.example/");
 			options.UseApplication("org.fixture");
 		}).ConfigurePrimaryHttpMessageHandler(() => handler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 
 		var configuration = await provider.GetRequiredService<IFreeboxClient>().AirMedia.GetConfigurationAsync();
 
@@ -177,7 +178,7 @@ public sealed class DiscoveryTests
 		malformed.Add([
 			Pointer("Freebox._fbx-api._tcp.local."), Service("Freebox._fbx-api._tcp.local."),
 			Address("freebox.local."), new MdnsRecord("Freebox._fbx-api._tcp.local.", MdnsRecordType.Text,
-				120, null, null, [3, (byte)'a'], null)
+				120, Target: null, Port: null, [3, (byte)'a'], Address: null)
 		]);
 
 		Assert.Null(malformed.TryCreateResult());
@@ -213,13 +214,13 @@ public sealed class DiscoveryTests
 	private static FreeboxDiscoveryResult ValidResult() => new(
 		new Uri("https://mdns.example:8443/"),
 		new ApiVersionResponse("mdns-uid", "Server", "fbxgw9-r1/full", "Ultra", "16.0", "mdns.example",
-			"/api/", true, 8443));
+			"/api/", HttpsAvailable: true, 8443));
 
 	private static MdnsRecord Pointer(string target) => new(MdnsWire.ServiceName, MdnsRecordType.Pointer, 120,
-		target, null, null, null);
+		target, Port: null, Text: null, Address: null);
 
 	private static MdnsRecord Service(string owner, string target = "freebox.local.") => new(owner,
-		MdnsRecordType.Service, 120, target, 8443, null, null);
+		MdnsRecordType.Service, 120, target, 8443, Text: null, Address: null);
 
 	private static MdnsRecord Text(string owner, string uid)
 	{
@@ -237,10 +238,10 @@ public sealed class DiscoveryTests
 			stream.Write(bytes);
 		}
 
-		return new MdnsRecord(owner, MdnsRecordType.Text, 120, null, null, stream.ToArray(), null);
+		return new MdnsRecord(owner, MdnsRecordType.Text, 120, Target: null, Port: null, stream.ToArray(), Address: null);
 	}
 
-	private static MdnsRecord Address(string target) => new(target, MdnsRecordType.Address, 120, null, null, null,
+	private static MdnsRecord Address(string target) => new(target, MdnsRecordType.Address, 120, Target: null, Port: null, Text: null,
 		IPAddress.Parse("192.0.2.1"));
 
 	private sealed class FakeResolver(Func<CancellationToken, ValueTask<FreeboxDiscoveryResult?>> discover) :
@@ -248,10 +249,10 @@ public sealed class DiscoveryTests
 	{
 		internal int CallCount { get; private set; }
 
-		public ValueTask<FreeboxDiscoveryResult?> DiscoverAsync(CancellationToken cancellationToken = default)
+		public async ValueTask<FreeboxDiscoveryResult?> DiscoverAsync(CancellationToken cancellationToken = default)
 		{
 			CallCount++;
-			return discover(cancellationToken);
+			return await discover(cancellationToken);
 		}
 	}
 }

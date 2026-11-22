@@ -9,8 +9,8 @@ public sealed class StringOrBooleanJsonConverter : JsonConverter<StringOrBoolean
 		return reader.TokenType switch
 		{
 			JsonTokenType.String => StringOrBoolean.FromString(reader.GetString()!),
-			JsonTokenType.True => StringOrBoolean.FromBoolean(true),
-			JsonTokenType.False => StringOrBoolean.FromBoolean(false),
+			JsonTokenType.True => StringOrBoolean.FromBoolean(value: true),
+			JsonTokenType.False => StringOrBoolean.FromBoolean(value: false),
 			_ => throw new JsonException("Expected a JSON string or boolean.")
 		};
 	}

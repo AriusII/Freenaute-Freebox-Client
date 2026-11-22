@@ -12,6 +12,7 @@ namespace Freenaute.Freebox.Mapper.ServerSide.General;
 /// <param name="ApiDomain">The domain to use in place of the hardcoded Freebox IP.</param>
 /// <param name="Uid">The unique ID of the device.</param>
 /// <param name="ApiVersion">The current API version on the Freebox.</param>
+/// <param name="DeviceType">The device type advertised by discovery.</param>
 [method: JsonConstructor]
 public sealed record ApiVersionResponse(
 	[property: JsonPropertyName("uid")] string? Uid,
@@ -30,7 +31,9 @@ public sealed record ApiVersionResponse(
 	[property: JsonPropertyName("https_available")]
 	bool? HttpsAvailable,
 	[property: JsonPropertyName("https_port")]
-	int? HttpsPort
+	int? HttpsPort,
+	[property: JsonPropertyName("device_type")]
+	string? DeviceType = null
 )
 {
 	/// <summary>Creates discovery metadata from a known model identifier.</summary>
@@ -95,8 +98,10 @@ public sealed record ApiVersionResponse(
 
 			string basePath = string.Join('/', ApiBaseUrl.Split('/', StringSplitOptions.RemoveEmptyEntries));
 			string path = basePath.Length is 0
-				? string.Create(CultureInfo.InvariantCulture, $"/v{major}/")
-				: string.Create(CultureInfo.InvariantCulture, $"/{basePath}/v{major}/");
+				? string.Format(CultureInfo.InvariantCulture, MapperConstants.RouteTemplates.ApiVersionWithoutBasePath,
+					major)
+				: string.Format(CultureInfo.InvariantCulture, MapperConstants.RouteTemplates.ApiVersionWithBasePath,
+					basePath, major);
 			return new UriBuilder
 			{
 				Scheme = HttpsAvailable is true ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,

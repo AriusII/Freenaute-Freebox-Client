@@ -51,7 +51,7 @@ public sealed class MapperAdapterTests
 		var mapper = new FreeboxMapper();
 		var original = new ApiVersionResponse(
 			"uid", "device", "fbx", "Freebox", FreeboxApiVersion.Current,
-			"example.com", "/api", true, 443);
+			"example.com", "/api", HttpsAvailable: true, 443);
 
 		string json = mapper.ToWire(original);
 		byte[] utf8 = mapper.ToUtf8Bytes(original);

@@ -7,5 +7,8 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files.Feeds;
 /// </summary>
 public sealed record MarkDownloadFeedItemRequest
 {
-	[JsonPropertyName("is_read")] public required bool IsRead { get; init; }
+	[JsonPropertyName("is_read")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> IsRead { get; init; }
 }

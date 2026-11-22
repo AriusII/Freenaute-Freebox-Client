@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Services.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Services.Calls;
 
 public sealed class FreeboxCallApi
@@ -11,17 +13,19 @@ public sealed class FreeboxCallApi
 		_binary = binary;
 	}
 
-	public Task<CallEntry[]> GetLogAsync(CancellationToken cancellationToken = default)
+	public async Task<CallEntry[]> GetLogAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, "call/log/", ServicesJsonSerializerContext.Default.CallEntryArray,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, ServicesConstants.Routes.Calls.Log,
+			ServicesJsonSerializerContext.Default.CallEntryArray,
+			cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task DeleteAllLogEntriesAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Post, "call/log/delete_all/", cancellationToken);
+	public async Task DeleteAllLogEntriesAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Post, ServicesConstants.Routes.Calls.DeleteAll, cancellationToken).ConfigureAwait(false);
 
-	public Task MarkAllLogEntriesAsReadAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Post, "call/log/mark_all_as_read/", cancellationToken);
+	public async Task MarkAllLogEntriesAsReadAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Post, ServicesConstants.Routes.Calls.MarkAllAsRead, cancellationToken)
+			.ConfigureAwait(false);
 
 	public FreeboxServiceResource<CallEntry, CallEntryPatch> LogEntry(long id)
 	{
@@ -30,16 +34,27 @@ public sealed class FreeboxCallApi
 			ServicesJsonSerializerContext.Default.CallEntryPatch, request => request.Validate());
 	}
 
-	public Task<CallAccount> GetAccountAsync(CancellationToken cancellationToken = default)
+	public async Task<CallEntry> GetLogEntryAsync(long id, CancellationToken cancellationToken = default) =>
+		await LogEntry(id).GetAsync(cancellationToken).ConfigureAwait(false);
+
+	public async Task<CallEntry> UpdateLogEntryAsync(long id, CallEntryPatch request,
+		CancellationToken cancellationToken = default) =>
+		await LogEntry(id).UpdateAsync(request, cancellationToken).ConfigureAwait(false);
+
+	public async Task DeleteLogEntryAsync(long id, CancellationToken cancellationToken = default) =>
+		await LogEntry(id).DeleteAsync(cancellationToken).ConfigureAwait(false);
+
+	public async Task<CallAccount> GetAccountAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, "call/account", ServicesJsonSerializerContext.Default.CallAccount,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, ServicesConstants.Routes.Calls.Account,
+			ServicesJsonSerializerContext.Default.CallAccount,
+			cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task<VoicemailEntry[]> GetVoicemailsAsync(CancellationToken cancellationToken = default)
+	public async Task<VoicemailEntry[]> GetVoicemailsAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, "call/voicemail/",
-			ServicesJsonSerializerContext.Default.VoicemailEntryArray, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, ServicesConstants.Routes.Calls.Voicemail,
+			ServicesJsonSerializerContext.Default.VoicemailEntryArray, cancellationToken).ConfigureAwait(false);
 	}
 
 	public FreeboxVoicemail Voicemail(string id) => new(_transport, _binary, ServicesPath.Segment(id));

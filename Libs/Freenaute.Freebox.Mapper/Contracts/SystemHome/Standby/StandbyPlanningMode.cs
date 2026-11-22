@@ -7,9 +7,14 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.Standby;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<StandbyPlanningMode>))]
 public readonly record struct StandbyPlanningMode(string Value) : ISystemHomeWireToken<StandbyPlanningMode>
 {
-	public bool IsKnown => Value is "wifi_off" or "standby";
-	public static StandbyPlanningMode WifiOff { get; } = new("wifi_off");
-	public static StandbyPlanningMode Standby { get; } = new("standby");
+	public bool IsKnown => Value is MapperConstants.SystemHomeWireTokens.StandbyPlanningMode.WifiOff
+		or MapperConstants.SystemHomeWireTokens.StandbyPlanningMode.Standby;
+
+	public static StandbyPlanningMode WifiOff { get; } =
+		new(MapperConstants.SystemHomeWireTokens.StandbyPlanningMode.WifiOff);
+
+	public static StandbyPlanningMode Standby { get; } =
+		new(MapperConstants.SystemHomeWireTokens.StandbyPlanningMode.Standby);
 
 	public static StandbyPlanningMode FromWire(string value)
 	{

@@ -24,4 +24,22 @@ public sealed class NatContractTests
 		AssertRoundTrip(
 			"""{"enabled":false,"comment":"off"}""",
 			NetworkJsonSerializerContext.Default.PortForwardingPatch);
+
+	[Fact]
+	public void DmzConfig_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"ip":"192.168.1.10","enabled":false}""",
+			NetworkJsonSerializerContext.Default.DmzConfig);
+
+	[Fact]
+	public void IncomingPortConfig_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"id":"http","enabled":true,"active":true,"type":"tcp","in_port":80,"netns":"main","min_port":1,"max_port":65535,"readonly":false}""",
+			NetworkJsonSerializerContext.Default.IncomingPortConfig);
+
+	[Fact]
+	public void IncomingPortPatch_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"enabled":false,"in_port":8080}""",
+			NetworkJsonSerializerContext.Default.IncomingPortPatch);
 }

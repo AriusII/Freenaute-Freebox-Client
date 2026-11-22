@@ -16,7 +16,9 @@ public sealed class DhcpV6ApiTests
 		var config = await dhcpV6.GetConfigurationAsync();
 		var updated = await dhcpV6.UpdateConfigurationAsync(new DhcpV6ConfigurationPatch
 		{
-			Enabled = false, UseCustomDns = true
+			Enabled = false,
+			UseCustomDns = true,
+			Dns = Optional<string[]>.Set(["2001:db8::1"])
 		});
 
 		Assert.True(config.Enabled);
@@ -33,7 +35,8 @@ public sealed class DhcpV6ApiTests
 		using var body = JsonDocument.Parse(requests[1].Body!);
 		Assert.False(body.RootElement.GetProperty("enabled").GetBoolean());
 		Assert.True(body.RootElement.GetProperty("use_custom_dns").GetBoolean());
-		Assert.Equal(2, body.RootElement.EnumerateObject().Count());
+		Assert.Equal("2001:db8::1", body.RootElement.GetProperty("dns")[0].GetString());
+		Assert.Equal(3, body.RootElement.EnumerateObject().Count());
 	}
 
 	[Fact]
@@ -43,8 +46,13 @@ public sealed class DhcpV6ApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => new FreeboxDhcpV6Api(client.Transport)
+		await Assert.ThrowsAnyAsync<ArgumentException>(async () => await new FreeboxDhcpV6Api(client.Transport)
 			.UpdateConfigurationAsync(new DhcpV6ConfigurationPatch { Enabled = Optional<bool>.Null }));
+		await Assert.ThrowsAnyAsync<ArgumentException>(async () => await new FreeboxDhcpV6Api(client.Transport)
+			.UpdateConfigurationAsync(new DhcpV6ConfigurationPatch
+			{
+				Dns = Optional<string[]>.Set([(string)null!])
+			}));
 
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -57,8 +65,8 @@ public sealed class DhcpV6ApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxDhcpV6Api(client.Transport).GetConfigurationAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxDhcpV6Api(client.Transport).GetConfigurationAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -81,9 +89,9 @@ public sealed class DhcpV6ApiTests
 
 		var pending = new FreeboxDhcpV6Api(client.Transport).GetConfigurationAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

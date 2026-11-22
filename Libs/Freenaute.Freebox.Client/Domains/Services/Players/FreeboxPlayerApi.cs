@@ -1,11 +1,13 @@
+using Freenaute.Freebox.Client.Domains.Services.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Services.Players;
 
 public sealed class FreeboxPlayerApi(IFreeboxTransport transport)
 {
-	public Task<Player[]> GetAllAsync(CancellationToken cancellationToken = default)
+	public async Task<Player[]> GetAllAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "player", ServicesJsonSerializerContext.Default.PlayerArray,
-			cancellationToken);
+		return await transport.SendAsync(HttpMethod.Get, ServicesConstants.Routes.Players.Base, ServicesJsonSerializerContext.Default.PlayerArray,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	public FreeboxPlayer Device(long id) => new(transport, ServicesPath.Id(id));

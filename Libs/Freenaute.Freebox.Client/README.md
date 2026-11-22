@@ -29,27 +29,40 @@ Options are validated on start (`FreeboxClientOptionsValidator`, source-generate
 
 ## Architecture
 
-- Root public surface only: `FreeboxClient`, `IFreeboxClient`, `FreeboxClientOptions`, `FreeboxServiceCollectionExtensions`,
+- Root public surface only: `FreeboxClient`, `IFreeboxClient`, `FreeboxClientOptions`,
+  `FreeboxServiceCollectionExtensions`,
   the 3 public exceptions. Everything else is `internal`.
 - `Http/Transport/` — split by concern, no `partial`:
-  - `FreeboxHttpTransportCore` — shared session/discovery/envelope/error-mapping plumbing
-  - `FreeboxHttpTransport` (`IFreeboxTransport`) — JSON requests
-  - `Binary/FreeboxBinaryTransport` (`IFreeboxBinaryTransport`) — binary downloads (`GET /dl/{path}`)
-  - `WebSockets/FreeboxWebSocketTransport` (`IFreeboxWebSocketTransport`) + `FreeboxWebSocketConnection` — events & WS upload
+    - `FreeboxHttpTransportCore` — shared session/discovery/envelope/error-mapping plumbing
+    - `FreeboxHttpTransport` (`IFreeboxTransport`) — JSON requests
+    - `Binary/FreeboxBinaryTransport` (`IFreeboxBinaryTransport`) — binary downloads (`GET /dl/{path}`)
+    - `WebSockets/FreeboxWebSocketTransport` (`IFreeboxWebSocketTransport`) + `FreeboxWebSocketConnection` — events & WS
+      upload
 - `Authentication/`, `Credentials/` — pairing flow, HMAC-SHA1 session, secure-store abstraction.
 - `Discovery/` (+`Mdns/`) — DNS-SD `_fbx-api._tcp` with TXT validation, HTTP fallback.
 - `Http/Tls/` — pins/validates the Freebox Root CA and Freebox ECC Root CA chain.
 - `Domains/<Domain>/` — one `IFreebox*Api` facade + implementation per API domain; `namespace` = folder path.
+- String-literal conventions:
+    - shared cross-cutting literals (headers, envelope keys, auth/mDNS route keys) live in
+      `Constants/ClientConstants.cs`
+    - domain route/query literals live near domain helpers (for example `Domains/Files/Support/FilesConstants.cs`)
+    - APIs consume constants/helpers for route composition; dynamic values remain encoded through
+      `FreeboxApiPath`, `FilesPath`, and `ServicesPath`
 
 ## Behavior guarantees
 
 - Auth header `X-Fbx-App-Auth` on every authenticated call; automatic session renewal; 403 error codes mapped to
   `FreeboxAuthenticationException`/`FreeboxAuthorizationException`, other API errors to `FreeboxApiException`.
 - Resilience via `Microsoft.Extensions.Http.Resilience` (opt-in; transient GETs retried, mutations never replayed).
-- All JSON goes through the Mapper's source-generated contexts (`JsonSerializerIsReflectionEnabledByDefault=false` in tests/smoke).
-- Stable, documented endpoints only — no unstable or deprecated APIs, no `[Obsolete]` members.
+- All JSON goes through the Mapper's source-generated contexts (`JsonSerializerIsReflectionEnabledByDefault=false` in
+  tests/smoke).
+- Covers stable + unstable + deprecated + internal Freebox routes.
+- Unstable routes are flagged in XML documentation (`UNSTABLE API` remarks).
+- Deprecated routes are exposed with `[Obsolete]` warning annotations.
 
 ## Security
 
-Pairing requires physical approval on the Freebox LCD. Store the `app_token` only in an `IFreeboxCredentialStore` backed by
-OS-protected/encrypted storage; never in config, env vars, logs or source. Session tokens/challenges/HMAC values are memory-only.
+Pairing requires physical approval on the Freebox LCD. Store the `app_token` only in an `IFreeboxCredentialStore` backed
+by
+OS-protected/encrypted storage; never in config, env vars, logs or source. Session tokens/challenges/HMAC values are
+memory-only.

@@ -6,6 +6,18 @@ public sealed class DownloadsContractTests
 		WireRoundTrip.AssertByteIdentical(wire, typeInfo);
 
 	[Fact]
+	public void AddDownloadBlacklistEntryRequest_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"host":"8.8.8.8","expire":3600}""",
+			FilesJsonSerializerContext.Default.AddDownloadBlacklistEntryRequest);
+
+	[Fact]
+	public void AddDownloadTrackerRequest_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"announce":"udp://tracker.example:80"}""",
+			FilesJsonSerializerContext.Default.AddDownloadTrackerRequest);
+
+	[Fact]
 	public void Download_RoundTripsByteIdentical() =>
 		AssertRoundTrip(
 			"""{"id":1,"type":"http","name":"ubuntu.iso","status":"downloading","size":4000000000,"queue_pos":2,"io_priority":"normal","tx_bytes":1024,"rx_bytes":2048000,"tx_rate":128,"rx_rate":204800,"tx_pct":1,"rx_pct":42,"created_ts":1700000000,"eta":120,"download_dir":"RGlzcXVlIGR1cg==","stop_ratio":200,"info_hash":"abcdef","piece_length":262144}""",
@@ -18,6 +30,12 @@ public sealed class DownloadsContractTests
 			FilesJsonSerializerContext.Default.DownloadStats);
 
 	[Fact]
+	public void DownloadBlacklistEntry_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"host":"89.215.188.6","reason":"timeout","expire":90,"global":true}""",
+			FilesJsonSerializerContext.Default.DownloadBlacklistEntry);
+
+	[Fact]
 	public void DownloadConfiguration_RoundTripsByteIdentical() =>
 		AssertRoundTrip(
 			"""{"max_downloading_tasks":5,"download_dir":"RGlzcXVlIGR1cg==","watch_dir":"RGlzcXVlIGR1ci9WaWTDqW9z","use_watch_dir":true,"throttling":{"normal":{"tx_rate":0,"rx_rate":0},"slow":{"tx_rate":0,"rx_rate":1024},"schedule":["on","off"],"mode":"normal"},"news":{"server":"news.free.fr","port":119,"ssl":false,"user":"u","nthreads":4,"auto_repair":true,"lazy_par2":false,"auto_extract":true,"erase_tmp":false},"bt":{"max_peers":100,"stop_ratio":100,"crypto_support":"plain","enable_dht":true,"enable_pex":false,"announce_timeout":300,"main_port":6881,"dht_port":6881},"feed":{"fetch_interval":3600,"max_items":100},"blocklist":{},"dns1":"1.1.1.1","dns2":"8.8.8.8"}""",
@@ -28,6 +46,24 @@ public sealed class DownloadsContractTests
 		AssertRoundTrip(
 			"""{"id":"0","task_id":7,"filepath":"RGlzcXVlIGR1ci9maWxl","name":"file.bin","mimetype":"application/octet-stream","size":1024,"rx":512,"status":"done","error":"","priority":"normal","preview_url":"https://example.fbxos.fr/preview/0"}""",
 			FilesJsonSerializerContext.Default.DownloadFile);
+
+	[Fact]
+	public void DownloadPeer_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"host":"186.213.200.201","port":51413,"state":"ready","origin":"tracker","protocol":"tcp_obfuscated","client":"Azureus 4.7.2.0","country_code":"BR","tx":836670,"rx":1617,"tx_rate":0,"rx_rate":0,"progress":91,"requests":[1,2,3]}""",
+			FilesJsonSerializerContext.Default.DownloadPeer);
+
+	[Fact]
+	public void DownloadTracker_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"announce":"udp://tracker.example:80","is_backup":false,"status":"announced","interval":1800,"min_interval":900,"reannounce_in":300,"nseeders":10,"nleechers":2,"is_enabled":true}""",
+			FilesJsonSerializerContext.Default.DownloadTracker);
+
+	[Fact]
+	public void DownloadPiecesResult_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"result":"XX\u002B.-/U"}""",
+			FilesJsonSerializerContext.Default.DownloadPiecesResult);
 
 	[Fact]
 	public void DownloadThrottlingStatus_RoundTripsByteIdentical() =>
@@ -52,4 +88,10 @@ public sealed class DownloadsContractTests
 		AssertRoundTrip(
 			"""{"max_downloading_tasks":5,"use_watch_dir":true,"dns1":"1.1.1.1"}""",
 			FilesJsonSerializerContext.Default.UpdateDownloadConfiguration);
+
+	[Fact]
+	public void UpdateDownloadTrackerRequest_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"announce":"udp://tracker.example:80","is_enabled":false}""",
+			FilesJsonSerializerContext.Default.UpdateDownloadTrackerRequest);
 }

@@ -1,12 +1,15 @@
+using Freenaute.Freebox.Client.Domains.Services.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Services.UPnp;
 
 public sealed class FreeboxUPnpAvApi(IFreeboxTransport transport)
 {
 	/// <seealso href="http://mafreebox.freebox.fr/doc/index.html#get--api-v8-upnpav-config-" />
-	public Task<UPnpAvConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
+	public async Task<UPnpAvConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "upnpav/config/", ServicesJsonSerializerContext.Default.UPnpAvConfig,
-			cancellationToken);
+		return await transport.SendAsync(HttpMethod.Get, ServicesConstants.Routes.UpnpAv.Configuration,
+			ServicesJsonSerializerContext.Default.UPnpAvConfig,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <seealso href="http://mafreebox.freebox.fr/doc/index.html#put--api-v8-upnpav-config-" />
@@ -15,7 +18,7 @@ public sealed class FreeboxUPnpAvApi(IFreeboxTransport transport)
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		request.Validate();
-		return transport.SendAsync(HttpMethod.Put, "upnpav/config/", request,
+		return transport.SendAsync(HttpMethod.Put, ServicesConstants.Routes.UpnpAv.Configuration, request,
 			ServicesJsonSerializerContext.Default.UPnpAvConfigPatch, ServicesJsonSerializerContext.Default.UPnpAvConfig,
 			cancellationToken);
 	}

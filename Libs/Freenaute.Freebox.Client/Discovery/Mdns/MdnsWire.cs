@@ -9,7 +9,7 @@ internal static class MdnsWire
 	internal static byte[] CreateQuery(IReadOnlyList<MdnsQuestion> questions)
 	{
 		using var stream = new MemoryStream();
-		using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
+		using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
 		writer.Write((short)0);
 		writer.Write((short)0);
 		writer.Write(ToNetwork((ushort)questions.Count));
@@ -95,7 +95,7 @@ internal static class MdnsWire
 			{
 				case MdnsRecordType.Pointer:
 					int pointerOffset = dataOffset;
-					record = new MdnsRecord(name, type, ttl, ReadName(packet, ref pointerOffset), null, null, null);
+					record = new MdnsRecord(name, type, ttl, ReadName(packet, ref pointerOffset), Port: null, Text: null, Address: null);
 					return pointerOffset == dataOffset + dataLength;
 				case MdnsRecordType.Service:
 					if (dataLength < 7)
@@ -106,7 +106,7 @@ internal static class MdnsWire
 					int targetOffset = dataOffset + 6;
 					string target = ReadName(packet, ref targetOffset);
 					record = new MdnsRecord(name, type, ttl, target, ReadNetworkUInt16(packet, dataOffset + 4),
-						null, null);
+Text: null, Address: null);
 					return targetOffset == dataOffset + dataLength;
 				case MdnsRecordType.Text:
 					if (dataLength > 4_096)
@@ -114,15 +114,16 @@ internal static class MdnsWire
 						return false;
 					}
 
-					record = new MdnsRecord(name, type, ttl, null, null, packet.Slice(dataOffset, dataLength).ToArray(),
-						null);
+					record = new MdnsRecord(name, type, ttl, Target: null, Port: null,
+						[.. packet.Slice(dataOffset, dataLength)],
+Address: null);
 					return true;
 				case MdnsRecordType.Address when dataLength is 4:
-					record = new MdnsRecord(name, type, ttl, null, null, null,
+					record = new MdnsRecord(name, type, ttl, Target: null, Port: null, Text: null,
 						new IPAddress(packet.Slice(dataOffset, 4)));
 					return true;
 				case MdnsRecordType.AddressV6 when dataLength is 16:
-					record = new MdnsRecord(name, type, ttl, null, null, null,
+					record = new MdnsRecord(name, type, ttl, Target: null, Port: null, Text: null,
 						new IPAddress(packet.Slice(dataOffset, 16)));
 					return true;
 				default:

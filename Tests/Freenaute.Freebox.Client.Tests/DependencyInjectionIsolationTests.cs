@@ -18,7 +18,7 @@ public sealed class DependencyInjectionIsolationTests
 			.ConfigurePrimaryHttpMessageHandler(() => homeHandler);
 		services.AddFreeboxClient("office", options => Configure(options, "office"))
 			.ConfigurePrimaryHttpMessageHandler(() => officeHandler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 
 		var home = provider.GetRequiredKeyedService<IFreeboxClient>("home");
 		var office = provider.GetRequiredKeyedService<IFreeboxClient>("office");
@@ -77,12 +77,12 @@ public sealed class DependencyInjectionIsolationTests
 			options.EnableMdnsDiscovery = false;
 			options.EnableResilience = true;
 		}).ConfigurePrimaryHttpMessageHandler(() => handler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 		var client = provider.GetRequiredService<IFreeboxClient>();
 
 		Assert.True((await client.AirMedia.GetConfigurationAsync()).Enabled);
-		await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			client.AirMedia.UpdateConfigurationAsync(new UpdateAirMediaConfigRequest(false, "fixture-password")));
+		await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await client.AirMedia.UpdateConfigurationAsync(new UpdateAirMediaConfigRequest(Enabled: false, "fixture-password")));
 
 		Assert.Equal(2, getAttempts);
 		Assert.Equal(1, mutationAttempts);

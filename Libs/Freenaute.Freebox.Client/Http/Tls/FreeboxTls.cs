@@ -47,7 +47,7 @@ internal static class FreeboxTls
 				UseCookies = false,
 				SslOptions = new SslClientAuthenticationOptions { CertificateChainPolicy = policy }
 			};
-			return new CertificateOwnerHandler(handler, certificates.ToArray());
+			return new CertificateOwnerHandler(handler, [.. certificates]);
 		}
 		catch
 		{

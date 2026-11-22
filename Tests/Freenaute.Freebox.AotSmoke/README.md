@@ -19,7 +19,9 @@ dotnet publish Tests/Freenaute.Freebox.AotSmoke -c Release -r win-x64   -o .arti
 ```
 
 `PublishAot=true`, `RuntimeIdentifiers=linux-x64;win-x64`, `JsonSerializerIsReflectionEnabledByDefault=false`.
-CI (`_aot.yml`) asserts the output is a single native binary (ELF on Linux / PE `MZ` on Windows), with **no** `.deps.json`,
+CI (`_aot.yml`) asserts the output is a single native binary (ELF on Linux / PE `MZ` on Windows), with **no**
+`.deps.json`,
 `.runtimeconfig.json` or managed `Freenaute.Freebox.*.dll`, runs it without `DOTNET_ROOT`, and records a SHA-256.
 
-> Native linking needs the MSVC/Windows SDK toolchain — run on CI runners (ubuntu-24.04 / windows-2025), not on a Rider-only box.
+> Native linking needs the MSVC/Windows SDK toolchain — run on CI runners (ubuntu-24.04 / windows-2025), not on a
+> Rider-only box.

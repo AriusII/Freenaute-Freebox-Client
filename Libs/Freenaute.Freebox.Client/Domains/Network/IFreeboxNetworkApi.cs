@@ -9,7 +9,10 @@ public interface IFreeboxNetworkApi
 	FreeboxNatApi Nat { get; }
 	FreeboxIgdApi Igd { get; }
 	FreeboxFreeplugApi Freeplug { get; }
+	FreeboxStorageApi Storage { get; }
 	FreeboxSfpApi Sfp { get; }
 	FreeboxSwitchApi Switch { get; }
+	FreeboxVpnApi Vpn { get; }
+	FreeboxVpnClientApi VpnClient { get; }
 	FreeboxWifiApi Wifi { get; }
 }

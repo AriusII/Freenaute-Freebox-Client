@@ -11,9 +11,9 @@ public sealed class FreeboxCamera
 		_path = $"camera/{FreeboxApiPath.EncodeSegment(id)}";
 	}
 
-	public Task<Camera> GetAsync(CancellationToken cancellationToken = default)
+	public async Task<Camera> GetAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, _path, ProtocolJsonSerializerContext.Default.Camera,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, _path, ProtocolJsonSerializerContext.Default.Camera,
+			cancellationToken).ConfigureAwait(false);
 	}
 }

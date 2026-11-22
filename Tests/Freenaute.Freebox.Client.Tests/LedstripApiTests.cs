@@ -61,7 +61,7 @@ public sealed class LedstripApiTests
 		var command = new FreeboxSystemHomeApi(client.Transport).Ledstrip.ConfigurePlanning()
 			.UseFields(new LedstripPlanningUpdate { UsePlanning = Optional<bool>.Null });
 
-		await Assert.ThrowsAsync<ArgumentException>(() => command.SendAsync());
+		await Assert.ThrowsAsync<ArgumentException>(async () => await command.SendAsync());
 
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -74,8 +74,8 @@ public sealed class LedstripApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxSystemHomeApi(client.Transport).Ledstrip.GetStatusAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxSystemHomeApi(client.Transport).Ledstrip.GetStatusAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -98,9 +98,9 @@ public sealed class LedstripApiTests
 
 		var pending = new FreeboxSystemHomeApi(client.Transport).Ledstrip.GetPlanningAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

@@ -12,7 +12,8 @@ public sealed class NetworkApiTests
 
 		var result = await network.Dhcp.UpdateConfigurationAsync(new DhcpConfigurationPatch
 		{
-			Enabled = false, Options = new DhcpOptionWrite[] { new() { Id = "tcp_ttl", Val = "0" } }
+			Enabled = false,
+			Options = new DhcpOptionWrite[] { new() { Id = "tcp_ttl", Val = "0" } }
 		});
 
 		var request = handler.Requests.Last();
@@ -38,7 +39,8 @@ public sealed class NetworkApiTests
 		{
 			Config = new WifiApConfigurationPatch
 			{
-				PrimaryChannel = 0, Ht = new WifiApHtConfigurationPatch { AcEnabled = false }
+				PrimaryChannel = 0,
+				Ht = new WifiApHtConfigurationPatch { AcEnabled = false }
 			}
 		});
 
@@ -150,9 +152,9 @@ public sealed class NetworkApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var network = new FreeboxNetworkApi(client.Transport);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => network.Wifi.UpdateConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await network.Wifi.UpdateConfigurationAsync(
 			new WifiGlobalConfigurationPatch { Enabled = Optional<bool>.Null }));
-		await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => network.Wifi.GuestAccess.CreateKeyAsync(
+		await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await network.Wifi.GuestAccess.CreateKeyAsync(
 			new CreateWifiCustomKeyRequest { MaxUseCount = StringOrInteger.FromInteger(128) }));
 		Assert.Empty(handler.Requests);
 	}
@@ -177,6 +179,180 @@ public sealed class NetworkApiTests
 	}
 
 	[Fact]
+	public async Task VpnCoversOverviewPoolUserAndConnectionOperations()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) =>
+		{
+			string json = request.Address.AbsolutePath switch
+			{
+				"/api/v16/vpn/connection/pptp%202" => """{"success":true}""",
+				"/api/v16/vpn/connection/" =>
+					"""{"success":true,"result":[{"id":"pptp-2","authenticated":true,"rx_bytes":94,"tx_bytes":95}]}""",
+				"/api/v16/vpn/ip_pool/" =>
+					"""{"success":true,"result":{"ip_start":"192.168.27.65","ip_end":"192.168.27.95","reservations":[{"login":"alice","ip":"192.168.27.69"}]}}""",
+				"/api/v16/vpn/user/alice" =>
+					request.Method == HttpMethod.Delete
+						? """{"success":true}"""
+						: """{"success":true,"result":{"login":"alice","password_set":true,"ip_reservation":"192.168.27.69"}}""",
+				"/api/v16/vpn/user/" =>
+					request.Method == HttpMethod.Post
+						? """{"success":true,"result":{"login":"alice","password_set":true}}"""
+						: """{"success":true,"result":[{"login":"alice","password_set":true}]}""",
+				_ => """{"success":true}"""
+			};
+			return Task.FromResult(FixtureHandler.Json(json));
+		});
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var vpn = new FreeboxNetworkApi(client.Transport).Vpn;
+
+		var pool = await vpn.GetIpPoolAsync();
+		var connections = await vpn.GetConnectionsAsync();
+		await vpn.DisconnectConnectionAsync("pptp 2");
+		var users = await vpn.GetUsersAsync();
+		var created = await vpn.CreateUserAsync(new VPNUser
+		{
+			Login = "alice",
+			Password = "secret123",
+			IpReservation = "192.168.27.69"
+		});
+		var user = await vpn.GetUserAsync("alice");
+		var updated = await vpn.UpdateUserAsync("alice", new VPNUser { Password = "newsecret123" });
+		await vpn.DeleteUserAsync("alice");
+
+		Assert.Equal("192.168.27.65", pool.IpStart);
+		Assert.Equal("192.168.27.69", Assert.Single(pool.Reservations!).Ip);
+		Assert.Equal("pptp-2", Assert.Single(connections).Id);
+		Assert.Equal("alice", Assert.Single(users).Login);
+		Assert.Equal("alice", created.Login);
+		Assert.Equal("alice", user.Login);
+		Assert.Equal("alice", updated.Login);
+
+		var requests = handler.Requests.Where(request =>
+			request.Address.AbsolutePath.StartsWith("/api/v16/vpn/", StringComparison.Ordinal)).ToArray();
+		Assert.Equal("/api/v16/vpn/ip_pool/", requests[0].Address.AbsolutePath);
+		Assert.Equal("/api/v16/vpn/connection/", requests[1].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Delete, requests[2].Method);
+		Assert.Equal("/api/v16/vpn/connection/pptp%202", requests[2].Address.AbsolutePath);
+		Assert.Equal("/api/v16/vpn/user/", requests[3].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Post, requests[4].Method);
+		Assert.Equal(HttpMethod.Get, requests[5].Method);
+		Assert.Equal("/api/v16/vpn/user/alice", requests[5].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Put, requests[6].Method);
+		Assert.Equal("/api/v16/vpn/user/alice", requests[6].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Delete, requests[7].Method);
+	}
+
+	[Fact]
+	public async Task VpnUserAndOpenVpnUpdatesAcceptRawJsonObjects()
+	{
+		using var handler = FixtureHandler.AuthenticatedConstant(
+			"""{"success":true,"result":{"login":"alice","enabled":true}}""");
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var vpn = new FreeboxNetworkApi(client.Transport).Vpn;
+
+		await vpn.CreateUserAsync(JsonDocument.Parse("""{"login":"alice","password":"secret123"}""").RootElement.Clone());
+		await vpn.UpdateUserAsync("alice",
+			JsonDocument.Parse("""{"password":"newsecret123"}""").RootElement.Clone());
+		await vpn.UpdateOpenVpnRoutedConfigurationAsync(
+			JsonDocument.Parse("""{"enabled":true,"port":1194}""").RootElement.Clone());
+
+		var requests = handler.Requests.Where(request =>
+			request.Address.AbsolutePath.StartsWith("/api/v16/vpn/", StringComparison.Ordinal)).ToArray();
+		Assert.Equal(3, requests.Length);
+		Assert.Equal(HttpMethod.Post, requests[0].Method);
+		Assert.Equal("/api/v16/vpn/user/", requests[0].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Put, requests[1].Method);
+		Assert.Equal("/api/v16/vpn/user/alice", requests[1].Address.AbsolutePath);
+		Assert.Equal("/api/v16/vpn/openvpn_routed/config/", requests[2].Address.AbsolutePath);
+	}
+
+	[Fact]
+	public async Task VpnIdentifierParametersFailValidationBeforeHttpRequest()
+	{
+		using var handler = FixtureHandler.Constant("{}");
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var vpn = new FreeboxNetworkApi(client.Transport).Vpn;
+
+		await Assert.ThrowsAsync<ArgumentException>(async () => await vpn.DisconnectConnectionAsync("../pptp"));
+		await Assert.ThrowsAsync<ArgumentException>(async () => await vpn.DownloadConfigurationAsync("../", "alice"));
+		await Assert.ThrowsAsync<ArgumentException>(async () => await vpn.GetUserAsync(" "));
+		await Assert.ThrowsAsync<ArgumentException>(async () =>
+			await vpn.UpdateUserAsync(".", new VPNUser()));
+		await Assert.ThrowsAsync<ArgumentException>(async () =>
+			await vpn.GetConfigurationAsync("openvpn/bridge"));
+
+		Assert.Empty(handler.Requests);
+	}
+
+	[Fact]
+	public async Task VpnRoutesCoverConnectionsDownloadAndTypedOpenVpnUpdate()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) =>
+		{
+			string json = request.Address.AbsolutePath switch
+			{
+				"/api/v16/vpn/connection/" =>
+					"""{"success":true,"result":[{"id":"connection-1","authenticated":true}]}""",
+				"/api/v16/vpn/download_config/openvpn%20routed/alice%40example" =>
+					"""{"success":true,"result":{"format":"ovpn","content":"fixture"}}""",
+				_ => """{"success":true,"result":{"id":"openvpn_routed","enabled":false,"port":1194}}"""
+			};
+			return Task.FromResult(FixtureHandler.Json(json));
+		});
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var vpn = new FreeboxNetworkApi(client.Transport).Vpn;
+
+		var connections = await vpn.GetConnectionsAsync();
+		var download = await vpn.DownloadConfigurationAsync("openvpn routed", "alice@example");
+		var updated = await vpn.UpdateOpenVpnRoutedConfigurationAsync(new VPNServerConfig
+		{
+			Id = "openvpn_routed",
+			Enabled = false,
+			Port = 1194
+		});
+
+		var requests = handler.Requests.Where(request =>
+			request.Address.AbsolutePath.StartsWith("/api/v16/vpn/", StringComparison.Ordinal)).ToArray();
+		Assert.Single(connections);
+		Assert.Equal("connection-1", connections[0].Id);
+		Assert.True(connections[0].Authenticated);
+		Assert.Equal("ovpn", download.GetProperty("format").GetString());
+		Assert.Equal(HttpMethod.Get, requests[0].Method);
+		Assert.Equal("/api/v16/vpn/connection/", requests[0].Address.AbsolutePath);
+		Assert.Equal(
+			"/api/v16/vpn/download_config/openvpn%20routed/alice%40example",
+			requests[1].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Put, requests[2].Method);
+		Assert.Equal("/api/v16/vpn/openvpn_routed/config/", requests[2].Address.AbsolutePath);
+		using var body = JsonDocument.Parse(requests[2].Body!);
+		Assert.Equal("openvpn_routed", body.RootElement.GetProperty("id").GetString());
+		Assert.False(body.RootElement.GetProperty("enabled").GetBoolean());
+		Assert.Equal(1194, body.RootElement.GetProperty("port").GetInt64());
+		Assert.Equal("openvpn_routed", updated.Id);
+		Assert.False(updated.Enabled);
+	}
+
+	[Fact]
+	public async Task VpnRouteParametersFailValidationBeforeHttpRequest()
+	{
+		using var handler = FixtureHandler.Constant("{}");
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var vpn = new FreeboxNetworkApi(client.Transport).Vpn;
+
+		await Assert.ThrowsAsync<ArgumentException>(async () =>
+			await vpn.DownloadConfigurationAsync("../", "alice"));
+		await Assert.ThrowsAsync<ArgumentException>(async () =>
+			await vpn.GetUserAsync(" "));
+
+		Assert.Empty(handler.Requests);
+	}
+
+	[Fact]
 	public async Task NetworkOperationPassesCancellationToTransport()
 	{
 		var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -192,9 +368,52 @@ public sealed class NetworkApiTests
 		var pending = new FreeboxNetworkApi(client.Transport).Wifi.AccessPoint(0)
 			.ScanNeighborsAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
+	}
+
+	[Fact]
+	public async Task StorageAndVpnRoutesAreWiredInNetworkAggregate()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) =>
+		{
+			string json = request.Address.AbsolutePath switch
+			{
+				"/api/v16/storage/disk/" =>
+					"""{"success":true,"result":[{"id":1,"name":"fixture"}]}""",
+				"/api/v16/vpn/" =>
+					"""{"success":true,"result":[{"name":"openvpn","type":"openvpn","state":"started"}]}""",
+				"/api/v16/vpn/user/" =>
+					"""{"success":true,"result":[{"login":"alice"}]}""",
+				"/api/v16/vpn_client/status" =>
+					"""{"success":true,"result":{"enabled":true,"state":"up"}}""",
+				_ => """{"success":true,"result":{"state":"ok"}}"""
+			};
+			return Task.FromResult(FixtureHandler.Json(json));
+		});
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var network = new FreeboxNetworkApi(client.Transport);
+
+		await network.Storage.GetConfigurationAsync();
+		await network.Storage.GetDisksAsync();
+		await network.Storage.SetDiskStateAsync(1, new SetStorageDiskStateRequest { State = "enabled" });
+		await network.Vpn.GetAsync();
+		await network.Vpn.GetUsersAsync();
+		await network.VpnClient.GetStatusAsync();
+
+		var requests = handler.Requests.Where(request =>
+			request.Address.AbsolutePath is not "/api_version" &&
+			!request.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal) &&
+			!request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)).ToArray();
+		Assert.Equal("/api/v16/storage/config/", requests[0].Address.AbsolutePath);
+		Assert.Equal("/api/v16/storage/disk/", requests[1].Address.AbsolutePath);
+		Assert.Equal("/api/v16/storage/disk/1", requests[2].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Put, requests[2].Method);
+		Assert.Equal("/api/v16/vpn/", requests[3].Address.AbsolutePath);
+		Assert.Equal("/api/v16/vpn/user/", requests[4].Address.AbsolutePath);
+		Assert.Equal("/api/v16/vpn_client/status", requests[5].Address.AbsolutePath);
 	}
 
 	[Theory]
@@ -242,6 +461,9 @@ public sealed class NetworkApiTests
 		Assert.True(config.Ht!.AcEnabled);
 		Assert.False(readJson.RootElement.TryGetProperty("he", out _));
 		Assert.False(readJson.RootElement.GetProperty("ht").TryGetProperty("ht_enabled", out _));
+		Assert.Null(typeof(WifiApHtConfig).GetProperty("HtEnabled"));
+		Assert.DoesNotContain(typeof(WifiApHtConfig).GetProperties(),
+			property => Attribute.IsDefined(property, typeof(ObsoleteAttribute)));
 
 		using var patchJson = JsonDocument.Parse(JsonSerializer.Serialize(
 			new WifiApConfigurationPatch { Ht = new WifiApHtConfigurationPatch { AcEnabled = false } },

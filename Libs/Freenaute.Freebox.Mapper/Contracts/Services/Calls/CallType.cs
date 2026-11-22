@@ -5,9 +5,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services.Calls;
 [JsonConverter(typeof(CallTypeJsonConverter))]
 public readonly record struct CallType(string Value)
 {
-	public static CallType Missed => new("missed");
-	public static CallType Accepted => new("accepted");
-	public static CallType Outgoing => new("outgoing");
+	public static CallType Missed => new(MapperConstants.ServiceWireTokens.Calls.Missed);
+	public static CallType Accepted => new(MapperConstants.ServiceWireTokens.Calls.Accepted);
+	public static CallType Outgoing => new(MapperConstants.ServiceWireTokens.Calls.Outgoing);
 
 	public override string ToString() => Value ?? string.Empty;
 }

@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Switch;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -17,6 +19,7 @@ public sealed class FreeboxSwitchApi
 
 	/// <summary>Get the current switch status.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-switch-status-</remarks>
-	public Task<SwitchPortStatus[]> GetStatusAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, "switch/status/", Json.SwitchPortStatusArray, cancellationToken);
+	public async Task<SwitchPortStatus[]> GetStatusAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Switch.Status, Json.SwitchPortStatusArray, cancellationToken)
+			.ConfigureAwait(false);
 }

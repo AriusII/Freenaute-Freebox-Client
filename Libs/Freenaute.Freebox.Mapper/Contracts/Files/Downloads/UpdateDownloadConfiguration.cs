@@ -46,6 +46,11 @@ public sealed record UpdateDownloadConfiguration
 	[JsonConverter(typeof(OptionalJsonConverter<UpdateDlFeedConfig>))]
 	public Optional<UpdateDlFeedConfig> Feed { get; init; }
 
+	[JsonPropertyName("blocklist")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<UpdateDlBlockListConfig>))]
+	public Optional<UpdateDlBlockListConfig> Blocklist { get; init; }
+
 	[JsonPropertyName("dns1")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 	[JsonConverter(typeof(OptionalJsonConverter<string>))]

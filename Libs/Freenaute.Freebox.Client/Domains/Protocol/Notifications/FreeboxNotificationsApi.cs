@@ -1,18 +1,20 @@
+using Freenaute.Freebox.Client.Domains.Protocol.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Protocol.Notifications;
 
 internal sealed class FreeboxNotificationsApi(IFreeboxTransport transport) : IFreeboxNotificationsApi
 {
-	public Task<NotificationTarget[]> ListTargetsAsync(CancellationToken cancellationToken = default)
+	public async Task<NotificationTarget[]> ListTargetsAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "notif/targets",
+		return await transport.SendAsync(HttpMethod.Get, ProtocolConstants.Routes.NotificationTargets,
 			ProtocolJsonSerializerContext.Default.NotificationTargetArray,
-			cancellationToken);
+			cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task CreateTargetAsync(NotificationTargetWrite request, CancellationToken cancellationToken = default)
+	public async Task CreateTargetAsync(NotificationTargetWrite request, CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Post, "notif/targets/", Snapshot(request),
-			ProtocolJsonSerializerContext.Default.NotificationTargetWrite, cancellationToken);
+		await transport.SendAsync(HttpMethod.Post, ProtocolConstants.Routes.NotificationTargetsCollection, Snapshot(request),
+			ProtocolJsonSerializerContext.Default.NotificationTargetWrite, cancellationToken).ConfigureAwait(false);
 	}
 
 	public FreeboxNotificationTarget Target(string id) => new(transport, id);

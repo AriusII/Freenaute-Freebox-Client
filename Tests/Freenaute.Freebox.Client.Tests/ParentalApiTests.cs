@@ -89,13 +89,14 @@ public sealed class ParentalApiTests
 		await filter.GetAsync();
 		await filter.UpdateAsync(new ParentalFilterWriteRequest
 		{
-			Forced = true, ForcedMode = ParentalFilterState.Denied
+			Forced = true,
+			ForcedMode = ParentalFilterState.Denied
 		});
 		await filter.DeleteAsync();
 
 		var requests = handler.Requests
 			.Where(r => !r.Address.AbsolutePath.Contains("/login/", StringComparison.Ordinal) &&
-			            r.Address.AbsolutePath.Contains("/parental/", StringComparison.Ordinal))
+						r.Address.AbsolutePath.Contains("/parental/", StringComparison.Ordinal))
 			.ToArray();
 		Assert.Equal(3, requests.Length);
 		Assert.Equal(HttpMethod.Get, requests[0].Method);
@@ -187,7 +188,7 @@ public sealed class ParentalApiTests
 			.ConfigurePrimaryHttpMessageHandler(() => handler);
 		services.AddFreeboxClient("second", options => Configure(options, "second"))
 			.ConfigurePrimaryHttpMessageHandler(() => handler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 
 		var client = provider.GetRequiredService<IFreeboxClient>();
 		Assert.Same(client.Parental, provider.GetRequiredService<IFreeboxParentalApi>());

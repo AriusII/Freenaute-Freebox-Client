@@ -21,8 +21,8 @@ public sealed class FreeboxServiceCommand<TRequest, TResponse>
 		return new FreeboxServiceCommand<TRequest, TResponse>(request, _send);
 	}
 
-	public Task<TResponse> SendAsync(CancellationToken cancellationToken = default) =>
-		_send(Request, cancellationToken);
+	public async Task<TResponse> SendAsync(CancellationToken cancellationToken = default) =>
+		await _send(Request, cancellationToken).ConfigureAwait(false);
 }
 
 public sealed class FreeboxServiceCommand<TRequest>
@@ -45,5 +45,6 @@ public sealed class FreeboxServiceCommand<TRequest>
 		return new FreeboxServiceCommand<TRequest>(request, _send);
 	}
 
-	public Task SendAsync(CancellationToken cancellationToken = default) => _send(Request, cancellationToken);
+	public async Task SendAsync(CancellationToken cancellationToken = default) =>
+		await _send(Request, cancellationToken).ConfigureAwait(false);
 }

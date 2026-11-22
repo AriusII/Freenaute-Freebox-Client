@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Lan;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -17,8 +19,9 @@ public sealed class FreeboxLanApi
 
 	/// <summary>Get the current Lan configuration.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-lan-config-</remarks>
-	public Task<LanConfig> GetConfigurationAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, "lan/config/", Json.LanConfig, cancellationToken);
+	public async Task<LanConfig> GetConfigurationAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Lan.Config, Json.LanConfig, cancellationToken)
+			.ConfigureAwait(false);
 
 	/// <summary>Update the current Lan configuration.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#put--api-v8-lan-config-</remarks>
@@ -27,14 +30,15 @@ public sealed class FreeboxLanApi
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, "lan/config/", request, Json.LanConfigurationPatch, Json.LanConfig,
+		return _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Lan.Config, request, Json.LanConfigurationPatch, Json.LanConfig,
 			cancellationToken);
 	}
 
 	/// <summary>Get the current routing configuration.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v16-lan-routes</remarks>
-	public Task<Route[]> GetRoutesAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, "lan/routes", Json.RouteArray, cancellationToken);
+	public async Task<Route[]> GetRoutesAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Lan.Routes, Json.RouteArray, cancellationToken)
+			.ConfigureAwait(false);
 
 	/// <summary>Update the current routing configuration.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#put--api-v16-lan-routes-</remarks>
@@ -42,23 +46,23 @@ public sealed class FreeboxLanApi
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, "lan/routes/", request, Json.LanRouteWriteArray, Json.RouteArray,
+		return _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Lan.RoutesCollection, request, Json.LanRouteWriteArray, Json.RouteArray,
 			cancellationToken);
 	}
 
 	/// <summary>Getting the list of browsable LAN interfaces.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-lan-browser-interfaces-</remarks>
-	public Task<LanBrowserInterface[]> GetInterfacesAsync(CancellationToken cancellationToken = default)
+	public async Task<LanBrowserInterface[]> GetInterfacesAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, "lan/browser/interfaces/", Json.LanBrowserInterfaceArray,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Lan.BrowserInterfaces, Json.LanBrowserInterfaceArray,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Getting available lan host types.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-lan-browser-types-</remarks>
 	public Task<LanHostTypeDescriptor[]> GetHostTypesAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, "lan/browser/types/", Json.LanHostTypeDescriptorArray,
+		return _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Lan.BrowserTypes, Json.LanHostTypeDescriptorArray,
 			cancellationToken);
 	}
 }

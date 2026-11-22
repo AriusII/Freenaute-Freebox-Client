@@ -34,6 +34,19 @@ public sealed class SerializationTests
 	}
 
 	[Fact]
+	public void AirMediaSerializesOptionalFieldsWhenProvided()
+	{
+		var request = new AirMediaReceiverRequest(AirMediaAction.Start, AirMediaMediaType.Video,
+			"https://media.example/video.mp4", "1111", 50_000);
+		using var json = JsonDocument.Parse(JsonSerializer.Serialize(request,
+			FreeboxJsonSerializerContext.Default.AirMediaReceiverRequest));
+
+		Assert.Equal("1111", json.RootElement.GetProperty("password").GetString());
+		Assert.Equal(50_000, json.RootElement.GetProperty("position").GetInt32());
+		Assert.Equal("https://media.example/video.mp4", json.RootElement.GetProperty("media").GetString());
+	}
+
+	[Fact]
 	public void DiscoveryReadsBoxModelAndIgnoresUnknownFutureFields()
 	{
 		var discovery = JsonSerializer.Deserialize(
@@ -72,7 +85,7 @@ public sealed class SerializationTests
 	public void GeneratedContractsOmitRemovedAndComputedFields()
 	{
 		var discovery = new ApiVersionResponse("fixture", "Server", BoxModels.FreeboxV9R1,
-			"Ultra", "16.0", "fixture.example", "/api/", true, 443);
+			"Ultra", "16.0", "fixture.example", "/api/", HttpsAvailable: true, 443);
 		using var version = JsonDocument.Parse(JsonSerializer.Serialize(discovery,
 			FreeboxJsonSerializerContext.Default.ApiVersionResponse));
 		Assert.False(version.RootElement.TryGetProperty("ApiUrl", out _));

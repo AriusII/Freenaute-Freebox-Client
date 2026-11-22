@@ -127,12 +127,13 @@ internal static class FilesForm
 
 		public override int Read(Span<byte> buffer) => inner.Read(buffer);
 
-		public override Task<int>
+		public override async Task<int>
 			ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-			inner.ReadAsync(buffer, offset, count, cancellationToken);
+			await inner.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
 
-		public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
-			inner.ReadAsync(buffer, cancellationToken);
+		public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default) =>
+			await inner.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
 
 		public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
 

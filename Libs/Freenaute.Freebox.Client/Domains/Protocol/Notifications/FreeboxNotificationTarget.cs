@@ -12,18 +12,19 @@ public sealed class FreeboxNotificationTarget
 	}
 
 	/// <summary>Preserves the documented object-or-array wire shape.</summary>
-	public Task<ObjectOrArray<NotificationTarget>> GetAsync(CancellationToken cancellationToken = default)
+	public async Task<ObjectOrArray<NotificationTarget>> GetAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, _path,
-			ProtocolJsonSerializerContext.Default.ObjectOrArrayNotificationTarget, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, _path,
+				ProtocolJsonSerializerContext.Default.ObjectOrArrayNotificationTarget, cancellationToken)
+			.ConfigureAwait(false);
 	}
 
-	public Task UpdateAsync(NotificationTargetWrite request, CancellationToken cancellationToken = default)
+	public async Task UpdateAsync(NotificationTargetWrite request, CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Put, _path, FreeboxNotificationsApi.Snapshot(request),
-			ProtocolJsonSerializerContext.Default.NotificationTargetWrite, cancellationToken);
+		await _transport.SendAsync(HttpMethod.Put, _path, FreeboxNotificationsApi.Snapshot(request),
+			ProtocolJsonSerializerContext.Default.NotificationTargetWrite, cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task DeleteAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Delete, _path, cancellationToken);
+	public async Task DeleteAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Delete, _path, cancellationToken).ConfigureAwait(false);
 }

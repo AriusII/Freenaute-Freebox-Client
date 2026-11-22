@@ -16,7 +16,7 @@ public sealed class FreeboxClient : IFreeboxClient, IDisposable
 	public FreeboxClient(HttpClient httpClient, FreeboxClientOptions options, bool disposeHttpClient = false)
 		: this(httpClient, new FreeboxClientState((options ?? throw new ArgumentNullException(nameof(options)))
 				.CreateValidatedSnapshot(), new InMemoryFreeboxCredentialStore(), new FreeboxMdnsDiscoveryResolver()),
-			true,
+ownsState: true,
 			disposeHttpClient)
 	{
 	}
@@ -26,7 +26,7 @@ public sealed class FreeboxClient : IFreeboxClient, IDisposable
 		bool disposeHttpClient = false)
 		: this(httpClient, new FreeboxClientState((options ?? throw new ArgumentNullException(nameof(options)))
 			.CreateValidatedSnapshot(), new InMemoryFreeboxCredentialStore(), new FreeboxMdnsDiscoveryResolver(),
-			credentials ?? throw new ArgumentNullException(nameof(credentials))), true, disposeHttpClient)
+			credentials ?? throw new ArgumentNullException(nameof(credentials))), ownsState: true, disposeHttpClient)
 	{
 	}
 
@@ -35,12 +35,12 @@ public sealed class FreeboxClient : IFreeboxClient, IDisposable
 		IFreeboxDiscoveryResolver discoveryResolver, bool disposeHttpClient = false)
 		: this(httpClient, new FreeboxClientState((options ?? throw new ArgumentNullException(nameof(options)))
 			.CreateValidatedSnapshot(), new InMemoryFreeboxCredentialStore(),
-			discoveryResolver ?? throw new ArgumentNullException(nameof(discoveryResolver))), true, disposeHttpClient)
+			discoveryResolver ?? throw new ArgumentNullException(nameof(discoveryResolver))), ownsState: true, disposeHttpClient)
 	{
 	}
 
 	internal FreeboxClient(HttpClient httpClient, FreeboxClientState state)
-		: this(httpClient, state, false, true)
+		: this(httpClient, state, ownsState: false, ownsHttpClient: true)
 	{
 	}
 

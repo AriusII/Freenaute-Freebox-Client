@@ -11,5 +11,6 @@ namespace Freenaute.Freebox.Mapper.ClientSide.WebSockets;
 public sealed record WebSocketRequest(
 	[property: JsonPropertyName("request_id")]
 	[property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-	int? RequestId,
-	[property: JsonPropertyName("action")] string Action);
+	long? RequestId,
+	[property: JsonPropertyName(MapperConstants.JsonProperties.Action)]
+	string Action);

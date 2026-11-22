@@ -7,6 +7,8 @@ public interface IFreeboxServicesApi
 	FreeboxFtpApi Ftp { get; }
 	FreeboxTftpApi Tftp { get; }
 	FreeboxNetworkShareApi NetworkShare { get; }
+	FreeboxPvrApi Pvr { get; }
+	FreeboxRrdApi Rrd { get; }
 	FreeboxUPnpAvApi UPnpAv { get; }
 	FreeboxPlayerApi Player { get; }
 }

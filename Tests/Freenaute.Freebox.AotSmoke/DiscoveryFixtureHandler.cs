@@ -4,7 +4,7 @@ internal sealed class DiscoveryFixtureHandler(bool fail = false) : HttpMessageHa
 {
 	public int RequestCount { get; private set; }
 
-	public static DiscoveryFixtureHandler FailingIfCalled() => new(true);
+	public static DiscoveryFixtureHandler FailingIfCalled() => new(fail: true);
 
 	protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
 		CancellationToken cancellationToken)
@@ -15,14 +15,14 @@ internal sealed class DiscoveryFixtureHandler(bool fail = false) : HttpMessageHa
 			throw new InvalidOperationException("HTTP discovery should not run after a valid mDNS result.");
 		}
 
-		const string Json = """
+		const string json = """
 		                    {"uid":"fixture-http-uid","device_name":"Server","box_model":"fixture","box_model_name":"Fixture",
 		                     "api_version":"4.0","api_domain":"fixture.example","api_base_url":"/api/",
 		                     "https_available":true,"https_port":443}
 		                    """;
 		return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
 		{
-			Content = new StringContent(Json, Encoding.UTF8, "application/json")
+			Content = new StringContent(json, Encoding.UTF8, "application/json")
 		});
 	}
 }

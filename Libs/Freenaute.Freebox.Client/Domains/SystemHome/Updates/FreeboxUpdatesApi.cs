@@ -1,14 +1,17 @@
+using Freenaute.Freebox.Client.Domains.SystemHome.Support;
+
 namespace Freenaute.Freebox.Client.Domains.SystemHome.Updates;
 
 public sealed class FreeboxUpdatesApi
 {
-	private readonly IFreeboxTransport transport;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxUpdatesApi(IFreeboxTransport transport)
 	{
-		this.transport = transport;
+		_transport = transport;
 	}
 
-	public Task<UpdateStatus> GetAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Get, "update/", SystemHomeWire.Json.UpdateStatus, cancellationToken);
+	public async Task<UpdateStatus> GetAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.Updates, SystemHomeWire.Json.UpdateStatus, cancellationToken)
+			.ConfigureAwait(false);
 }

@@ -1,12 +1,14 @@
+using Freenaute.Freebox.Client.Domains.Services.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Services.Ftp;
 
 public sealed class FreeboxFtpApi(IFreeboxTransport transport)
 {
 	/// <seealso href="http://mafreebox.freebox.fr/doc/index.html#get--api-v8-ftp-config-" />
-	public Task<FtpConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
+	public async Task<FtpConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "ftp/config/", ServicesJsonSerializerContext.Default.FtpConfig,
-			cancellationToken);
+		return await transport.SendAsync(HttpMethod.Get, ServicesConstants.Routes.Ftp.Configuration, ServicesJsonSerializerContext.Default.FtpConfig,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <seealso href="http://mafreebox.freebox.fr/doc/index.html#put--api-v8-ftp-config-" />
@@ -15,7 +17,7 @@ public sealed class FreeboxFtpApi(IFreeboxTransport transport)
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		request.Validate();
-		return transport.SendAsync(HttpMethod.Put, "ftp/config/", request,
+		return transport.SendAsync(HttpMethod.Put, ServicesConstants.Routes.Ftp.Configuration, request,
 			ServicesJsonSerializerContext.Default.FtpConfigPatch, ServicesJsonSerializerContext.Default.FtpConfig,
 			cancellationToken);
 	}

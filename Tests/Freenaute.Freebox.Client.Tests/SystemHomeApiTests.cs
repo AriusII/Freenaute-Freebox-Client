@@ -57,7 +57,7 @@ public sealed class SystemHomeApiTests
 		using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"resolution":48}}""");
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
-		bool[] values = Enumerable.Repeat(false, 7 * 48).ToArray();
+		bool[] values = [.. Enumerable.Repeat(element: false, 7 * 48)];
 		var fields = new StandbyConfigUpdate().WithUsePlanning(false).WithMapping(values);
 		values[0] = true;
 		await new FreeboxSystemHomeApi(client.Transport).Standby.Configure().UseFields(fields).SendAsync();
@@ -116,5 +116,108 @@ public sealed class SystemHomeApiTests
 		Assert.Equal(38, system.Sensors!.Value[0].Value);
 		Assert.True(system.Expansions!.Value[0].Present);
 		Assert.True(system.ModelInfo!.HasLanSfp);
+	}
+
+	[Fact]
+	public async Task SystemRoutesGetRebootAndShutdown()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
+			request.Method == HttpMethod.Get
+				? """{"success":true,"result":{"firmware_version":"4.9","box_flavor":"full","temp_cpub":55,"temp_cpum":54,"temp_sw":45,"fan_rpm":1200}}"""
+				: """{"success":true}""")));
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var system = new FreeboxSystemHomeApi(client.Transport).System;
+
+		var config = await system.GetAsync();
+		await system.RebootAsync();
+		await system.ShutdownAsync();
+
+		Assert.Equal("4.9", config.FirmwareVersion);
+		Assert.Equal("full", config.BoxFlavor);
+		Assert.Equal(55, config.TempCpub);
+		Assert.Equal(54, config.TempCpum);
+		Assert.Equal(45, config.TempSw);
+		Assert.Equal(1200, config.FanRpm);
+		var requests = handler.Requests.Where(request =>
+			request.Address.AbsolutePath is not "/api_version" &&
+			!request.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal) &&
+			!request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)).ToArray();
+		Assert.Equal(HttpMethod.Get, requests[0].Method);
+		Assert.Equal("/api/v16/system/", requests[0].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Post, requests[1].Method);
+		Assert.Equal("/api/v16/system/reboot/", requests[1].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Post, requests[2].Method);
+		Assert.Equal("/api/v16/system/shutdown/", requests[2].Address.AbsolutePath);
+	}
+
+	[Fact]
+	public async Task UpdateStatusUsesUpdateRoute()
+	{
+		using var handler = FixtureHandler.AuthenticatedConstant(
+			"""{"success":true,"result":{"state":"up_to_date","upgrade_state":{"state":"commit","old_version":"4.8","new_version":"4.9","percent":100,"error_string":""}}}""");
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+
+		var status = await new FreeboxSystemHomeApi(client.Transport).Updates.GetAsync();
+
+		Assert.Equal("up_to_date", status.State!.Value.Value);
+		Assert.Equal("commit", status.UpgradeState!.State!.Value.Value);
+		var request = Assert.Single(handler.Requests, request =>
+			request.Address.AbsolutePath is not "/api_version" &&
+			!request.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal) &&
+			!request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal));
+		Assert.Equal(HttpMethod.Get, request.Method);
+		Assert.Equal("/api/v16/update/", request.Address.AbsolutePath);
+	}
+
+	[Fact]
+	public async Task NetworkControlRulesSupportGetCreateUpdateAndDelete()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) =>
+		{
+			string result = request.Address.AbsolutePath.EndsWith("/rules", StringComparison.Ordinal)
+							&& request.Method == HttpMethod.Get
+				? """{"success":true,"result":[]}"""
+				: request.Method == HttpMethod.Put
+					? """{"success":true,"result":{"id":5,"profile_id":3,"name":"fixture","mode":"allowed","start_time":0,"end_time":3600,"weekdays":[true,false,true,false,true,false,false],"enabled":false}}"""
+					: request.Method == HttpMethod.Delete
+						? """{"success":true}"""
+						: """{"success":true,"result":{"id":5,"profile_id":3,"name":"fixture","mode":"allowed","start_time":0,"end_time":3600,"weekdays":[true,false,true,false,true,false,false],"enabled":true}}""";
+			return Task.FromResult(FixtureHandler.Json(result));
+		});
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var rules = new FreeboxSystemHomeApi(client.Transport).Profiles.For(3).NetworkControl.Rules;
+
+		var listed = await rules.ListAsync();
+		var rule = await rules.GetAsync(5);
+		var created = await rules.Create().UseFields(
+			new NetworkControlRuleUpdate().WithName("fixture").WithMode(NetworkControlMode.Allowed)
+				.WithStartTime(0).WithEndTime(3600).WithEnabled(true)).SendAsync();
+		var updated = await rules.Update(5).UseFields(
+			new NetworkControlRuleUpdate().WithEnabled(false)).SendAsync();
+		await rules.DeleteAsync(5);
+
+		Assert.Equal(5, rule.Id);
+		Assert.Equal("allowed", created.Mode!.Value.Value);
+		Assert.False(updated.Enabled);
+		Assert.Empty(listed);
+		var requests = handler.Requests.Where(request =>
+			request.Address.AbsolutePath is not "/api_version" &&
+			!request.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal) &&
+			!request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)).ToArray();
+		Assert.Equal("/api/v16/network_control/3/rules", requests[0].Address.AbsolutePath);
+		Assert.Equal("/api/v16/network_control/3/rules/5", requests[1].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Post, requests[2].Method);
+		Assert.Equal("/api/v16/network_control/3/rules", requests[2].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Put, requests[3].Method);
+		Assert.Equal("/api/v16/network_control/3/rules/5", requests[3].Address.AbsolutePath);
+		Assert.Equal(HttpMethod.Delete, requests[4].Method);
+		using var createBody = JsonDocument.Parse(requests[2].Body!);
+		Assert.Equal("fixture", createBody.RootElement.GetProperty("name").GetString());
+		Assert.Equal("allowed", createBody.RootElement.GetProperty("mode").GetString());
+		using var updateBody = JsonDocument.Parse(requests[3].Body!);
+		Assert.False(updateBody.RootElement.GetProperty("enabled").GetBoolean());
 	}
 }

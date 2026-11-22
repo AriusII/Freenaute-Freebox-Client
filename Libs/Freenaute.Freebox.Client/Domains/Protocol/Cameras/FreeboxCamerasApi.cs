@@ -1,11 +1,13 @@
+using Freenaute.Freebox.Client.Domains.Protocol.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Protocol.Cameras;
 
 internal sealed class FreeboxCamerasApi(IFreeboxTransport transport) : IFreeboxCamerasApi
 {
-	public Task<Camera[]> ListAsync(CancellationToken cancellationToken = default)
+	public async Task<Camera[]> ListAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "camera/", ProtocolJsonSerializerContext.Default.CameraArray,
-			cancellationToken);
+		return await transport.SendAsync(HttpMethod.Get, ProtocolConstants.Routes.Cameras, ProtocolJsonSerializerContext.Default.CameraArray,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	public FreeboxCamera Camera(string id) => new(transport, id);

@@ -137,7 +137,7 @@ internal sealed class MdnsDiscoveryState
 					return false;
 				}
 
-				string entry = new UTF8Encoding(false, true).GetString(text, offset, length);
+				string entry = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true).GetString(text, offset, length);
 				offset += length;
 				int separator = entry.IndexOf('=', StringComparison.OrdinalIgnoreCase);
 				if (separator <= 0 || !values.TryAdd(entry[..separator], entry[(separator + 1)..]))
@@ -158,13 +158,13 @@ internal sealed class MdnsDiscoveryState
 		out FreeboxDiscoveryResult? result)
 	{
 		result = null;
-		if (!values.TryGetValue("uid", out string? uid) || !IsSafe(uid, 128) ||
-		    !values.TryGetValue("api_version", out string? version) ||
-		    !values.TryGetValue("api_base_url", out string? basePath) ||
-		    !values.TryGetValue("api_domain", out string? domain) || !IsHost(domain) ||
-		    !values.TryGetValue("https_available", out string? httpsText) ||
+		if (!values.TryGetValue(ClientConstants.MdnsFields.Uid, out string? uid) || !IsSafe(uid, 128) ||
+		    !values.TryGetValue(ClientConstants.MdnsFields.ApiVersion, out string? version) ||
+		    !values.TryGetValue(ClientConstants.MdnsFields.ApiBaseUrl, out string? basePath) ||
+		    !values.TryGetValue(ClientConstants.MdnsFields.ApiDomain, out string? domain) || !IsHost(domain) ||
+		    !values.TryGetValue(ClientConstants.MdnsFields.HttpsAvailable, out string? httpsText) ||
 		    !bool.TryParse(httpsText, out bool httpsAvailable) || !httpsAvailable ||
-		    !values.TryGetValue("https_port", out string? portText) ||
+		    !values.TryGetValue(ClientConstants.MdnsFields.HttpsPort, out string? portText) ||
 		    !int.TryParse(portText, NumberStyles.None, CultureInfo.InvariantCulture, out int port) ||
 		    port is < 1 or > 65_535 || port != servicePort)
 		{
@@ -176,9 +176,9 @@ internal sealed class MdnsDiscoveryState
 			return false;
 		}
 
-		string? deviceName = values.GetValueOrDefault("device_name");
-		string? boxModel = values.GetValueOrDefault("box_model");
-		string? boxModelName = values.GetValueOrDefault("box_model_name");
+		string? deviceName = values.GetValueOrDefault(ClientConstants.MdnsFields.DeviceName);
+		string? boxModel = values.GetValueOrDefault(ClientConstants.MdnsFields.BoxModel);
+		string? boxModelName = values.GetValueOrDefault(ClientConstants.MdnsFields.BoxModelName);
 		if ((deviceName is not null && !IsSafe(deviceName, 256)) ||
 		    (boxModel is not null && !IsSafe(boxModel, 256)) ||
 		    (boxModelName is not null && !IsSafe(boxModelName, 256)))
@@ -187,7 +187,7 @@ internal sealed class MdnsDiscoveryState
 		}
 
 		var metadata = new ApiVersionResponse(uid, deviceName, boxModel, boxModelName, version, domain,
-			normalizedBasePath, true, port);
+			normalizedBasePath, HttpsAvailable: true, port);
 		var origin = new UriBuilder(Uri.UriSchemeHttps, domain, port).Uri;
 		result = new FreeboxDiscoveryResult(origin, metadata);
 		return true;

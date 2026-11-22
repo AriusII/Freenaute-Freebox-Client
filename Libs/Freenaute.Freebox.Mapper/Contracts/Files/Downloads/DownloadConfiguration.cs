@@ -40,7 +40,7 @@ public sealed record DownloadConfiguration
 
 	/// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadConfiguration.blocklist</summary>
 	[JsonPropertyName("blocklist")]
-	public JsonElement? Blocklist { get; init; }
+	public DlBlockListConfig? Blocklist { get; init; }
 
 	/// <summary>http://mafreebox.freebox.fr/doc/index.html#DownloadConfiguration.dns1</summary>
 	[JsonPropertyName("dns1")]

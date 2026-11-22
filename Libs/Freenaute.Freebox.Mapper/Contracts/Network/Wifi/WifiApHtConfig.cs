@@ -4,6 +4,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network.Wifi;
 ///     Wire contract documented at http://mafreebox.freebox.fr/doc/index.html#WifiApHtConfig.
 ///     Missing read values are represented by nullable properties; this does not assert server acceptance of JSON null.
 /// </summary>
+/// <remarks><b>UNSTABLE API:</b> this contract is marked unstable in the Freebox API documentation.</remarks>
 public sealed class WifiApHtConfig
 {
 	/// <summary>enable 802.11ac</summary>

@@ -3,19 +3,19 @@ namespace Freenaute.Freebox.Client.Domains.SystemHome;
 /// <summary>An immutable success-only command; construction performs no network I/O.</summary>
 public sealed class FreeboxSystemHomeCommand<TRequest> where TRequest : ISystemHomeRequest
 {
-	private readonly HttpMethod method;
-	private readonly string path;
-	private readonly JsonTypeInfo<TRequest> requestType;
-	private readonly IFreeboxTransport transport;
+	private readonly HttpMethod _method;
+	private readonly string _path;
+	private readonly JsonTypeInfo<TRequest> _requestType;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxSystemHomeCommand(IFreeboxTransport transport, HttpMethod method, string path,
 		TRequest fields, JsonTypeInfo<TRequest> requestType)
 	{
-		this.transport = transport;
-		this.method = method;
-		this.path = path;
+		_transport = transport;
+		_method = method;
+		_path = path;
 		Fields = fields;
-		this.requestType = requestType;
+		_requestType = requestType;
 	}
 
 	public TRequest Fields { get; }
@@ -23,34 +23,34 @@ public sealed class FreeboxSystemHomeCommand<TRequest> where TRequest : ISystemH
 	public FreeboxSystemHomeCommand<TRequest> UseFields(TRequest fields)
 	{
 		ArgumentNullException.ThrowIfNull(fields);
-		return new FreeboxSystemHomeCommand<TRequest>(transport, method, path, fields, requestType);
+		return new FreeboxSystemHomeCommand<TRequest>(_transport, _method, _path, fields, _requestType);
 	}
 
 	public Task SendAsync(CancellationToken cancellationToken = default)
 	{
 		Fields.Validate();
-		return transport.SendAsync(method, path, Fields, requestType, cancellationToken);
+		return _transport.SendAsync(_method, _path, Fields, _requestType, cancellationToken);
 	}
 }
 
 /// <summary>An immutable command with a source-generated result contract.</summary>
 public sealed class FreeboxSystemHomeCommand<TRequest, TResponse> where TRequest : ISystemHomeRequest
 {
-	private readonly HttpMethod method;
-	private readonly string path;
-	private readonly JsonTypeInfo<TRequest> requestType;
-	private readonly JsonTypeInfo<TResponse> responseType;
-	private readonly IFreeboxTransport transport;
+	private readonly HttpMethod _method;
+	private readonly string _path;
+	private readonly JsonTypeInfo<TRequest> _requestType;
+	private readonly JsonTypeInfo<TResponse> _responseType;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxSystemHomeCommand(IFreeboxTransport transport, HttpMethod method, string path,
 		TRequest fields, JsonTypeInfo<TRequest> requestType, JsonTypeInfo<TResponse> responseType)
 	{
-		this.transport = transport;
-		this.method = method;
-		this.path = path;
+		_transport = transport;
+		_method = method;
+		_path = path;
 		Fields = fields;
-		this.requestType = requestType;
-		this.responseType = responseType;
+		_requestType = requestType;
+		_responseType = responseType;
 	}
 
 	public TRequest Fields { get; }
@@ -58,13 +58,13 @@ public sealed class FreeboxSystemHomeCommand<TRequest, TResponse> where TRequest
 	public FreeboxSystemHomeCommand<TRequest, TResponse> UseFields(TRequest fields)
 	{
 		ArgumentNullException.ThrowIfNull(fields);
-		return new FreeboxSystemHomeCommand<TRequest, TResponse>(transport, method, path, fields, requestType,
-			responseType);
+		return new FreeboxSystemHomeCommand<TRequest, TResponse>(_transport, _method, _path, fields, _requestType,
+			_responseType);
 	}
 
 	public Task<TResponse> SendAsync(CancellationToken cancellationToken = default)
 	{
 		Fields.Validate();
-		return transport.SendAsync(method, path, Fields, requestType, responseType, cancellationToken);
+		return _transport.SendAsync(_method, _path, Fields, _requestType, _responseType, cancellationToken);
 	}
 }

@@ -16,7 +16,9 @@ public sealed class NetworkShareApiTests
 		var config = await share.GetSambaConfigurationAsync();
 		var updated = await share.UpdateSambaConfigurationAsync(new SambaConfigPatch
 		{
-			FileShareEnabled = true, Smbv2Enabled = false, Workgroup = "fixture-wg"
+			FileShareEnabled = true,
+			Smbv2Enabled = false,
+			Workgroup = "fixture-wg"
 		});
 
 		Assert.False(config.FileShareEnabled);
@@ -49,7 +51,9 @@ public sealed class NetworkShareApiTests
 		var config = await share.GetAfpConfigurationAsync();
 		var updated = await share.UpdateAfpConfigurationAsync(new AfpConfigPatch
 		{
-			Enabled = true, GuestAllow = false, ServerType = AfpServerType.Macbook
+			Enabled = true,
+			GuestAllow = false,
+			ServerType = AfpServerType.Macbook
 		});
 
 		Assert.False(config.Enabled);
@@ -95,9 +99,9 @@ public sealed class NetworkShareApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var share = new FreeboxNetworkShareApi(client.Transport);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => share.UpdateSambaConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await share.UpdateSambaConfigurationAsync(
 			new SambaConfigPatch { Workgroup = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => share.UpdateAfpConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await share.UpdateAfpConfigurationAsync(
 			new AfpConfigPatch { LoginPassword = Optional<string>.Null }));
 
 		Assert.Empty(ResourceRequests(handler));
@@ -111,8 +115,8 @@ public sealed class NetworkShareApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxNetworkShareApi(client.Transport).GetSambaConfigurationAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxNetworkShareApi(client.Transport).GetSambaConfigurationAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -135,9 +139,9 @@ public sealed class NetworkShareApiTests
 
 		var pending = new FreeboxNetworkShareApi(client.Transport).GetAfpConfigurationAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

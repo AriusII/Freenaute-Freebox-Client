@@ -29,9 +29,9 @@ internal sealed class ScriptedWebSocket(params string[] fragments) : WebSocket
 
 	public override void Dispose() => _disposed = true;
 
-	public override Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer,
+	public override async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer,
 		CancellationToken cancellationToken) =>
-		ReceiveCoreAsync(buffer, cancellationToken);
+		await ReceiveCoreAsync(buffer, cancellationToken);
 
 	public override Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage,
 		CancellationToken cancellationToken) =>

@@ -33,6 +33,7 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(AuthenticationErrorEnum))]
 [JsonSerializable(typeof(BoxModels))]
 [JsonSerializable(typeof(JsonElement))]
+[JsonSerializable(typeof(JsonElement[]))]
 [JsonSerializable(typeof(SuccessfulResponse<AuthorizeResponse>))]
 [JsonSerializable(typeof(SuccessfulResponse<AuthorizeTrackResponse>))]
 [JsonSerializable(typeof(SuccessfulResponse<LoginResponse>))]

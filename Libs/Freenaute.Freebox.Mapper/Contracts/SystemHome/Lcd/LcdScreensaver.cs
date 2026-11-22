@@ -4,10 +4,13 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.Lcd;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<LcdScreensaver>))]
 public readonly record struct LcdScreensaver(string Value) : ISystemHomeWireToken<LcdScreensaver>
 {
-	public bool IsKnown => Value is "disabled" or "on" or "night";
-	public static LcdScreensaver Disabled { get; } = new("disabled");
-	public static LcdScreensaver On { get; } = new("on");
-	public static LcdScreensaver Night { get; } = new("night");
+	public bool IsKnown => Value is MapperConstants.SystemHomeWireTokens.LcdScreensaver.Disabled
+		or MapperConstants.SystemHomeWireTokens.LcdScreensaver.On
+		or MapperConstants.SystemHomeWireTokens.LcdScreensaver.Night;
+
+	public static LcdScreensaver Disabled { get; } = new(MapperConstants.SystemHomeWireTokens.LcdScreensaver.Disabled);
+	public static LcdScreensaver On { get; } = new(MapperConstants.SystemHomeWireTokens.LcdScreensaver.On);
+	public static LcdScreensaver Night { get; } = new(MapperConstants.SystemHomeWireTokens.LcdScreensaver.Night);
 
 	public static LcdScreensaver FromWire(string value)
 	{

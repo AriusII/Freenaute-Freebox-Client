@@ -46,4 +46,22 @@ public sealed class ContactsContractTests
 		AssertRoundTrip(
 			"""{"contact_id":1,"type":"mobile","number":"0601020304","is_default":true,"is_own":false}""",
 			ServicesJsonSerializerContext.Default.ContactNumberWriteRequest);
+
+	[Fact]
+	public void ContactAddressWriteRequest_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"contact_id":1,"type":"home","number":"11","street":"8 rue du pont","street2":"","city":"Paris","zipcode":"75008","country":"France"}""",
+			ServicesJsonSerializerContext.Default.ContactAddressWriteRequest);
+
+	[Fact]
+	public void ContactEmailWriteRequest_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"contact_id":1,"type":"work","email":"bob@acme.fr"}""",
+			ServicesJsonSerializerContext.Default.ContactEmailWriteRequest);
+
+	[Fact]
+	public void ContactUrlWriteRequest_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"contact_id":1,"type":"profile","url":"https://x/bob"}""",
+			ServicesJsonSerializerContext.Default.ContactUrlWriteRequest);
 }

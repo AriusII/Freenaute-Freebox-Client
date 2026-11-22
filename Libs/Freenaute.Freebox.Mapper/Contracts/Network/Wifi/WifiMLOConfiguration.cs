@@ -4,7 +4,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network.Wifi;
 ///     Wire contract documented at http://mafreebox.freebox.fr/doc/index.html#WifiMLOConfiguration.
 ///     Missing read values are represented by nullable properties; this does not assert server acceptance of JSON null.
 /// </summary>
-public sealed class WifiMLOConfiguration
+public sealed class WifiMloConfiguration
 {
 	/// <summary>
 	///     List of phys participating in the MLD for the BSS An empty array means MLO is disabled An array with only the

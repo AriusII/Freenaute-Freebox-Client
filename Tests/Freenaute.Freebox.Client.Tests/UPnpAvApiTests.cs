@@ -51,7 +51,7 @@ public sealed class UPnpAvApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => new FreeboxUPnpAvApi(client.Transport)
+		await Assert.ThrowsAsync<ArgumentException>(async () => await new FreeboxUPnpAvApi(client.Transport)
 			.UpdateConfigurationAsync(new UPnpAvConfigPatch { Enabled = Optional<bool>.Null }));
 
 		Assert.Empty(ResourceRequests(handler));
@@ -65,8 +65,8 @@ public sealed class UPnpAvApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxUPnpAvApi(client.Transport).GetConfigurationAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxUPnpAvApi(client.Transport).GetConfigurationAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -89,9 +89,9 @@ public sealed class UPnpAvApiTests
 
 		var pending = new FreeboxUPnpAvApi(client.Transport).GetConfigurationAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

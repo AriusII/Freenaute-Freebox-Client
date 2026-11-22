@@ -140,6 +140,14 @@ internal static class NetworkWriteValidation
 		ArgumentNullException.ThrowIfNull(request);
 		RejectNull(request.Enabled, "enabled");
 		RejectNull(request.UseCustomDns, "use_custom_dns");
+		RejectNull(request.Dns, "dns");
+		if (request.Dns.HasValue)
+		{
+			foreach (string value in request.Dns.Value)
+			{
+				ArgumentNullException.ThrowIfNull(value);
+			}
+		}
 	}
 
 	internal static void Validate(IgdConfigurationPatch request)

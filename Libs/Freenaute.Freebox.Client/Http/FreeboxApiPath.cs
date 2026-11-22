@@ -3,12 +3,24 @@ namespace Freenaute.Freebox.Client.Http;
 /// <summary>Utilities for constructing API paths without interpreting user input as a route.</summary>
 internal static class FreeboxApiPath
 {
+	private const string RelativeSegmentError = "A route parameter must be one path segment.";
+	private const string OpaqueSegmentError = "An opaque parameter cannot contain traversal or control characters.";
+	private const string BasePathQueryError = "The API base path cannot contain a query.";
+	private const string RelativePathError = "An API path must be relative to the versioned API root.";
+	private const string ResourcePathError = "An API path must contain a resource path.";
+
+	private const string TraversalPathError =
+		"An API path cannot contain traversal, leading encoded separators or control characters.";
+
+	private const string RootEscapeError = "An API path must stay within the versioned API root.";
+	private const string RootSlash = "/";
+
 	public static string EncodeSegment(string value)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(value);
 		if (value is "." or ".." || value.IndexOfAny(['/', '\\']) >= 0)
 		{
-			throw new ArgumentException("A route parameter must be one path segment.", nameof(value));
+			throw new ArgumentException(RelativeSegmentError, nameof(value));
 		}
 
 		return Uri.EscapeDataString(value);
@@ -22,8 +34,7 @@ internal static class FreeboxApiPath
 		    value.Contains('\\', StringComparison.OrdinalIgnoreCase) || value.Any(char.IsControl) ||
 		    value.Split('/').Any(part => part is "." or ".."))
 		{
-			throw new ArgumentException("An opaque parameter cannot contain traversal or control characters.",
-				nameof(value));
+			throw new ArgumentException(OpaqueSegmentError, nameof(value));
 		}
 
 		return Uri.EscapeDataString(value);
@@ -36,10 +47,10 @@ internal static class FreeboxApiPath
 		ValidateRelativePath(relative);
 		if (relative.Contains('?', StringComparison.OrdinalIgnoreCase))
 		{
-			throw new ArgumentException("The API base path cannot contain a query.", nameof(path));
+			throw new ArgumentException(BasePathQueryError, nameof(path));
 		}
 
-		return "/" + relative.TrimEnd('/') + "/";
+		return RootSlash + relative.TrimEnd('/') + RootSlash;
 	}
 
 	internal static void ValidateRelativePath(string relativePath)
@@ -50,15 +61,14 @@ internal static class FreeboxApiPath
 		    relativePath.Contains('#', StringComparison.OrdinalIgnoreCase) ||
 		    Uri.TryCreate(relativePath, UriKind.Absolute, out _))
 		{
-			throw new ArgumentException("An API path must be relative to the versioned API root.",
-				nameof(relativePath));
+			throw new ArgumentException(RelativePathError, nameof(relativePath));
 		}
 
 		int queryIndex = relativePath.IndexOf('?', StringComparison.OrdinalIgnoreCase);
 		string path = queryIndex < 0 ? relativePath : relativePath[..queryIndex];
 		if (path.Length is 0)
 		{
-			throw new ArgumentException("An API path must contain a resource path.", nameof(relativePath));
+			throw new ArgumentException(ResourcePathError, nameof(relativePath));
 		}
 
 		foreach (string segment in path.Split('/'))
@@ -90,9 +100,7 @@ internal static class FreeboxApiPath
 			    decoded.Contains('\\', StringComparison.OrdinalIgnoreCase) ||
 			    hasTraversalSegment || hasControlCharacter)
 			{
-				throw new ArgumentException(
-					"An API path cannot contain traversal, leading encoded separators or control characters.",
-					nameof(relativePath));
+				throw new ArgumentException(TraversalPathError, nameof(relativePath));
 			}
 		}
 	}
@@ -102,7 +110,7 @@ internal static class FreeboxApiPath
 		ValidateRelativePath(relativePath);
 		var resolved = new Uri(apiAddress, relativePath);
 		return !resolved.AbsoluteUri.StartsWith(apiAddress.AbsoluteUri, StringComparison.Ordinal)
-			? throw new ArgumentException("An API path must stay within the versioned API root.", nameof(relativePath))
+			? throw new ArgumentException(RootEscapeError, nameof(relativePath))
 			: resolved;
 	}
 }

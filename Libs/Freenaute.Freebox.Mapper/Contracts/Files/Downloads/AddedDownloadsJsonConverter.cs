@@ -18,7 +18,7 @@ public sealed class AddedDownloadsJsonConverter : JsonConverter<AddedDownloads>
 				throw new JsonException();
 			}
 
-			bool isId = reader.ValueTextEquals("id"u8);
+			bool isId = reader.ValueTextEquals(MapperConstants.JsonProperties.IdUtf8);
 			if (!reader.Read())
 			{
 				throw new JsonException();
@@ -95,7 +95,7 @@ public sealed class AddedDownloadsJsonConverter : JsonConverter<AddedDownloads>
 	public override void Write(Utf8JsonWriter writer, AddedDownloads value, JsonSerializerOptions options)
 	{
 		writer.WriteStartObject();
-		writer.WritePropertyName("id");
+		writer.WritePropertyName(MapperConstants.JsonProperties.Id);
 		if (value.WasMultiple)
 		{
 			writer.WriteStartArray();

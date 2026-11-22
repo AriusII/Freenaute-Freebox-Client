@@ -12,5 +12,8 @@ public interface IFreeboxAirMediaApi
 	Task SendToReceiverAsync(string receiverName, AirMediaReceiverRequest request,
 		CancellationToken cancellationToken = default);
 
+	Task SendToLegacyReceiverRouteAsync(string receiverName, AirMediaReceiverRequest request,
+		CancellationToken cancellationToken = default);
+
 	FreeboxAirMediaReceiver Receiver(string receiverName);
 }

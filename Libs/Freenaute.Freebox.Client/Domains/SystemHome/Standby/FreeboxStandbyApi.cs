@@ -1,29 +1,31 @@
+using Freenaute.Freebox.Client.Domains.SystemHome.Support;
+
 namespace Freenaute.Freebox.Client.Domains.SystemHome.Standby;
 
 public sealed class FreeboxStandbyApi
 {
-	private readonly IFreeboxTransport transport;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxStandbyApi(IFreeboxTransport transport)
 	{
-		this.transport = transport;
+		_transport = transport;
 	}
 
-	public Task<StandbyStatus> GetStatusAsync(CancellationToken cancellationToken = default)
+	public async Task<StandbyStatus> GetStatusAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "standby/status", SystemHomeWire.Json.StandbyStatus,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.StandbyStatus, SystemHomeWire.Json.StandbyStatus,
+			cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task<StandbyConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
+	public async Task<StandbyConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "standby/config/", SystemHomeWire.Json.StandbyConfig,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.StandbyConfiguration, SystemHomeWire.Json.StandbyConfig,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	public FreeboxSystemHomeCommand<StandbyConfigUpdate, StandbyConfig> Configure()
 	{
-		return new FreeboxSystemHomeCommand<StandbyConfigUpdate, StandbyConfig>(transport, HttpMethod.Put,
+		return new FreeboxSystemHomeCommand<StandbyConfigUpdate, StandbyConfig>(_transport, HttpMethod.Put,
 			"standby/config", new StandbyConfigUpdate(), SystemHomeWire.Json.StandbyConfigUpdate,
 			SystemHomeWire.Json.StandbyConfig);
 	}

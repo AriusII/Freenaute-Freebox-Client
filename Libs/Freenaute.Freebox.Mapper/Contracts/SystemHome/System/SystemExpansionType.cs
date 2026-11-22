@@ -7,15 +7,30 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.System;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<SystemExpansionType>))]
 public readonly record struct SystemExpansionType(string Value) : ISystemHomeWireToken<SystemExpansionType>
 {
-	public bool IsKnown => Value is "unknown" or "dsl_lte" or "dsl_lte_external_antennas" or "ftth_p2p" or "ftth_pon"
-		or "security";
+	public bool IsKnown => Value is MapperConstants.SystemHomeWireTokens.SystemExpansionType.Unknown
+		or MapperConstants.SystemHomeWireTokens.SystemExpansionType.DslLte
+		or MapperConstants.SystemHomeWireTokens.SystemExpansionType.DslLteExternalAntennas
+		or MapperConstants.SystemHomeWireTokens.SystemExpansionType.FtthP2P
+		or MapperConstants.SystemHomeWireTokens.SystemExpansionType.FtthPon
+		or MapperConstants.SystemHomeWireTokens.SystemExpansionType.Security;
 
-	public static SystemExpansionType Unknown { get; } = new("unknown");
-	public static SystemExpansionType DslLte { get; } = new("dsl_lte");
-	public static SystemExpansionType DslLteExternalAntennas { get; } = new("dsl_lte_external_antennas");
-	public static SystemExpansionType FtthP2p { get; } = new("ftth_p2p");
-	public static SystemExpansionType FtthPon { get; } = new("ftth_pon");
-	public static SystemExpansionType Security { get; } = new("security");
+	public static SystemExpansionType Unknown { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemExpansionType.Unknown);
+
+	public static SystemExpansionType DslLte { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemExpansionType.DslLte);
+
+	public static SystemExpansionType DslLteExternalAntennas { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemExpansionType.DslLteExternalAntennas);
+
+	public static SystemExpansionType FtthP2P { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemExpansionType.FtthP2P);
+
+	public static SystemExpansionType FtthPon { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemExpansionType.FtthPon);
+
+	public static SystemExpansionType Security { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemExpansionType.Security);
 
 	public static SystemExpansionType FromWire(string value)
 	{

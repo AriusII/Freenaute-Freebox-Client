@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Wifi;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -21,8 +23,9 @@ public sealed class FreeboxWifiAccessPoint
 
 	/// <summary>Get a particular AP.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id</remarks>
-	public Task<WifiAp> GetAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}", Json.WifiAp, cancellationToken);
+	public async Task<WifiAp> GetAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPoint(_id), Json.WifiAp, cancellationToken)
+			.ConfigureAwait(false);
 
 	/// <summary>Update an AP.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#put--api-v9-wifi-ap-id</remarks>
@@ -30,71 +33,74 @@ public sealed class FreeboxWifiAccessPoint
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, $"wifi/ap/{_id}", request, Json.WifiAccessPointPatch, Json.WifiAp,
+		return _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Wifi.AccessPoint(_id), request, Json.WifiAccessPointPatch, Json.WifiAp,
 			cancellationToken);
 	}
 
 	/// <summary>Wi-Fi AP allowed channels.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-allowed_channel_comb</remarks>
-	public Task<WifiAllowedComb[]> GetAllowedChannelsAsync(CancellationToken cancellationToken = default)
+	public async Task<WifiAllowedComb[]> GetAllowedChannelsAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/allowed_channel_comb", Json.WifiAllowedCombArray,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPointAllowedChannelCombination(_id),
+			Json.WifiAllowedCombArray,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Get Wi-Fi Stations List.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-stations-</remarks>
 	public Task<WifiStation[]> GetStationsAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/stations/", Json.WifiStationArray,
+		return _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPointStations(_id), Json.WifiStationArray,
 			cancellationToken);
 	}
 
 	/// <summary>Get survey data history.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-channel_survey_history-timestamp</remarks>
-	public Task<WifiApChannelSurveyData[]> GetSurveyHistoryAsync(long timestamp,
+	public async Task<WifiApChannelSurveyData[]> GetSurveyHistoryAsync(long timestamp,
 		CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get,
+		return await _transport.SendAsync(HttpMethod.Get,
 			$"wifi/ap/{_id}/channel_survey_history/{NetworkPath.Number(timestamp)}", Json.WifiApChannelSurveyDataArray,
-			cancellationToken);
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Restart an AP.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#post--api-v9-wifi-ap-id-restart</remarks>
 	public Task RestartAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Post, $"wifi/ap/{_id}/restart", cancellationToken);
+		_transport.SendAsync(HttpMethod.Post, NetworkConstants.Routes.Wifi.AccessPointRestart(_id), cancellationToken);
 
 	/// <summary>List AP neighbors.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-neighbors-</remarks>
-	public Task<WifiNeighbor[]> GetNeighborsAsync(CancellationToken cancellationToken = default)
+	public async Task<WifiNeighbor[]> GetNeighborsAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/neighbors/", Json.WifiNeighborArray,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPointNeighbors(_id), Json.WifiNeighborArray,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>List Wi-Fi channels usage.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-channel_usage-</remarks>
 	public Task<WifiChannelUsage[]> GetChannelUsageAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/channel_usage/", Json.WifiChannelUsageArray,
+		return _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPointChannelUsage(_id), Json.WifiChannelUsageArray,
 			cancellationToken);
 	}
 
 	/// <summary>Refresh radar informations.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#post--api-v9-wifi-ap-id-neighbors-scan</remarks>
-	public Task ScanNeighborsAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Post, $"wifi/ap/{_id}/neighbors/scan", cancellationToken);
+	public async Task ScanNeighborsAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Post, NetworkConstants.Routes.Wifi.AccessPointNeighborsScan(_id), cancellationToken)
+			.ConfigureAwait(false);
 
 	/// <summary>Config reset value of an AP.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-default</remarks>
 	public Task<WifiApConfig> GetDefaultsAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/default", Json.WifiApConfig, cancellationToken);
+		_transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPointDefault(_id), Json.WifiApConfig, cancellationToken);
 
 	/// <summary>Per AP/BSS diagnostic.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-diag &amp; -api-v9-wifi-bss-id-diag</remarks>
-	public Task<WifiDiagItem[]> GetDiagnosticsAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/diag", Json.WifiDiagItemArray, cancellationToken);
+	public async Task<WifiDiagItem[]> GetDiagnosticsAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPointDiagnostics(_id), Json.WifiDiagItemArray, cancellationToken)
+			.ConfigureAwait(false);
 
 	/// <summary>Per AP/BSS diagnostic.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#post--api-v9-wifi-ap-id-diag &amp; -api-v9-wifi-bss-id-diag</remarks>
@@ -102,7 +108,7 @@ public sealed class FreeboxWifiAccessPoint
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Post, $"wifi/ap/{_id}/diag", request, Json.StringArray,
+		return _transport.SendAsync(HttpMethod.Post, NetworkConstants.Routes.Wifi.AccessPointDiagnostics(_id), request, Json.StringArray,
 			cancellationToken);
 	}
 }

@@ -58,4 +58,10 @@ public sealed class DhcpContractTests
 		AssertRoundTrip(
 			"""{"enabled":true,"use_custom_dns":false,"dns":["2a01::1"]}""",
 			NetworkJsonSerializerContext.Default.DHCPv6Config);
+
+	[Fact]
+	public void DhcpV6ConfigurationPatch_RoundTripsByteIdentical() =>
+		AssertRoundTrip(
+			"""{"enabled":false,"use_custom_dns":true,"dns":["2001:db8::1","2001:db8::2"]}""",
+			NetworkJsonSerializerContext.Default.DhcpV6ConfigurationPatch);
 }

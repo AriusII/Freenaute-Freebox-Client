@@ -68,14 +68,14 @@ public sealed record LcdConfigPatch : ISystemHomeRequest
 		SystemHomeRequestValidation.NoNull(LedStripAnimation, nameof(LedStripAnimation));
 		if (LedStripAnimation.HasValue && LedStripAnimation.Value.Value is null)
 		{
-			throw new ArgumentException("Undefined token.", nameof(LedStripAnimation));
+			throw new ArgumentException(MapperConstants.ExceptionMessages.Validation.UndefinedToken, nameof(LedStripAnimation));
 		}
 
 		SystemHomeRequestValidation.NoNull(HideStatusLed, nameof(HideStatusLed));
 		SystemHomeRequestValidation.NoNull(Screensaver, nameof(Screensaver));
 		if (Screensaver.HasValue && Screensaver.Value.Value is null)
 		{
-			throw new ArgumentException("Undefined token.", nameof(Screensaver));
+			throw new ArgumentException(MapperConstants.ExceptionMessages.Validation.UndefinedToken, nameof(Screensaver));
 		}
 	}
 

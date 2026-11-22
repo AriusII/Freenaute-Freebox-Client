@@ -1,29 +1,31 @@
+using Freenaute.Freebox.Client.Domains.SystemHome.Support;
+
 namespace Freenaute.Freebox.Client.Domains.SystemHome.Ledstrip;
 
 public sealed class FreeboxLedstripApi
 {
-	private readonly IFreeboxTransport transport;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxLedstripApi(IFreeboxTransport transport)
 	{
-		this.transport = transport;
+		_transport = transport;
 	}
 
-	public Task<LedstripStatus> GetStatusAsync(CancellationToken cancellationToken = default)
+	public async Task<LedstripStatus> GetStatusAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "ledstrip/status", SystemHomeWire.Json.LedstripStatus,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.LedstripStatus, SystemHomeWire.Json.LedstripStatus,
+			cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task<LedstripPlanning> GetPlanningAsync(CancellationToken cancellationToken = default)
+	public async Task<LedstripPlanning> GetPlanningAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "ledstrip/planning/", SystemHomeWire.Json.LedstripPlanning,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.LedstripPlanning, SystemHomeWire.Json.LedstripPlanning,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	public FreeboxSystemHomeCommand<LedstripPlanningUpdate, LedstripPlanning> ConfigurePlanning()
 	{
-		return new FreeboxSystemHomeCommand<LedstripPlanningUpdate, LedstripPlanning>(transport, HttpMethod.Put,
+		return new FreeboxSystemHomeCommand<LedstripPlanningUpdate, LedstripPlanning>(_transport, HttpMethod.Put,
 			"ledstrip/planning", new LedstripPlanningUpdate(), SystemHomeWire.Json.LedstripPlanningUpdate,
 			SystemHomeWire.Json.LedstripPlanning);
 	}

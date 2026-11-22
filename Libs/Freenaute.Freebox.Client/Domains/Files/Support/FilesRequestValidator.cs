@@ -15,6 +15,20 @@ internal static class FilesRequestValidator
 		return request;
 	}
 
+	public static AddDownloadBlacklistEntryRequest Validate(AddDownloadBlacklistEntryRequest request)
+	{
+		ArgumentNullException.ThrowIfNull(request);
+		ArgumentNullException.ThrowIfNull(request.Host);
+		return request;
+	}
+
+	public static AddDownloadTrackerRequest Validate(AddDownloadTrackerRequest request)
+	{
+		ArgumentNullException.ThrowIfNull(request);
+		ArgumentNullException.ThrowIfNull(request.Announce);
+		return request;
+	}
+
 
 	public static ConcatenateFilesRequest Validate(ConcatenateFilesRequest request)
 	{
@@ -104,6 +118,7 @@ internal static class FilesRequestValidator
 	public static MarkDownloadFeedItemRequest Validate(MarkDownloadFeedItemRequest request)
 	{
 		ArgumentNullException.ThrowIfNull(request);
+		RejectNull(request.IsRead, "IsRead");
 		return request;
 	}
 
@@ -176,6 +191,18 @@ internal static class FilesRequestValidator
 		ArgumentNullException.ThrowIfNull(request);
 		RejectNull(request.FetchInterval, "FetchInterval");
 		RejectNull(request.MaxItems, "MaxItems");
+		return request;
+	}
+
+	public static UpdateDlBlockListConfig Validate(UpdateDlBlockListConfig request)
+	{
+		ArgumentNullException.ThrowIfNull(request);
+		RejectNull(request.Sources, "Sources");
+		if (request.Sources.HasValue)
+		{
+			ArgumentNullException.ThrowIfNull(request.Sources.Value);
+		}
+
 		return request;
 	}
 
@@ -275,6 +302,12 @@ internal static class FilesRequestValidator
 			Validate(request.Feed.Value);
 		}
 
+		RejectNull(request.Blocklist, "Blocklist");
+		if (request.Blocklist.HasValue)
+		{
+			Validate(request.Blocklist.Value);
+		}
+
 		RejectNull(request.Dns1, "Dns1");
 		RejectNull(request.Dns2, "Dns2");
 		return request;
@@ -283,6 +316,7 @@ internal static class FilesRequestValidator
 	public static UpdateDownloadFeedRequest Validate(UpdateDownloadFeedRequest request)
 	{
 		ArgumentNullException.ThrowIfNull(request);
+		RejectNull(request.AutoDownload, "AutoDownload");
 		return request;
 	}
 
@@ -303,6 +337,14 @@ internal static class FilesRequestValidator
 		}
 
 		RejectNull(request.ArchivePassword, "ArchivePassword");
+		return request;
+	}
+
+	public static UpdateDownloadTrackerRequest Validate(UpdateDownloadTrackerRequest request)
+	{
+		ArgumentNullException.ThrowIfNull(request);
+		RejectNull(request.Announce, "Announce");
+		RejectNull(request.IsEnabled, "IsEnabled");
 		return request;
 	}
 

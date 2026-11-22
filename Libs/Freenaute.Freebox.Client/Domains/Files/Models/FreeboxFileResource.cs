@@ -3,23 +3,23 @@ namespace Freenaute.Freebox.Client.Domains.Files.Models;
 /// <summary>An immutable selector retaining the exact encoded path returned by Freebox.</summary>
 public sealed class FreeboxFileResource
 {
-	private readonly FreeboxFileSystemApi api;
-	private readonly EncodedFreeboxPath path;
+	private readonly FreeboxFileSystemApi _api;
+	private readonly EncodedFreeboxPath _path;
 
 	internal FreeboxFileResource(FreeboxFileSystemApi api, EncodedFreeboxPath path)
 	{
 		_ = path.Value;
-		this.api = api;
-		this.path = path;
+		_api = api;
+		_path = path;
 	}
 
-	public Task<FileEntry> GetInformationAsync(CancellationToken cancellationToken = default) =>
-		api.GetInformationAsync(path, cancellationToken);
+	public async Task<FileEntry> GetInformationAsync(CancellationToken cancellationToken = default) =>
+		await _api.GetInformationAsync(_path, cancellationToken).ConfigureAwait(false);
 
-	public Task<FileListing> ListAsync(FileListingOptions? options = null,
+	public async Task<FileListing> ListAsync(FileListingOptions? options = null,
 		CancellationToken cancellationToken = default) =>
-		api.ListAsync(path, options, cancellationToken);
+		await _api.ListAsync(_path, options, cancellationToken).ConfigureAwait(false);
 
-	public Task<FreeboxDownload> DownloadAsync(CancellationToken cancellationToken = default) =>
-		api.DownloadAsync(path, cancellationToken);
+	public async Task<FreeboxDownload> DownloadAsync(CancellationToken cancellationToken = default) =>
+		await _api.DownloadAsync(_path, cancellationToken).ConfigureAwait(false);
 }

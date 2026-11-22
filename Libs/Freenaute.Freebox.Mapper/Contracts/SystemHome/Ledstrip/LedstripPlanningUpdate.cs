@@ -23,7 +23,7 @@ public sealed record LedstripPlanningUpdate : ISystemHomeRequest
 		SystemHomeRequestValidation.NoNull(PlanningMode, nameof(PlanningMode));
 		if (PlanningMode.HasValue && PlanningMode.Value.Value is null)
 		{
-			throw new ArgumentException("Undefined token.", nameof(PlanningMode));
+			throw new ArgumentException(MapperConstants.ExceptionMessages.Validation.UndefinedToken, nameof(PlanningMode));
 		}
 
 		SystemHomeRequestValidation.Array(Mapping, nameof(Mapping));
@@ -40,6 +40,6 @@ public sealed record LedstripPlanningUpdate : ISystemHomeRequest
 	public LedstripPlanningUpdate WithMapping(IEnumerable<bool> values)
 	{
 		ArgumentNullException.ThrowIfNull(values);
-		return this with { Mapping = Optional<ImmutableArray<bool>>.FromValue(values.ToImmutableArray()) };
+		return this with { Mapping = Optional<ImmutableArray<bool>>.FromValue([.. values]) };
 	}
 }

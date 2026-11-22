@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Wifi;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -20,9 +22,9 @@ public sealed class FreeboxWifiStation
 
 	/// <summary>Get Wi-Fi Station.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-ap-id-stations-mac</remarks>
-	public Task<WifiStation> GetAsync(CancellationToken cancellationToken = default)
+	public async Task<WifiStation> GetAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"wifi/ap/{_id}/stations/{_mac}", Json.WifiStation,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.AccessPointStation(_id, _mac), Json.WifiStation,
+			cancellationToken).ConfigureAwait(false);
 	}
 }

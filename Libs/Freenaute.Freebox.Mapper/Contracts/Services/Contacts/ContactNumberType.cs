@@ -5,11 +5,11 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services.Contacts;
 [JsonConverter(typeof(ContactNumberTypeJsonConverter))]
 public readonly record struct ContactNumberType(string Value)
 {
-	public static ContactNumberType Fixed => new("fixed");
-	public static ContactNumberType Mobile => new("mobile");
-	public static ContactNumberType Work => new("work");
-	public static ContactNumberType Fax => new("fax");
-	public static ContactNumberType Other => new("other");
+	public static ContactNumberType Fixed => new(MapperConstants.ServiceWireTokens.Contacts.NumberType.Fixed);
+	public static ContactNumberType Mobile => new(MapperConstants.ServiceWireTokens.Contacts.NumberType.Mobile);
+	public static ContactNumberType Work => new(MapperConstants.ServiceWireTokens.Contacts.NumberType.Work);
+	public static ContactNumberType Fax => new(MapperConstants.ServiceWireTokens.Contacts.NumberType.Fax);
+	public static ContactNumberType Other => new(MapperConstants.ServiceWireTokens.Contacts.NumberType.Other);
 
 	public override string ToString() => Value ?? string.Empty;
 }

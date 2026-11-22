@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Igd;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -18,6 +20,6 @@ public sealed class FreeboxIgdRedirection
 
 	/// <summary>Delete a redirection.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#delete--api-v8-upnpigd-redir-id</remarks>
-	public Task DeleteAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Delete, $"upnpigd/redir/{_id}", cancellationToken);
+	public async Task DeleteAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Delete, NetworkConstants.Routes.Igd.Redirection(_id), cancellationToken).ConfigureAwait(false);
 }

@@ -1,16 +1,18 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Nat;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
 public sealed class FreeboxIncomingPort
 {
-	private readonly string _port_id;
+	private readonly string _portId;
 	private readonly IFreeboxTransport _transport;
 
-	public FreeboxIncomingPort(IFreeboxTransport transport, string port_id)
+	public FreeboxIncomingPort(IFreeboxTransport transport, string portId)
 	{
 		ArgumentNullException.ThrowIfNull(transport);
 		_transport = transport;
-		_port_id = FreeboxApiPath.EncodeSegment(port_id);
+		_portId = FreeboxApiPath.EncodeSegment(portId);
 	}
 
 	private static NetworkJsonSerializerContext Json => NetworkJsonSerializerContext.Default;
@@ -18,10 +20,10 @@ public sealed class FreeboxIncomingPort
 
 	/// <summary>Getting a specific incoming port.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v8-fw-incoming-port_id</remarks>
-	public Task<IncomingPortConfig> GetAsync(CancellationToken cancellationToken = default)
+	public async Task<IncomingPortConfig> GetAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"fw/incoming/{_port_id}", Json.IncomingPortConfig,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Nat.IncomingPort(_portId), Json.IncomingPortConfig,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Updating an incoming port.</summary>
@@ -31,7 +33,7 @@ public sealed class FreeboxIncomingPort
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, $"fw/incoming/{_port_id}", request, Json.IncomingPortPatch,
+		return _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Nat.IncomingPort(_portId), request, Json.IncomingPortPatch,
 			Json.IncomingPortConfig, cancellationToken);
 	}
 }

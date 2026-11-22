@@ -89,8 +89,8 @@ public sealed class TlsTests
 			return;
 		}
 
-		var error = await Assert.ThrowsAsync<HttpRequestException>(() =>
-			http.GetStringAsync(address, cancellation.Token));
+		var error = await Assert.ThrowsAsync<HttpRequestException>(async () =>
+			await http.GetStringAsync(address, cancellation.Token));
 		Assert.Equal(HttpRequestError.SecureConnectionError, error.HttpRequestError);
 
 		await server.WaitAsync(TimeSpan.FromSeconds(10));
@@ -109,7 +109,8 @@ public sealed class TlsTests
 			await stream.AuthenticateAsServerAsync(
 				new SslServerAuthenticationOptions
 				{
-					ServerCertificate = certificate, EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
+					ServerCertificate = certificate,
+					EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
 				}, cancellationToken);
 			byte[] buffer = new byte[4096];
 			int count = 0;
@@ -148,22 +149,22 @@ public sealed class TlsTests
 			var now = DateTimeOffset.UtcNow;
 			using var rootKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
 			var rootRequest = new CertificateRequest("CN=Freebox test synthetic CA", rootKey, HashAlgorithmName.SHA256);
-			rootRequest.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
+			rootRequest.CertificateExtensions.Add(new X509BasicConstraintsExtension(certificateAuthority: true, hasPathLengthConstraint: false, 0, critical: true));
 			rootRequest.CertificateExtensions.Add(
-				new X509KeyUsageExtension(X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign, true));
-			rootRequest.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(rootRequest.PublicKey, false));
+				new X509KeyUsageExtension(X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign, critical: true));
+			rootRequest.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(rootRequest.PublicKey, critical: false));
 			Root = rootRequest.CreateSelfSigned(now.AddYears(-1), now.AddYears(1));
 
 			using var leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
 			var leafRequest =
 				new CertificateRequest("CN=Freebox test synthetic server", leafKey, HashAlgorithmName.SHA256);
-			leafRequest.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, true));
-			leafRequest.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, true));
+			leafRequest.CertificateExtensions.Add(new X509BasicConstraintsExtension(certificateAuthority: false, hasPathLengthConstraint: false, 0, critical: true));
+			leafRequest.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, critical: true));
 			leafRequest.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(
 				new OidCollection
 				{
 					new Oid(scenario is "client-auth-only" ? "1.3.6.1.5.5.7.3.2" : "1.3.6.1.5.5.7.3.1")
-				}, true));
+				}, critical: true));
 			var san = new SubjectAlternativeNameBuilder();
 			if (scenario is "wrong-name")
 			{

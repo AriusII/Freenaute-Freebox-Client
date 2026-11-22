@@ -85,7 +85,7 @@ public sealed class ProtocolContractTests
 				options.WithApplicationVersion(version);
 			}
 		}).ConfigurePrimaryHttpMessageHandler(() => handler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 
 		await provider.GetRequiredService<IFreeboxClient>().AirMedia.GetConfigurationAsync();
 
@@ -113,18 +113,19 @@ public sealed class ProtocolContractTests
 	[Fact]
 	public void WebSocketCorrelationUsesRequestIdWireFieldInBothDirections()
 	{
-		using var request = JsonDocument.Parse(JsonSerializer.Serialize(new WebSocketRequest(17, "ping"),
+		const long requestId = 5_000_000_000;
+		using var request = JsonDocument.Parse(JsonSerializer.Serialize(new WebSocketRequest(requestId, "ping"),
 			FreeboxJsonSerializerContext.Default.WebSocketRequest));
-		Assert.Equal(17, request.RootElement.GetProperty("request_id").GetInt32());
+		Assert.Equal(requestId, request.RootElement.GetProperty("request_id").GetInt64());
 		Assert.False(request.RootElement.TryGetProperty("req_id", out _));
 
 		var response = JsonSerializer.Deserialize(
-			"""{"request_id":17,"action":"ping","success":true,"result":{"response":"pong"}}""",
+			"""{"request_id":5000000000,"action":"ping","success":true,"result":{"response":"pong"}}""",
 			FreeboxJsonSerializerContext.Default.WebSocketResponse);
 		Assert.NotNull(response);
-		Assert.Equal(17, response.RequestId);
+		Assert.Equal(requestId, response.RequestId);
 		Assert.Equal("pong", response.Result?.GetProperty("response").GetString());
-		using var optional = JsonDocument.Parse(JsonSerializer.Serialize(new WebSocketRequest(null, "ping"),
+		using var optional = JsonDocument.Parse(JsonSerializer.Serialize(new WebSocketRequest(RequestId: null, "ping"),
 			FreeboxJsonSerializerContext.Default.WebSocketRequest));
 		Assert.False(optional.RootElement.TryGetProperty("request_id", out _));
 	}

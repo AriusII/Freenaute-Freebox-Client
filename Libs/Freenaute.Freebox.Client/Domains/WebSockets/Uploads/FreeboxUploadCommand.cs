@@ -11,7 +11,7 @@ public sealed class FreeboxUploadCommand
 	private readonly IFreeboxWebSocketTransport _transport;
 
 	public FreeboxUploadCommand(IFreeboxWebSocketTransport transport, EncodedFreeboxPath directory, string filename)
-		: this(transport, directory, filename, null, null, 512 * 1024)
+		: this(transport, directory, filename, force: null, size: null, 512 * 1024)
 	{
 	}
 
@@ -51,19 +51,15 @@ public sealed class FreeboxUploadCommand
 	}
 
 	/// <summary>Controls local binary message size, bounded by the conservative one-million-byte WebSocket limit.</summary>
-	public FreeboxUploadCommand WithChunkSize(int bytes)
-	{
-		if (bytes is < 1 or > 1_000_000)
-		{
-			throw new ArgumentOutOfRangeException(nameof(bytes));
-		}
-
-		return new FreeboxUploadCommand(_transport, _directory, _filename, _force, _size, bytes);
-	}
+	public FreeboxUploadCommand WithChunkSize(int bytes) =>
+		bytes is < 1 or > 1_000_000
+			? throw new ArgumentOutOfRangeException(nameof(bytes))
+			: new FreeboxUploadCommand(_transport, _directory, _filename, _force, _size, bytes);
 
 	public async Task<FreeboxUploadSession> OpenAsync(CancellationToken cancellationToken = default)
 	{
-		var connection = await _transport.ConnectAsync("ws/upload", cancellationToken).ConfigureAwait(false);
+		var connection = await _transport.ConnectAsync(FreeboxWebSocketUploadsApi.Route, cancellationToken)
+			.ConfigureAwait(false);
 		return await FreeboxUploadSession.StartAsync(connection,
 			new FileUploadStartRequest
 			{

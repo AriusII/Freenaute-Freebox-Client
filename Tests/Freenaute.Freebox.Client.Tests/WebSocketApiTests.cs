@@ -50,7 +50,7 @@ public sealed class WebSocketApiTests
 		};
 		var transport = new SocketFixtureTransport(socket);
 		var path = EncodedFreeboxPath.FromEncoded("L0Rpc3F1ZSBkdXIvMF91cGxvYWRfdGVzdA==");
-		await using var source = new MemoryStream(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+		await using var source = new MemoryStream([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 		var result = await new FreeboxWebSocketsApi(transport).Uploads.To(path).File("épreuve.bin")
 			.Overwrite().WithSize(9).WithChunkSize(4).SendAsync(source, progress: progress);
 
@@ -112,9 +112,9 @@ public sealed class WebSocketApiTests
 			.To(EncodedFreeboxPath.FromUtf8Path("/Disque dur")).File("partial.bin")
 			.SendAsync(source, cancellation.Token);
 		await writing.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 
 		Assert.True(socket.WasDisposed);
 		Assert.Equal("upload_start", Assert.Single(socket.Controls()).GetProperty("action").GetString());
@@ -164,8 +164,8 @@ public sealed class WebSocketApiTests
 			return Task.CompletedTask;
 		};
 		using var source = new MemoryStream([1]);
-		var exception = await Assert.ThrowsAsync<FreeboxWebSocketApiException>(() =>
-			new FreeboxWebSocketsApi(new SocketFixtureTransport(socket)).Uploads
+		var exception = await Assert.ThrowsAsync<FreeboxWebSocketApiException>(async () =>
+			await new FreeboxWebSocketsApi(new SocketFixtureTransport(socket)).Uploads
 				.To(EncodedFreeboxPath.FromUtf8Path("/Disque dur")).File("conflict.bin").SendAsync(source));
 
 		Assert.Equal("conflict", exception.ErrorCode);
@@ -203,7 +203,7 @@ public sealed class WebSocketApiTests
 			return Task.CompletedTask;
 		};
 		using var source = new MemoryStream();
-		await Assert.ThrowsAsync<JsonException>(() => new FreeboxWebSocketsApi(new SocketFixtureTransport(socket))
+		await Assert.ThrowsAsync<JsonException>(async () => await new FreeboxWebSocketsApi(new SocketFixtureTransport(socket))
 			.Uploads
 			.To(EncodedFreeboxPath.FromUtf8Path("/Disque dur")).File("empty.bin").WithSize(0).SendAsync(source));
 		Assert.True(socket.WasDisposed);
@@ -230,8 +230,8 @@ public sealed class WebSocketApiTests
 			}
 		};
 		using var source = new MemoryStream([1, 2, 3]);
-		var exception = await Assert.ThrowsAsync<FreeboxWebSocketApiException>(() =>
-			new FreeboxWebSocketsApi(new SocketFixtureTransport(socket)).Uploads
+		var exception = await Assert.ThrowsAsync<FreeboxWebSocketApiException>(async () =>
+			await new FreeboxWebSocketsApi(new SocketFixtureTransport(socket)).Uploads
 				.To(EncodedFreeboxPath.FromUtf8Path("/Disque dur")).File("disk-full.bin").SendAsync(source));
 
 		Assert.Equal("disk_full", exception.ErrorCode);
@@ -264,7 +264,7 @@ public sealed class WebSocketApiTests
 		}
 
 		Assert.Equal("ws/event", Assert.Single(transport.Paths));
-		Assert.Equal(new[] { "lan_host_l3addr_reachable", "lan_host_l3addr_unreachable" },
+		Assert.Equal(["lan_host_l3addr_reachable", "lan_host_l3addr_unreachable"],
 			socket.Controls().Single().GetProperty("events").EnumerateArray().Select(x => x.GetString()));
 		var notification = Assert.Single(events);
 		Assert.Equal("hôte", notification.GetLanHost()!.Id);
@@ -281,9 +281,9 @@ public sealed class WebSocketApiTests
 		using var cancellation = new CancellationTokenSource();
 		await using var reader = subscription.ReadAllAsync(cancellation.Token).GetAsyncEnumerator();
 		var pending = reader.MoveNextAsync().AsTask();
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 		Assert.True(socket.WasDisposed);
 		Assert.Single(socket.Controls());
 	}

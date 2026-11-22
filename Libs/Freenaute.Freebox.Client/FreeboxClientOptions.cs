@@ -147,7 +147,7 @@ public sealed class FreeboxClientOptions : IValidatableObject
 
 	internal FreeboxClientOptions CreateValidatedSnapshot()
 	{
-		var validation = new FreeboxClientOptionsValidator().Validate(null, this);
+		var validation = new FreeboxClientOptionsValidator().Validate(name: null, this);
 		if (validation.Failed)
 		{
 			throw new OptionsValidationException(validation.FailureMessage, typeof(FreeboxClientOptions),

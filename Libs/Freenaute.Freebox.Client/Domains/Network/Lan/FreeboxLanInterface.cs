@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Lan;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -21,8 +23,9 @@ public sealed class FreeboxLanInterface
 
 	/// <summary>Getting the list of hosts on a given interface.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v16-lan-browser-interface-</remarks>
-	public Task<LanHost[]> GetHostsAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, $"lan/browser/{_interface}/", Json.LanHostArray, cancellationToken);
+	public async Task<LanHost[]> GetHostsAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Lan.InterfaceHosts(_interface), Json.LanHostArray, cancellationToken)
+			.ConfigureAwait(false);
 
 	/// <summary>Send Wake ok Lan packet to an host.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#post--api-v8-lan-wol-interface-</remarks>
@@ -30,7 +33,7 @@ public sealed class FreeboxLanInterface
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Post, $"lan/wol/{_interface}/", request, Json.WakeOnLanRequest,
+		return _transport.SendAsync(HttpMethod.Post, NetworkConstants.Routes.Lan.WakeOnLanInterface(_interface), request, Json.WakeOnLanRequest,
 			cancellationToken);
 	}
 }

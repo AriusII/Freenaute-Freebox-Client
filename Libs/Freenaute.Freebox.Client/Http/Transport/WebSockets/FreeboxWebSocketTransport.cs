@@ -21,7 +21,7 @@ internal sealed class FreeboxWebSocketTransport(FreeboxHttpTransportCore core) :
 		try
 		{
 			var apiAddress = await core.GetApiAddressAsync(handshake.Token).ConfigureAwait(false);
-			session = await core.ResolveSessionAsync(true,
+			session = await core.ResolveSessionAsync(requiresAuthentication: true,
 				"Open a session before opening an authenticated WebSocket.", handshake.Token).ConfigureAwait(false);
 			var address = FreeboxApiPath.Resolve(apiAddress, relativePath);
 			var websocketAddress = new UriBuilder(address)

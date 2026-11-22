@@ -4,28 +4,42 @@ internal sealed class FreeboxAirMediaApi(FreeboxHttpTransport transport) : IFree
 {
 	private static readonly FreeboxJsonSerializerContext Json = FreeboxJsonSerializerContext.Default;
 
-	public Task<AirMediaConfigResponse> GetConfigurationAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Get, "airmedia/config/", Json.AirMediaConfigResponse, cancellationToken);
+	public async Task<AirMediaConfigResponse> GetConfigurationAsync(CancellationToken cancellationToken = default) =>
+		await transport.SendAsync(HttpMethod.Get, ClientConstants.Routes.AirMedia.Configuration,
+			Json.AirMediaConfigResponse, cancellationToken)
+			.ConfigureAwait(false);
 
-	public Task<AirMediaConfigResponse> UpdateConfigurationAsync(UpdateAirMediaConfigRequest request,
+	public async Task<AirMediaConfigResponse> UpdateConfigurationAsync(UpdateAirMediaConfigRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Put, "airmedia/config/", request, Json.UpdateAirMediaConfigRequest,
-			Json.AirMediaConfigResponse, cancellationToken);
+		return await transport.SendAsync(HttpMethod.Put, ClientConstants.Routes.AirMedia.Configuration, request,
+			Json.UpdateAirMediaConfigRequest, Json.AirMediaConfigResponse, cancellationToken).ConfigureAwait(false);
 	}
 
 	public async Task<IReadOnlyList<AirMediaReceiverResponse>> GetReceiversAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return await transport.SendAsync(HttpMethod.Get, "airmedia/receivers/", Json.AirMediaReceiverResponseArray,
+		return await transport.SendAsync(HttpMethod.Get, ClientConstants.Routes.AirMedia.Receivers,
+			Json.AirMediaReceiverResponseArray,
 			cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task SendToReceiverAsync(string receiverName, AirMediaReceiverRequest request,
+	public async Task SendToReceiverAsync(string receiverName, AirMediaReceiverRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Post, $"airmedia/receivers/{FreeboxApiPath.EncodeSegment(receiverName)}/",
-			request, Json.AirMediaReceiverRequest, cancellationToken);
+		await transport.SendAsync(HttpMethod.Post,
+			$"{ClientConstants.Routes.AirMedia.Receivers}{FreeboxApiPath.EncodeSegment(receiverName)}/",
+			request, Json.AirMediaReceiverRequest, cancellationToken).ConfigureAwait(false);
+	}
+
+	/// <summary>Legacy typo route retained in Freebox documentation.</summary>
+	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#post--api-v8-airmedia-receviers-receiver_name-</remarks>
+	public async Task SendToLegacyReceiverRouteAsync(string receiverName, AirMediaReceiverRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		await transport.SendAsync(HttpMethod.Post,
+			$"{ClientConstants.Routes.AirMedia.LegacyReceiversTypo}{FreeboxApiPath.EncodeSegment(receiverName)}/",
+			request, Json.AirMediaReceiverRequest, cancellationToken).ConfigureAwait(false);
 	}
 
 	public FreeboxAirMediaReceiver Receiver(string receiverName) => new(this, receiverName);

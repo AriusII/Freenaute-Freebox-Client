@@ -22,7 +22,9 @@ public sealed class WifiMacFilterWpsApiTests
 		var filters = await wifi.GetMacFiltersAsync();
 		var created = await wifi.CreateMacFilterAsync(new CreateWifiMacFilterRequest
 		{
-			Mac = "00:11:22:33:44:55", Type = "blacklist", Comment = "fixture"
+			Mac = "00:11:22:33:44:55",
+			Type = "blacklist",
+			Comment = "fixture"
 		});
 		var fetched = await wifi.MacFilter("filter-1").GetAsync();
 		var updated = await wifi.MacFilter("filter-1")
@@ -106,6 +108,79 @@ public sealed class WifiMacFilterWpsApiTests
 	}
 
 	[Fact]
+	public async Task WifiDomainRoutesAndMloLifecycleUseExpectedPaths()
+	{
+		using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(
+			request.Address.AbsolutePath.EndsWith("/state/", StringComparison.Ordinal)
+				? FixtureHandler.Json("""{"success":true,"result":{"state":"enabled"}}""")
+				: request.Address.AbsolutePath.EndsWith("/stations/", StringComparison.Ordinal)
+					? FixtureHandler.Json(
+						"""{"success":true,"result":[{"id":"aa:bb:cc:dd:ee:ff","mac":"aa:bb:cc:dd:ee:ff"}]}""")
+					: request.Address.AbsolutePath.Contains("/stations/", StringComparison.Ordinal)
+						? FixtureHandler.Json(
+							"""{"success":true,"result":{"id":"aa:bb:cc:dd:ee:ff","mac":"aa:bb:cc:dd:ee:ff"}}""")
+						: request.Address.AbsolutePath.Contains("/allowed_channel_comb", StringComparison.Ordinal)
+							? FixtureHandler.Json(
+								"""{"success":true,"result":[{"band":"5g","channel_width":"80mhz","need_dfs":false,"primary":36,"secondary":40}]}""")
+							: request.Address.AbsolutePath.Contains("/channel_survey_history/",
+								StringComparison.Ordinal)
+								? FixtureHandler.Json("""{"success":true,"result":[]}""")
+								: request.Address.AbsolutePath.EndsWith("/diag", StringComparison.Ordinal)
+									? FixtureHandler.Json("""{"success":true,"result":[]}""")
+									: request.Address.AbsolutePath.Contains("/mlo/allowed_comb",
+										StringComparison.Ordinal)
+										? FixtureHandler.Json("""{"success":true,"result":[[1,2],[1]]}""")
+										: request.Address.AbsolutePath.EndsWith("/mlo/config", StringComparison.Ordinal)
+											? FixtureHandler.Json("""{"success":true,"result":{"partners":[1,2]}}""")
+											: FixtureHandler.Json("""{"success":true,"result":{}}""")));
+		using var http = new HttpClient(handler);
+		using var client = HttpClientTests.CreateClient(http);
+		var wifi = new FreeboxWifiApi(client.Transport);
+
+		await wifi.GetSteeringAsync();
+		await wifi.UpdateSteeringAsync(new WifiSteeringConfigurationPatch { SteeringLevel = 2 });
+		await wifi.GetStateAsync();
+		await wifi.GetPlanningAsync();
+		await wifi.UpdatePlanningAsync(new WifiPlanningPatch
+		{
+			UsePlanning = true,
+			Mapping = Optional<string[]>.FromValue(["on", "off"])
+		});
+		await wifi.GetTemporaryDisableAsync();
+		await wifi.TemporarilyDisableAsync(new TemporaryWifiDisableRequest { Duration = 300, Keep = "5g" });
+		await wifi.AccessPoint(1).GetStationsAsync();
+		await wifi.AccessPoint(1).Station("aa:bb:cc:dd:ee:ff").GetAsync();
+		await wifi.AccessPoint(1).GetAllowedChannelsAsync();
+		await wifi.AccessPoint(1).GetSurveyHistoryAsync(1700000000);
+		await wifi.AccessPoint(1).ScanNeighborsAsync();
+		await wifi.AccessPoint(1).GetDefaultsAsync();
+		await wifi.AccessPoint(1).GetDiagnosticsAsync();
+		await wifi.Bss("aa:bb:cc:dd:ee:ff").GetAllowedMloPartnersAsync();
+		await wifi.Bss("aa:bb:cc:dd:ee:ff").GetMloConfigurationAsync();
+
+		var requests = ResourceRequests(handler).ToArray();
+		Assert.Contains(requests, request =>
+			request.Address.AbsolutePath == "/api/v16/wifi/steering/config/");
+		Assert.Contains(requests, request =>
+			request.Address.AbsolutePath == "/api/v16/wifi/planning/" &&
+			request.Method == HttpMethod.Put);
+		Assert.Contains(requests, request =>
+			request.Address.AbsolutePath.StartsWith("/api/v16/wifi/temp_disable", StringComparison.Ordinal));
+		Assert.Contains(requests, request =>
+			request.Address.AbsolutePath.Contains("/api/v16/wifi/ap/1/stations/", StringComparison.Ordinal) &&
+			request.Method == HttpMethod.Get);
+		Assert.Contains(requests, request =>
+			request.Address.AbsolutePath.Contains("/api/v16/wifi/ap/1/channel_survey_history/",
+				StringComparison.Ordinal));
+		Assert.Contains(requests, request =>
+			request.Address.AbsolutePath.Contains("/api/v16/wifi/bss/", StringComparison.Ordinal) &&
+			request.Address.AbsolutePath.EndsWith("/mlo/allowed_comb", StringComparison.Ordinal));
+		Assert.Contains(requests, request =>
+			request.Address.AbsolutePath.Contains("/api/v16/wifi/bss/", StringComparison.Ordinal) &&
+			request.Address.AbsolutePath.EndsWith("/mlo/config", StringComparison.Ordinal));
+	}
+
+	[Fact]
 	public async Task ValidationFailsBeforeAnyHttpRequest()
 	{
 		using var handler = FixtureHandler.Constant("{}");
@@ -113,15 +188,15 @@ public sealed class WifiMacFilterWpsApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var wifi = new FreeboxWifiApi(client.Transport);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => wifi.CreateMacFilterAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await wifi.CreateMacFilterAsync(
 			new CreateWifiMacFilterRequest { Mac = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => wifi.MacFilter("filter-1")
+		await Assert.ThrowsAsync<ArgumentException>(async () => await wifi.MacFilter("filter-1")
 			.UpdateAsync(new WifiMacFilterPatch { Type = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => wifi.Wps.UpdateConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await wifi.Wps.UpdateConfigurationAsync(
 			new WifiWpsConfigurationPatch { Enabled = Optional<bool>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => wifi.Wps.StartAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await wifi.Wps.StartAsync(
 			new WifiWpsStartRequest { Bssid = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => wifi.Wps.StopAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await wifi.Wps.StopAsync(
 			new WifiWpsStopRequest { SessionId = Optional<long>.Null }));
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -134,8 +209,8 @@ public sealed class WifiMacFilterWpsApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxWifiApi(client.Transport).Wps.GetSessionsAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxWifiApi(client.Transport).Wps.GetSessionsAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -158,9 +233,9 @@ public sealed class WifiMacFilterWpsApiTests
 
 		var pending = new FreeboxWifiApi(client.Transport).GetMacFiltersAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

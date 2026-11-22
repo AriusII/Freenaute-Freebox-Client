@@ -14,6 +14,8 @@ internal sealed class FreeboxServicesApi : IFreeboxServicesApi
 		Ftp = new FreeboxFtpApi(transport);
 		Tftp = new FreeboxTftpApi(transport);
 		NetworkShare = new FreeboxNetworkShareApi(transport);
+		Pvr = new FreeboxPvrApi(transport);
+		Rrd = new FreeboxRrdApi(transport);
 		UPnpAv = new FreeboxUPnpAvApi(transport);
 		Player = new FreeboxPlayerApi(transport);
 	}
@@ -23,6 +25,8 @@ internal sealed class FreeboxServicesApi : IFreeboxServicesApi
 	public FreeboxFtpApi Ftp { get; }
 	public FreeboxTftpApi Tftp { get; }
 	public FreeboxNetworkShareApi NetworkShare { get; }
+	public FreeboxPvrApi Pvr { get; }
+	public FreeboxRrdApi Rrd { get; }
 	public FreeboxUPnpAvApi UPnpAv { get; }
 	public FreeboxPlayerApi Player { get; }
 }

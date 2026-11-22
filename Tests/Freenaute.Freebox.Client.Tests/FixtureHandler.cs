@@ -26,8 +26,8 @@ internal sealed class FixtureHandler(
 		Func<CapturedRequest, CancellationToken, Task<HttpResponseMessage>> respond,
 		string sessionToken = "fixture-session", bool provideDiscovery = true)
 	{
-		return new FixtureHandler((request, cancellationToken) =>
-			provideDiscovery && request.Address.AbsolutePath is "/api_version"
+		return new FixtureHandler(async (request, cancellationToken) =>
+			await (provideDiscovery && request.Address.AbsolutePath is "/api_version"
 				? Task.FromResult(Json(HttpClientTests.DiscoveryJson))
 				: request.Address.AbsolutePath.EndsWith("/login/", StringComparison.Ordinal)
 					? Task.FromResult(
@@ -35,7 +35,7 @@ internal sealed class FixtureHandler(
 					: request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)
 						? Task.FromResult(Json(
 							$"{{\"success\":true,\"result\":{{\"session_token\":\"{sessionToken}\",\"challenge\":\"next\",\"permissions\":{{\"settings\":true}}}}}}"))
-						: respond(request, cancellationToken));
+						: respond(request, cancellationToken)));
 	}
 
 	public static FixtureHandler AuthenticatedConstant(string json, HttpStatusCode status = HttpStatusCode.OK) =>

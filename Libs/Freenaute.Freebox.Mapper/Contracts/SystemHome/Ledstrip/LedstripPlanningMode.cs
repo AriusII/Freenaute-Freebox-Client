@@ -7,8 +7,10 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.Ledstrip;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<LedstripPlanningMode>))]
 public readonly record struct LedstripPlanningMode(string Value) : ISystemHomeWireToken<LedstripPlanningMode>
 {
-	public bool IsKnown => Value is "ledstrip_off";
-	public static LedstripPlanningMode LedstripOff { get; } = new("ledstrip_off");
+	public bool IsKnown => Value is MapperConstants.SystemHomeWireTokens.LedstripPlanningMode.LedstripOff;
+
+	public static LedstripPlanningMode LedstripOff { get; } =
+		new(MapperConstants.SystemHomeWireTokens.LedstripPlanningMode.LedstripOff);
 
 	public static LedstripPlanningMode FromWire(string value)
 	{

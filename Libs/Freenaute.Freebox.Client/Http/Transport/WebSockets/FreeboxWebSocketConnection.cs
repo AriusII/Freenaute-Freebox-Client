@@ -4,7 +4,7 @@ namespace Freenaute.Freebox.Client.Http.Transport.WebSockets;
 public sealed class FreeboxWebSocketConnection : IDisposable, IAsyncDisposable
 {
 	public const int MaximumMessageBytes = 1_000_000;
-	private static readonly UTF8Encoding Utf8 = new(false, true);
+	private static readonly UTF8Encoding Utf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 	private readonly CancellationTokenSource _closed = new();
 	private readonly IFreeboxMapper _mapper = FreeboxMapper.Default;
 	private readonly Queue<JsonElement> _messages = new();
@@ -63,14 +63,15 @@ public sealed class FreeboxWebSocketConnection : IDisposable, IAsyncDisposable
 		_closed.Dispose();
 	}
 
-	public Task SendJsonAsync<T>(T value, JsonTypeInfo<T> jsonType, CancellationToken cancellationToken = default)
+	public async Task SendJsonAsync<T>(T value, JsonTypeInfo<T> jsonType, CancellationToken cancellationToken = default)
 	{
 		ArgumentNullException.ThrowIfNull(jsonType);
-		return SendAsync(_mapper.ToUtf8Bytes(value, jsonType), WebSocketMessageType.Text, cancellationToken);
+		await SendAsync(_mapper.ToUtf8Bytes(value, jsonType), WebSocketMessageType.Text, cancellationToken)
+			.ConfigureAwait(false);
 	}
 
-	public Task SendBinaryAsync(ReadOnlyMemory<byte> value, CancellationToken cancellationToken = default) =>
-		SendAsync(value, WebSocketMessageType.Binary, cancellationToken);
+	public async Task SendBinaryAsync(ReadOnlyMemory<byte> value, CancellationToken cancellationToken = default) =>
+		await SendAsync(value, WebSocketMessageType.Binary, cancellationToken).ConfigureAwait(false);
 
 	private async Task SendAsync(ReadOnlyMemory<byte> value, WebSocketMessageType type,
 		CancellationToken cancellationToken)
@@ -85,7 +86,7 @@ public sealed class FreeboxWebSocketConnection : IDisposable, IAsyncDisposable
 		await _writer.WaitAsync(operation.Token).ConfigureAwait(false);
 		try
 		{
-			await _socket.SendAsync(value, type, true, operation.Token).ConfigureAwait(false);
+			await _socket.SendAsync(value, type, endOfMessage: true, operation.Token).ConfigureAwait(false);
 		}
 		finally
 		{
@@ -133,7 +134,7 @@ public sealed class FreeboxWebSocketConnection : IDisposable, IAsyncDisposable
 						throw new JsonException("The Freebox WebSocket message exceeds 1 MB.");
 					}
 
-					content.Write(rented, 0, result.Count);
+					await content.WriteAsync(rented, 0, result.Count).ConfigureAwait(false);
 					if (!result.EndOfMessage)
 					{
 						continue;
@@ -143,12 +144,9 @@ public sealed class FreeboxWebSocketConnection : IDisposable, IAsyncDisposable
 					try
 					{
 						using var complete = JsonDocument.Parse(text);
-						if (complete.RootElement.ValueKind is not JsonValueKind.Object)
-						{
-							throw new JsonException("A WebSocket JSON record must be an object.");
-						}
-
-						return complete.RootElement.Clone();
+						return complete.RootElement.ValueKind is not JsonValueKind.Object
+							? throw new JsonException("A WebSocket JSON record must be an object.")
+							: complete.RootElement.Clone();
 					}
 					catch (JsonException jsonError)
 					{

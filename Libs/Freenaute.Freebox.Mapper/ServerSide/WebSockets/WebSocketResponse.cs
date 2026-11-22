@@ -4,7 +4,7 @@ namespace Freenaute.Freebox.Mapper.ServerSide.WebSockets;
 ///     Represents a WebSocket response.
 /// </summary>
 /// <param name="RequestId">
-///     The request ID. If set in the WebSocketRequest, the same ID will be returned in the associated
+///     The optional request ID. If set in the WebSocketRequest, the same ID will be returned in the associated
 ///     response.
 /// </param>
 /// <param name="Action">The action specified in the associated WebSocketRequest.</param>
@@ -15,8 +15,9 @@ namespace Freenaute.Freebox.Mapper.ServerSide.WebSockets;
 public sealed record WebSocketResponse(
 	[property: JsonPropertyName("request_id")]
 	[property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-	int? RequestId,
-	[property: JsonPropertyName("action")] string Action,
+	long? RequestId,
+	[property: JsonPropertyName(MapperConstants.JsonProperties.Action)]
+	string Action,
 	[property: JsonPropertyName("success")]
 	bool Success,
 	[property: JsonPropertyName("result")] JsonElement? Result = null,

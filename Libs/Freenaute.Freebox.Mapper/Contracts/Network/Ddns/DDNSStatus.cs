@@ -4,7 +4,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network.Ddns;
 ///     Wire contract documented at http://mafreebox.freebox.fr/doc/index.html#DDNSStatus.
 ///     Missing read values are represented by nullable properties; this does not assert server acceptance of JSON null.
 /// </summary>
-public sealed class DDNSStatus
+public sealed class DdnsStatus
 {
 	/// <summary>
 	///     Status Description disabled Disabled ok Ok wait Updating reqfail Request failed authfail Authentication error

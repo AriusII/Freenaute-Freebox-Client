@@ -2,21 +2,22 @@ namespace Freenaute.Freebox.Client.Domains.SystemHome.Profiles;
 
 public sealed class FreeboxProfileResource
 {
-	private readonly string path;
-	private readonly IFreeboxTransport transport;
+	private readonly string _path;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxProfileResource(IFreeboxTransport transport, long id)
 	{
-		this.transport = transport;
-		path = "profile/" + SystemHomeWire.Id(id);
+		_transport = transport;
+		_path = "profile/" + SystemHomeWire.Id(id);
 		NetworkControl = new FreeboxNetworkControlResource(transport, id);
 	}
 
 	public FreeboxNetworkControlResource NetworkControl { get; }
 
-	public Task<Profile> GetAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Get, path, SystemHomeWire.Json.Profile, cancellationToken);
+	public async Task<Profile> GetAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, _path, SystemHomeWire.Json.Profile, cancellationToken)
+			.ConfigureAwait(false);
 
-	public Task DeleteAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Delete, path, cancellationToken);
+	public async Task DeleteAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Delete, _path, cancellationToken).ConfigureAwait(false);
 }

@@ -29,8 +29,8 @@ public sealed class FreeboxContactItems<TRead, TWrite> where TWrite : class, new
 		_bindContact = bindContact;
 	}
 
-	public Task<TRead[]> GetAllAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, _listPath, _listType, cancellationToken);
+	public async Task<TRead[]> GetAllAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, _listPath, _listType, cancellationToken).ConfigureAwait(false);
 
 	public FreeboxServiceResource<TRead, TWrite> Item(long id)
 	{
@@ -38,12 +38,13 @@ public sealed class FreeboxContactItems<TRead, TWrite> where TWrite : class, new
 			_writeType, _validate);
 	}
 
-	public Task<TRead> CreateAsync(TWrite request, CancellationToken cancellationToken = default)
+	public async Task<TRead> CreateAsync(TWrite request, CancellationToken cancellationToken = default)
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		var bound = _bindContact(request);
 		_validate(bound);
-		return _transport.SendAsync(HttpMethod.Post, _itemRoot, bound, _writeType, _readType, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Post, _itemRoot, bound, _writeType, _readType, cancellationToken)
+			.ConfigureAwait(false);
 	}
 
 	public FreeboxServiceCommand<TWrite, TRead> Create() => new(new TWrite(), CreateAsync);

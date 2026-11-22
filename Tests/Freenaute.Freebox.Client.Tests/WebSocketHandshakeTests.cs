@@ -14,12 +14,29 @@ public sealed class WebSocketHandshakeTests
 				ApiVersion = 16,
 				ApplicationId = "org.fixture"
 			}, HttpClientTests.ApprovedCredentials());
-		using var connection = await client.WebSocketTransport.ConnectAsync("ws/event");
+		await using var connection = await client.WebSocketTransport.ConnectAsync("ws/event");
 		Assert.Equal("fixture.example", handler.UpgradeAddress!.Host);
 		Assert.Equal(8443, handler.UpgradeAddress.Port);
 		Assert.Equal("/api/v16/ws/event", handler.UpgradeAddress.AbsolutePath);
 		Assert.Equal("fixture-session", handler.SessionToken);
 		Assert.Equal(1, handler.Upgrades);
+	}
+
+	[Fact]
+	public async Task UploadWebSocketUpgradeUsesSameRouteShapeAsEvents()
+	{
+		using var handler = new UpgradeHandler();
+		using var http = new HttpClient(handler);
+		using var client = new FreeboxClient(http,
+			new FreeboxClientOptions
+			{
+				ServerAddress = new Uri("https://fixture.example/"),
+				ApiVersion = 16,
+				ApplicationId = "org.fixture"
+			}, HttpClientTests.ApprovedCredentials());
+		await using var connection = await client.WebSocketTransport.ConnectAsync(FreeboxWebSocketUploadsApi.Route);
+
+		Assert.Equal("/api/v16/ws/upload", handler.UpgradeAddress!.AbsolutePath);
 	}
 
 	[Theory]
@@ -32,9 +49,11 @@ public sealed class WebSocketHandshakeTests
 		using var client = new FreeboxClient(http,
 			new FreeboxClientOptions
 			{
-				ServerAddress = new Uri("https://fixture.example/"), ApiVersion = 16, ApplicationId = "org.fixture"
+				ServerAddress = new Uri("https://fixture.example/"),
+				ApiVersion = 16,
+				ApplicationId = "org.fixture"
 			}, HttpClientTests.ApprovedCredentials());
-		await Assert.ThrowsAsync<WebSocketException>(() => client.WebSocketTransport.ConnectAsync("ws/event"));
+		await Assert.ThrowsAsync<WebSocketException>(async () => await client.WebSocketTransport.ConnectAsync("ws/event"));
 		Assert.Equal(1, handler.Upgrades);
 		Assert.Equal(1, handler.SessionRequests);
 		await client.Authentication.OpenSessionAsync();
@@ -79,7 +98,8 @@ public sealed class WebSocketHandshakeTests
 					SHA1.HashData(Encoding.ASCII.GetBytes(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
 			var response = new HttpResponseMessage(upgradeStatus)
 			{
-				Version = HttpVersion.Version11, Content = new DuplexContent()
+				Version = HttpVersion.Version11,
+				Content = new DuplexContent()
 			};
 			response.Headers.TryAddWithoutValidation("Connection", "Upgrade");
 			response.Headers.TryAddWithoutValidation("Upgrade", "websocket");

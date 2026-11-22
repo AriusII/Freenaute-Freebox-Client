@@ -9,6 +9,11 @@ public sealed record SystemConfig
 	[JsonPropertyName("uptime")] public string? Uptime { get; init; }
 	[JsonPropertyName("uptime_val")] public long? UptimeVal { get; init; }
 	[JsonPropertyName("board_name")] public string? BoardName { get; init; }
+	[JsonPropertyName("box_flavor")] public string? BoxFlavor { get; init; }
+	[JsonPropertyName("temp_cpub")] public long? TempCpub { get; init; }
+	[JsonPropertyName("temp_cpum")] public long? TempCpum { get; init; }
+	[JsonPropertyName("temp_sw")] public long? TempSw { get; init; }
+	[JsonPropertyName("fan_rpm")] public long? FanRpm { get; init; }
 
 	[JsonPropertyName("box_authenticated")]
 	public bool? BoxAuthenticated { get; init; }

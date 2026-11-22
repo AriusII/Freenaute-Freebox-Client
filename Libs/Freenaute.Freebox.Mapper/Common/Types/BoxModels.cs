@@ -12,30 +12,30 @@ namespace Freenaute.Freebox.Mapper.Common.Types;
 [JsonConverter(typeof(JsonStringEnumConverter<BoxModels>))]
 public enum BoxModels : byte
 {
-	[JsonStringEnumMemberName("fbxgw-r1/full")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxServerV6R1)]
 	FreeboxServerV6R1,
 
-	[JsonStringEnumMemberName("fbxgw-r2/full")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxServerV6R2)]
 	FreeboxServerV6R2,
 
-	[JsonStringEnumMemberName("fbxgw-r1/mini")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxMiniR1)]
 	FreeboxMiniR1,
 
-	[JsonStringEnumMemberName("fbxgw-r2/mini")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxMiniR2)]
 	FreeboxMiniR2,
 
-	[JsonStringEnumMemberName("fbxgw-r1/one")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxOneR1)]
 	FreeboxOneR1,
 
-	[JsonStringEnumMemberName("fbxgw-r2/one")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxOneR2)]
 	FreeboxOneR2,
 
-	[JsonStringEnumMemberName("fbxgw7-r1/full")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxV7R1)]
 	FreeboxV7R1,
 
-	[JsonStringEnumMemberName("fbxgw8-r1/full")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxV8R1)]
 	FreeboxV8R1,
 
-	[JsonStringEnumMemberName("fbxgw9-r1/full")]
+	[JsonStringEnumMemberName(MapperConstants.BoxModels.FreeboxV9R1)]
 	FreeboxV9R1
 }

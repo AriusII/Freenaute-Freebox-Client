@@ -5,7 +5,8 @@ public sealed class FileUploadControlResponse
 {
 	[JsonPropertyName("request_id")] public long? RequestId { get; init; }
 
-	[JsonPropertyName("action")] public string? Action { get; init; }
+	[JsonPropertyName(MapperConstants.JsonProperties.Action)]
+	public string? Action { get; init; }
 
 	[JsonPropertyName("success")] public bool? Success { get; init; }
 

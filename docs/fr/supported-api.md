@@ -1,21 +1,24 @@
 # API prise en charge et exclusions
 
-Le client expose volontairement les opérations Freebox Server documentées et stables via des façades typées : découverte/authentification, AirMedia, caméras, notifications, réseau, services retenus, fichiers, configuration système, WebSockets modernes et transports typés.
+Source de réconciliation : `docs/api-model.json` comparé à `.Client` et `.Mapper`.
 
-Les surfaces suivantes ne sont **pas revendiquées comme prises en charge** :
+## Matrice de couverture (exacte)
 
-- contrats RRD/statistiques ;
-- stockage, RAID et administration des machines virtuelles ;
-- contrats PVR et VPN ;
-- trackers, pairs et blacklist des téléchargements ;
-- opérations Home non documentées de pairing, nœuds et tuiles ;
-- champs Wi-Fi explicitement dépréciés ou instables ;
-- ancien upload HTTP à la place de l'upload WebSocket moderne.
+- **Opérations** : **222 / 222** couvertes (**100%**)
+- **Schémas** : **120 / 120** couverts (**100%**)
+- Artefact de preuve :  
+  `C:\Users\Arius-dev\.copilot\session-state\a6a9000b-eb02-48ef-a676-4fc1cb95fc0e\files\wave2-global-matrix-docs-coverage.json`
 
-Ces exclusions sont intentionnelles : la documentation de référence ne fournit pas de routes, encodages, schémas ou garanties de compatibilité suffisamment stables. Aucun type, chemin ou contexte généré exclu ne doit être considéré comme API garantie.
+## Politique de couverture
 
-Les modèles de protocole conservent la sémantique filaire de `Optional<T>`, des chemins Freebox encodés, des unions objet/tableau et des enums générés. Une réponse de permission PVR n'est pas une promesse de compatibilité, même si un champ est omis dans une réponse observée.
+- Les éléments **stables** constituent la surface publique normale orientée compatibilité.
+- Les éléments **instables** sont inclus et signalés uniquement dans la documentation XML.
+- Les éléments **dépréciés** sont inclus avec l’annotation `[Obsolete]`.
 
-Le SDK n'est pas exhaustif et ne remplace pas les tests sur le modèle et les permissions Freebox de votre déploiement. La documentation officielle Freebox et la découverte runtime restent les autorités en cas de changement de firmware.
+## Normalisation d’alias incluse dans la matrice
 
-Références officielles : <https://dev.freebox.fr/sdk/os/> et les modules API publiés sur ce site.
+- Les alias OpenAPI `/[number,address,url,email]/...` sont comptés via les routes concrètes implémentées (`/number`, `/address`, `/url`, `/email`).
+- `/contact/{contact_id}/[numbers|addresses|urls|emails]/` est compté via les collections concrètes implémentées.
+- `/parental/filter/{id}/planning` est compté via la sous-ressource dédiée de planning.
+- `/ws/upload` est compté via la couverture de la route WebSocket d’upload.
+- `/api_version` est compté via la couverture de la découverte transport.

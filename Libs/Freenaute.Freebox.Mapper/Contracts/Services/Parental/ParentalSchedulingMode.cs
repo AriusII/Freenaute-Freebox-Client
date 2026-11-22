@@ -5,9 +5,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services.Parental;
 [JsonConverter(typeof(ParentalSchedulingModeJsonConverter))]
 public readonly record struct ParentalSchedulingMode(string Value)
 {
-	public static ParentalSchedulingMode Forced => new("forced");
-	public static ParentalSchedulingMode Temporary => new("temporary");
-	public static ParentalSchedulingMode Planning => new("planning");
+	public static ParentalSchedulingMode Forced => new(MapperConstants.ServiceWireTokens.Parental.Forced);
+	public static ParentalSchedulingMode Temporary => new(MapperConstants.ServiceWireTokens.Parental.Temporary);
+	public static ParentalSchedulingMode Planning => new(MapperConstants.ServiceWireTokens.Parental.Planning);
 
 	public override string ToString() => Value ?? string.Empty;
 }

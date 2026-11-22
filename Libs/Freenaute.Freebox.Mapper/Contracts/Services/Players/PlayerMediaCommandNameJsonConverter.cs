@@ -14,7 +14,7 @@ public sealed class PlayerMediaCommandNameJsonConverter : JsonConverter<PlayerMe
 	{
 		if (value.Value is null)
 		{
-			throw new JsonException("An uninitialized wire value cannot be serialized.");
+			throw new JsonException(MapperConstants.ExceptionMessages.JsonConverters.UninitializedWireValueCannotBeSerialized);
 		}
 
 		writer.WriteStringValue(value.Value);

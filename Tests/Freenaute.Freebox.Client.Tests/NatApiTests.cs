@@ -126,13 +126,13 @@ public sealed class NatApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var nat = new FreeboxNatApi(client.Transport);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => nat.UpdateDmzAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await nat.UpdateDmzAsync(
 			new DmzConfigurationPatch { Enabled = Optional<bool>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => nat.CreateForwardingAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await nat.CreateForwardingAsync(
 			new CreatePortForwardingRequest { LanIp = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => nat.Forwarding(7)
+		await Assert.ThrowsAsync<ArgumentException>(async () => await nat.Forwarding(7)
 			.UpdateAsync(new PortForwardingPatch { Comment = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => nat.IncomingPort("http")
+		await Assert.ThrowsAsync<ArgumentException>(async () => await nat.IncomingPort("http")
 			.UpdateAsync(new IncomingPortPatch { InPort = Optional<long>.Null }));
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -145,8 +145,8 @@ public sealed class NatApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxNatApi(client.Transport).GetDmzAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxNatApi(client.Transport).GetDmzAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -169,9 +169,9 @@ public sealed class NatApiTests
 
 		var pending = new FreeboxNatApi(client.Transport).GetForwardingsAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

@@ -11,21 +11,21 @@ public static class FreeboxServiceCollectionExtensions
 		{
 			ArgumentNullException.ThrowIfNull(services);
 			ArgumentNullException.ThrowIfNull(configure);
-			return AddCore(services, null, configure, null, false);
+			return AddCore(services, keyedName: null, configure, section: null, validateOnStart: false);
 		}
 
 		public IHttpClientBuilder AddFreeboxClient(IConfiguration section)
 		{
 			ArgumentNullException.ThrowIfNull(services);
 			ArgumentNullException.ThrowIfNull(section);
-			return AddCore(services, null, null, section, false);
+			return AddCore(services, keyedName: null, configure: null, section, validateOnStart: false);
 		}
 
 		public IHttpClientBuilder AddFreeboxClient(Action<FreeboxClientOptions> configure, bool validateOnStart)
 		{
 			ArgumentNullException.ThrowIfNull(services);
 			ArgumentNullException.ThrowIfNull(configure);
-			return AddCore(services, null, configure, null, validateOnStart);
+			return AddCore(services, keyedName: null, configure, section: null, validateOnStart);
 		}
 
 		public IHttpClientBuilder AddFreeboxClient(string name,
@@ -34,7 +34,7 @@ public static class FreeboxServiceCollectionExtensions
 			ArgumentNullException.ThrowIfNull(services);
 			ArgumentException.ThrowIfNullOrWhiteSpace(name);
 			ArgumentNullException.ThrowIfNull(configure);
-			return AddCore(services, name, configure, null, false);
+			return AddCore(services, name, configure, section: null, validateOnStart: false);
 		}
 	}
 
@@ -84,7 +84,7 @@ public static class FreeboxServiceCollectionExtensions
 
 		if (keyedName is null)
 		{
-			services.AddSingleton(sp => CreateState(sp, null));
+			services.AddSingleton(sp => CreateState(sp, keyedName: null));
 		}
 		else
 		{
@@ -101,7 +101,7 @@ public static class FreeboxServiceCollectionExtensions
 					client.Timeout = state.Options.Timeout;
 				})
 				.ConfigurePrimaryHttpMessageHandler(() => FreeboxTls.CreateHandler())
-				.RedactLoggedHeaders(["X-Fbx-App-Auth", "Authorization", "Cookie", "Set-Cookie"]);
+				.RedactLoggedHeaders(ClientConstants.Headers.Redacted);
 			services.AddSingleton<IFreeboxClient>(sp =>
 				new FreeboxClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient(httpClientName),
 					sp.GetRequiredService<FreeboxClientState>()));
@@ -118,12 +118,13 @@ public static class FreeboxServiceCollectionExtensions
 					client.Timeout = state.Options.Timeout;
 				})
 				.ConfigurePrimaryHttpMessageHandler(() => FreeboxTls.CreateHandler())
-				.RedactLoggedHeaders(["X-Fbx-App-Auth", "Authorization", "Cookie", "Set-Cookie"]);
+				.RedactLoggedHeaders(ClientConstants.Headers.Redacted);
 		}
 
 		if (registrationOptions.EnableResilience)
 		{
-			builder.AddStandardResilienceHandler(options => options.Retry.DisableForUnsafeHttpMethods());
+			builder.AddStandardResilienceHandler(options =>
+				options.Retry.DisableForUnsafeHttpMethods());
 		}
 
 		RegisterOwnerServices(services, keyedName);

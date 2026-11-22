@@ -11,16 +11,16 @@ public sealed class FreeboxPlayer
 		_path = $"player/{id}/api/v6/";
 	}
 
-	public Task<PlayerStatus> GetStatusAsync(CancellationToken cancellationToken = default)
+	public async Task<PlayerStatus> GetStatusAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, _path + "status/",
-			ServicesJsonSerializerContext.Default.PlayerStatus, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, _path + "status/",
+			ServicesJsonSerializerContext.Default.PlayerStatus, cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task<PlayerVolume> GetVolumeAsync(CancellationToken cancellationToken = default)
+	public async Task<PlayerVolume> GetVolumeAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, _path + "control/volume/",
-			ServicesJsonSerializerContext.Default.PlayerVolume, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, _path + "control/volume/",
+			ServicesJsonSerializerContext.Default.PlayerVolume, cancellationToken).ConfigureAwait(false);
 	}
 
 	public Task<PlayerVolume> UpdateVolumeAsync(PlayerVolumePatch request,
@@ -48,11 +48,11 @@ public sealed class FreeboxPlayer
 			ServicesJsonSerializerContext.Default.PlayerMediaCommand, cancellationToken);
 	}
 
-	public Task OpenAsync(string url, string? type = null, CancellationToken cancellationToken = default)
+	public async Task OpenAsync(string url, string? type = null, CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(url);
-		return _transport.SendAsync(HttpMethod.Post, _path + "control/open",
+		await _transport.SendAsync(HttpMethod.Post, _path + "control/open",
 			new PlayerOpenRequest { Url = url, Type = type },
-			ServicesJsonSerializerContext.Default.PlayerOpenRequest, cancellationToken);
+			ServicesJsonSerializerContext.Default.PlayerOpenRequest, cancellationToken).ConfigureAwait(false);
 	}
 }

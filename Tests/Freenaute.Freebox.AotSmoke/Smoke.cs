@@ -46,14 +46,14 @@ internal static class Smoke
 		var secondary = provider.GetRequiredKeyedService<IFreeboxClient>("secondary");
 		Check("di-default-client", primary.Discovery is not null && primary.Transport is not null);
 		Check("di-keyed-facades", !ReferenceEquals(primary, secondary) &&
-		                          ReferenceEquals(secondary.Discovery,
-			                          provider.GetRequiredKeyedService<IFreeboxDiscoveryApi>("secondary")));
+								  ReferenceEquals(secondary.Discovery,
+									  provider.GetRequiredKeyedService<IFreeboxDiscoveryApi>("secondary")));
 	}
 
 	private static void CheckGeneratedOptionsValidation()
 	{
 		var validator = new FreeboxClientOptionsValidator();
-		var result = validator.Validate(null, new FreeboxClientOptions { ApiVersion = 0 });
+		var result = validator.Validate(name: null, new FreeboxClientOptions { ApiVersion = 0 });
 		Check("generated-options-validator", result.Failed);
 	}
 
@@ -79,7 +79,7 @@ internal static class Smoke
 	{
 		var mapper = new FreeboxMapper();
 		var version = new ApiVersionResponse("fixture-uid", "fixture-device", "fixture-model", "Fixture Freebox",
-			FreeboxApiVersion.Current, "fixture.example", "/api", true, 443);
+			FreeboxApiVersion.Current, "fixture.example", "/api", HttpsAvailable: true, 443);
 		string versionJson = mapper.ToWire(version, FreeboxJsonSerializerContext.Default.ApiVersionResponse);
 		var decoded = mapper.FromWire(versionJson,
 			FreeboxJsonSerializerContext.Default.ApiVersionResponse);
@@ -129,7 +129,7 @@ internal static class Smoke
 	private static async Task CheckScriptedDiscoveryAsync()
 	{
 		ApiVersionResponse metadata = new("fixture-mdns-uid", "Server", "fbx", "Fixture Freebox",
-			FreeboxApiVersion.Current, "mdns.example", "/api/", true, 443);
+			FreeboxApiVersion.Current, "mdns.example", "/api/", HttpsAvailable: true, 443);
 		var mdnsResolver = new ScriptedDiscoveryResolver(new FreeboxDiscoveryResult(
 			new Uri("https://mdns.example/"), metadata));
 		using var mdnsHandler = DiscoveryFixtureHandler.FailingIfCalled();
@@ -143,14 +143,14 @@ internal static class Smoke
 		using var fallbackHttp = new HttpClient(fallbackHandler);
 		using var fallbackClient = new FreeboxClient(fallbackHttp,
 			new FreeboxClientOptions { ServerAddress = new Uri("https://fixture.example/") },
-			new ScriptedDiscoveryResolver(null));
+			new ScriptedDiscoveryResolver(result: null));
 		var fallback = await fallbackClient.Discovery.GetApiVersionAsync();
 		Check("http-fallback-selection", fallback.Uid is "fixture-http-uid" && fallbackHandler.RequestCount is 1);
 	}
 
 	private static async Task CheckScriptedWebSocketAsync()
 	{
-		using var connection = new FreeboxWebSocketConnection(new ScriptedWebSocket(
+		await using var connection = new FreeboxWebSocketConnection(new ScriptedWebSocket(
 			"{\"ordinal\":",
 			"1}\n{\"ordinal\":2}\n{\"ordinal\":3}"));
 

@@ -7,7 +7,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Primitives;
 [JsonConverter(typeof(EncodedFreeboxPathJsonConverter))]
 public readonly struct EncodedFreeboxPath : IEquatable<EncodedFreeboxPath>
 {
-	private static readonly UTF8Encoding StrictUtf8 = new(false, true);
+	private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 	private readonly string? _encoded;
 
 	private EncodedFreeboxPath(string encoded)

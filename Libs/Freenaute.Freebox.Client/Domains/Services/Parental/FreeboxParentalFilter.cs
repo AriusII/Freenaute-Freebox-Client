@@ -19,15 +19,15 @@ public sealed class FreeboxParentalFilter
 	/// <summary>The per-rule planning (GET/PUT <c>parental/filter/{id}/planning</c>).</summary>
 	public FreeboxServiceResource<ParentalFilterPlanning, ParentalFilterPlanningPatch> Planning { get; }
 
-	public Task<ParentalFilter> GetAsync(CancellationToken cancellationToken = default) =>
-		_resource.GetAsync(cancellationToken);
+	public async Task<ParentalFilter> GetAsync(CancellationToken cancellationToken = default) =>
+		await _resource.GetAsync(cancellationToken).ConfigureAwait(false);
 
-	public Task<ParentalFilter> UpdateAsync(ParentalFilterWriteRequest request,
+	public async Task<ParentalFilter> UpdateAsync(ParentalFilterWriteRequest request,
 		CancellationToken cancellationToken = default) =>
-		_resource.UpdateAsync(request, cancellationToken);
+		await _resource.UpdateAsync(request, cancellationToken).ConfigureAwait(false);
 
-	public Task DeleteAsync(CancellationToken cancellationToken = default) =>
-		_resource.DeleteAsync(cancellationToken);
+	public async Task DeleteAsync(CancellationToken cancellationToken = default) =>
+		await _resource.DeleteAsync(cancellationToken).ConfigureAwait(false);
 
 	public FreeboxServiceCommand<ParentalFilterWriteRequest, ParentalFilter> Configure() =>
 		_resource.Configure();

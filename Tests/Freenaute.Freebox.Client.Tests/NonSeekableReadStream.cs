@@ -17,8 +17,8 @@ internal sealed class NonSeekableReadStream(byte[] data) : Stream
 
 	public override int Read(byte[] buffer, int offset, int count) => _source.Read(buffer, offset, count);
 
-	public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
-		_source.ReadAsync(buffer, cancellationToken);
+	public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
+		await _source.ReadAsync(buffer, cancellationToken);
 
 	public override void Flush() => throw new NotSupportedException();
 

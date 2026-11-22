@@ -15,7 +15,7 @@ public sealed class ClientOptionsTests
 			HttpClientName = ""
 		};
 
-		var result = validator.Validate(null, options);
+		var result = validator.Validate(name: null, options);
 
 		Assert.True(result.Failed);
 		Assert.Contains(result.Failures!, failure => failure.Contains("HTTP(S) origin", StringComparison.Ordinal));
@@ -30,7 +30,8 @@ public sealed class ClientOptionsTests
 	{
 		var values = new Dictionary<string, string?>
 		{
-			["ApiVersion"] = "not-an-integer", ["ApplicationId"] = "org.fixture"
+			["ApiVersion"] = "not-an-integer",
+			["ApplicationId"] = "org.fixture"
 		};
 		IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 		var services = new ServiceCollection();
@@ -49,7 +50,8 @@ public sealed class ClientOptionsTests
 		IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(
 				new Dictionary<string, string?>
 				{
-					["ApplicationId"] = "org.fixture", ["AppToken"] = "must-not-be-bound"
+					["ApplicationId"] = "org.fixture",
+					["AppToken"] = "must-not-be-bound"
 				})
 			.Build();
 		var services = new ServiceCollection();
@@ -67,7 +69,7 @@ public sealed class ClientOptionsTests
 	public void DefaultAndValidateOnStartRegistrationsKeepOptionsOwnerSpecific()
 	{
 		var services = new ServiceCollection();
-		services.AddFreeboxClient(options => options.ApiVersion = 16, true);
+		services.AddFreeboxClient(options => options.ApiVersion = 16, validateOnStart: true);
 		services.AddFreeboxClient("home", options =>
 		{
 			options.ApiVersion = 17;

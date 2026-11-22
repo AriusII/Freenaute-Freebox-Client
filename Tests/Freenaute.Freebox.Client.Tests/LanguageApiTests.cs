@@ -37,8 +37,8 @@ public sealed class LanguageApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var language = new FreeboxSystemHomeApi(client.Transport).Language;
 
-		await Assert.ThrowsAsync<ArgumentException>(() => language.Set("fr").SendAsync());
-		await Assert.ThrowsAsync<ArgumentException>(() => language.Set("fra!").SendAsync());
+		await Assert.ThrowsAsync<ArgumentException>(async () => await language.Set("fr").SendAsync());
+		await Assert.ThrowsAsync<ArgumentException>(async () => await language.Set("fra!").SendAsync());
 
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -51,8 +51,8 @@ public sealed class LanguageApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxSystemHomeApi(client.Transport).Language.GetAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxSystemHomeApi(client.Transport).Language.GetAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -75,9 +75,9 @@ public sealed class LanguageApiTests
 
 		var pending = new FreeboxSystemHomeApi(client.Transport).Language.GetAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

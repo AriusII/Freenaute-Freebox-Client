@@ -20,7 +20,7 @@ public sealed class ConnectionIpv6Configuration
 
 	/// <summary>Freebox IPv6 link local address</summary>
 	[JsonPropertyName("ipv6ll")]
-	public string? Ipv6ll { get; init; }
+	public string? Ipv6Ll { get; init; }
 
 	/// <summary>list of IPv6 delegations</summary>
 	[JsonPropertyName("delegations")]

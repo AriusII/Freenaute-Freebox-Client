@@ -23,7 +23,7 @@ public static class NetworkWireValues
 		public const string Ftth = "ftth";
 		public const string Ethernet = "ethernet";
 		public const string Xdsl = "xdsl";
-		public const string Backup4g = "backup_4g";
+		public const string Backup4G = "backup_4g";
 	}
 
 	public static class ConnectionConfigurationSipAlg
@@ -33,7 +33,36 @@ public static class NetworkWireValues
 		public const string AnyMedia = "any_media";
 	}
 
-	public static class DDNSStatusStatus
+	public static class XdslStatusStatus
+	{
+		public const string Down = "down";
+		public const string Training = "training";
+		public const string Started = "started";
+		public const string ChannelAnalysis = "chan_analysis";
+		public const string MessageExchange = "msg_exchange";
+		public const string Showtime = "showtime";
+		public const string Disabled = "disabled";
+	}
+
+	public static class XdslStatusProtocol
+	{
+		public const string T1413 = "t1413";
+		public const string Adsl1A = "adsl1_a";
+		public const string Adsl2A = "adsl2_a";
+		public const string Adsl2PlusA = "adsl2plus_a";
+		public const string Readsl2 = "readsl2";
+		public const string Adsl2M = "adsl2_m";
+		public const string Adsl2PlusM = "adsl2plus_m";
+		public const string Unknown = "unknown";
+	}
+
+	public static class XdslStatusModulation
+	{
+		public const string Adsl = "adsl";
+		public const string Vdsl = "vdsl";
+	}
+
+	public static class DdnsStatusStatus
 	{
 		public const string Disabled = "disabled";
 		public const string Ok = "ok";
@@ -205,12 +234,12 @@ public static class NetworkWireValues
 
 	public static class SfpConfigAvailableSfpTypes
 	{
-		public const string P2p1g = "p2p_1g";
-		public const string P2p2d5gNoAneg = "p2p_2d5g_no_aneg";
-		public const string P2p10g = "p2p_10g";
-		public const string Copper1g = "copper_1g";
-		public const string CopperSgmii1g = "copper_sgmii_1g";
-		public const string CopperSgmii10g = "copper_sgmii_10g";
+		public const string P2P1G = "p2p_1g";
+		public const string P2P2D5GNoAneg = "p2p_2d5g_no_aneg";
+		public const string P2P10G = "p2p_10g";
+		public const string Copper1G = "copper_1g";
+		public const string CopperSgmii1G = "copper_sgmii_1g";
+		public const string CopperSgmii10G = "copper_sgmii_10g";
 	}
 
 	public static class SwitchPortStatusLink
@@ -270,10 +299,10 @@ public static class NetworkWireValues
 
 	public static class ExpectedPhyBand
 	{
-		public const string Value2d4g = "2d4g";
-		public const string Value5g = "5g";
-		public const string Value6g = "6g";
-		public const string Value60g = "60g";
+		public const string Value2D4G = "2d4g";
+		public const string Value5G = "5g";
+		public const string Value6G = "6g";
+		public const string Value60G = "60g";
 	}
 
 	public static class WifiApStatusState
@@ -299,17 +328,17 @@ public static class NetworkWireValues
 
 	public static class WifiApConfigBand
 	{
-		public const string Value2d4g = "2d4g";
-		public const string Value5g = "5g";
-		public const string Value6g = "6g";
-		public const string Value60g = "60g";
+		public const string Value2D4G = "2d4g";
+		public const string Value5G = "5g";
+		public const string Value6G = "6g";
+		public const string Value60G = "60g";
 	}
 
 	public static class WifiAllowedCombBand
 	{
-		public const string Value2d4g = "2d4g";
-		public const string Value5g = "5g";
-		public const string Value60g = "60g";
+		public const string Value2D4G = "2d4g";
+		public const string Value5G = "5g";
+		public const string Value60G = "60g";
 	}
 
 	public static class WifiStationState
@@ -347,16 +376,16 @@ public static class NetworkWireValues
 
 	public static class WifiNeighborBand
 	{
-		public const string Value2d4g = "2d4g";
-		public const string Value5g = "5g";
-		public const string Value60g = "60g";
+		public const string Value2D4G = "2d4g";
+		public const string Value5G = "5g";
+		public const string Value60G = "60g";
 	}
 
 	public static class WifiChannelUsageBand
 	{
-		public const string Value2d4g = "2d4g";
-		public const string Value5g = "5g";
-		public const string Value60g = "60g";
+		public const string Value2D4G = "2d4g";
+		public const string Value5G = "5g";
+		public const string Value60G = "60g";
 	}
 
 	public static class WifiMacFilterType
@@ -383,9 +412,9 @@ public static class NetworkWireValues
 
 	public static class WifiWpsCandidateBand
 	{
-		public const string Value2d4g = "2d4g";
-		public const string Value5g = "5g";
-		public const string Value60g = "60g";
+		public const string Value2D4G = "2d4g";
+		public const string Value5G = "5g";
+		public const string Value60G = "60g";
 	}
 
 	public static class WifiWpsSessionResult
@@ -406,8 +435,8 @@ public static class NetworkWireValues
 
 	public static class TemporaryWifiDisableKeep
 	{
-		public const string Value2d4g = "2d4g";
-		public const string Value5g = "5g";
-		public const string Value6g = "6g";
+		public const string Value2D4G = "2d4g";
+		public const string Value5G = "5g";
+		public const string Value6G = "6g";
 	}
 }

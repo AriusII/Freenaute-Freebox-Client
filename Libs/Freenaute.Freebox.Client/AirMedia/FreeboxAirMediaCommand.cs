@@ -46,6 +46,6 @@ public sealed class FreeboxAirMediaCommand
 		return new FreeboxAirMediaCommand(_api, _receiverName, _request with { Password = password });
 	}
 
-	public Task SendAsync(CancellationToken cancellationToken = default) =>
-		_api.SendToReceiverAsync(_receiverName, _request, cancellationToken);
+	public async Task SendAsync(CancellationToken cancellationToken = default) =>
+		await _api.SendToReceiverAsync(_receiverName, _request, cancellationToken).ConfigureAwait(false);
 }

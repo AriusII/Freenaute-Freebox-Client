@@ -34,10 +34,10 @@ internal sealed class FreeboxMdnsDiscoveryResolver : IFreeboxDiscoveryResolver
 					MdnsRecordType.Pointer)
 			]), cancellationToken).ConfigureAwait(false);
 
-			var receives = clients.Select(client =>
+			var receives = clients.Select(async client =>
 			{
 				client.ReceiveTask = ReceiveAsync(client, cancellationToken);
-				return client.ReceiveTask;
+				return await client.ReceiveTask.ConfigureAwait(false);
 			}).ToList();
 			while (receives.Count > 0)
 			{
@@ -136,7 +136,7 @@ internal sealed class FreeboxMdnsDiscoveryResolver : IFreeboxDiscoveryResolver
 		{
 			udp = new UdpClient(family);
 			udp.Client.ExclusiveAddressUse = false;
-			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, optionValue: true);
 			udp.Client.MulticastLoopback = true;
 			udp.Client.Bind(new IPEndPoint(family is AddressFamily.InterNetwork ? IPAddress.Any : IPAddress.IPv6Any,
 				5353));
@@ -168,8 +168,8 @@ internal sealed class FreeboxMdnsDiscoveryResolver : IFreeboxDiscoveryResolver
 		}
 	}
 
-	private static Task<UdpReceiveResult> ReceiveAsync(MdnsClient client, CancellationToken cancellationToken) =>
-		client.Client.ReceiveAsync(cancellationToken).AsTask();
+	private static async Task<UdpReceiveResult> ReceiveAsync(MdnsClient client, CancellationToken cancellationToken) =>
+		await client.Client.ReceiveAsync(cancellationToken).AsTask().ConfigureAwait(false);
 
 	private static async Task SendQueryAsync(List<MdnsClient> clients, byte[] query,
 		CancellationToken cancellationToken)

@@ -25,7 +25,7 @@ public sealed class HttpClientTests
 			options.EnableMdnsDiscovery = false;
 			options.UseApplication("org.fixture");
 		}).ConfigurePrimaryHttpMessageHandler(() => handler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 
 		var client = provider.GetRequiredService<IFreeboxClient>();
 		var configuration = await client.AirMedia.GetConfigurationAsync();
@@ -65,6 +65,29 @@ public sealed class HttpClientTests
 		Assert.Null(handler.Requests.Single(request => request.Address.AbsolutePath is "/api_version").SessionToken);
 		Assert.Equal("fixture-session", handler.Requests.Single(request =>
 			request.Address.AbsolutePath.Contains("airmedia", StringComparison.Ordinal)).SessionToken);
+	}
+
+	[Fact]
+	public async Task DiscoveryRouteUsesOneUnauthenticatedGetAndCachesTheResult()
+	{
+		using var handler = FixtureHandler.Constant(DiscoveryJson);
+		using var http = new HttpClient(handler);
+		using var client = new FreeboxClient(http,
+			new FreeboxClientOptions
+			{
+				ServerAddress = new Uri("https://fixture.example:8443/"),
+				EnableMdnsDiscovery = false
+			});
+
+		var first = await client.Discovery.GetApiVersionAsync();
+		var second = await client.Discovery.GetApiVersionAsync();
+
+		Assert.Equal("fixture", first.Uid);
+		Assert.Same(first, second);
+		var request = Assert.Single(handler.Requests);
+		Assert.Equal(HttpMethod.Get, request.Method);
+		Assert.Equal("https://fixture.example:8443/api_version", request.Address.AbsoluteUri);
+		Assert.Null(request.SessionToken);
 	}
 
 	[Fact]
@@ -108,6 +131,25 @@ public sealed class HttpClientTests
 	}
 
 	[Fact]
+	public async Task AirMediaLegacyReceiverRouteMatchesApiModelTypoPath()
+	{
+		using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true}""");
+		using var http = new HttpClient(handler);
+		var client = CreateClient(http);
+
+		await client.AirMedia.SendToLegacyReceiverRouteAsync("Séjour & TV?#%", new AirMediaReceiverRequest(
+			AirMediaAction.Start, AirMediaMediaType.Photo, "L0Rpc3F1ZQ==", "1111"));
+
+		var request = Assert.Single(ResourceRequests(handler));
+		Assert.Equal(HttpMethod.Post, request.Method);
+		Assert.Equal("/api/v16/airmedia/receviers/S%C3%A9jour%20%26%20TV%3F%23%25/", request.Address.PathAndQuery);
+		using var body = JsonDocument.Parse(request.Body!);
+		Assert.Equal("start", body.RootElement.GetProperty("action").GetString());
+		Assert.Equal("photo", body.RootElement.GetProperty("media_type").GetString());
+		Assert.Equal("1111", body.RootElement.GetProperty("password").GetString());
+	}
+
+	[Fact]
 	public async Task AirMediaUpdateAndReceiversUseExpectedMethodsAndReadNestedCapabilities()
 	{
 		using var handler = FixtureHandler.Authenticated((request, _) => Task.FromResult(FixtureHandler.Json(
@@ -121,7 +163,7 @@ public sealed class HttpClientTests
 		var client = CreateClient(http);
 
 		var updated =
-			await client.AirMedia.UpdateConfigurationAsync(new UpdateAirMediaConfigRequest(false, "fixture-password"));
+			await client.AirMedia.UpdateConfigurationAsync(new UpdateAirMediaConfigRequest(Enabled: false, "fixture-password"));
 		var receivers = await client.AirMedia.GetReceiversAsync();
 
 		Assert.False(updated.Enabled);
@@ -200,7 +242,7 @@ public sealed class HttpClientTests
 
 		var call = client.AirMedia.GetConfigurationAsync(cancellation.Token);
 		await entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
 		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await call);
 		Assert.Single(ResourceRequests(handler));

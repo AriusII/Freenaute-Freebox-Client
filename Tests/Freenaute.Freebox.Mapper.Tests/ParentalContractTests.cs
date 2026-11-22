@@ -54,7 +54,9 @@ public sealed class ParentalContractTests
 		Assert.Equal(4, filter!.Id);
 		Assert.Equal(["D8:A2:CA:FE:BA:DF", "D0:23:BE:DE:AD:EF"], filter.Macs!);
 		Assert.Equal(["iPad-r0ro", "iPhone-r0ro"], filter.Hosts!);
+#pragma warning disable CS0618
 		Assert.Equal("0.0.0.0", filter.Ip);
+#pragma warning restore CS0618
 		Assert.Equal("r0ro", filter.Desc);
 		Assert.False(filter.Forced);
 		Assert.Equal(ParentalFilterState.Allowed, filter.ForcedMode);
@@ -139,6 +141,18 @@ public sealed class ParentalContractTests
 			new ParentalFilterPlanningPatch { Mapping = Optional<ParentalFilterState[]>.Null }.Validate());
 	}
 
+	[Fact]
+	public void DeprecatedParentalIpRemainsReadCompatibleAndAnnotated()
+	{
+		var property = typeof(ParentalFilter).GetProperty("Ip");
+
+		Assert.NotNull(property);
+		var obsolete = Assert.IsType<ObsoleteAttribute>(
+			Attribute.GetCustomAttribute(property, typeof(ObsoleteAttribute)));
+		Assert.Equal("Deprecated by Freebox API documentation.", obsolete.Message);
+		Assert.NotNull(Attribute.GetCustomAttribute(property, typeof(JsonPropertyNameAttribute)));
+	}
+
 	[Theory]
 	[InlineData("allowed", "allowed")]
 	[InlineData("denied", "denied")]
@@ -156,6 +170,7 @@ public sealed class ParentalContractTests
 	[InlineData("forced")]
 	[InlineData("temporary")]
 	[InlineData("planning")]
+	[InlineData("future_value")]
 	public void ParentalSchedulingMode_RoundTrips(string wire)
 	{
 		var mode = _mapper.FromWire<ParentalSchedulingMode>($"\"{wire}\"");

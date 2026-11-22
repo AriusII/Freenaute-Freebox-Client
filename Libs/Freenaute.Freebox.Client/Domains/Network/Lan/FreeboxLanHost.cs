@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Lan;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -20,10 +22,10 @@ public sealed class FreeboxLanHost
 
 	/// <summary>Getting an host information.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v16-lan-browser-interface-hostid-</remarks>
-	public Task<LanHost> GetAsync(CancellationToken cancellationToken = default)
+	public async Task<LanHost> GetAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"lan/browser/{_interface}/{_hostid}/", Json.LanHost,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Lan.Host(_interface, _hostid), Json.LanHost,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Updating an host information.</summary>
@@ -32,7 +34,7 @@ public sealed class FreeboxLanHost
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, $"lan/browser/{_interface}/{_hostid}/", request, Json.LanHostPatch,
+		return _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Lan.Host(_interface, _hostid), request, Json.LanHostPatch,
 			Json.LanHost, cancellationToken);
 	}
 }

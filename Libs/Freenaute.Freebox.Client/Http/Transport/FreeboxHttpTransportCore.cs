@@ -10,7 +10,7 @@ public sealed class FreeboxHttpTransportCore(
 	FreeboxClientState state,
 	TimeSpan? standaloneTimeout = null)
 {
-	internal const string AuthenticationHeader = "X-Fbx-App-Auth";
+	internal const string AuthenticationHeader = ClientConstants.Headers.Authentication;
 	private static readonly IFreeboxMapper Mapper = FreeboxMapper.Default;
 	private static readonly FreeboxJsonSerializerContext Json = FreeboxJsonSerializerContext.Default;
 
@@ -22,7 +22,10 @@ public sealed class FreeboxHttpTransportCore(
 	internal static HttpContent CreateJsonContent<T>(T value, JsonTypeInfo<T> typeInfo)
 	{
 		var content = new ByteArrayContent(Mapper.ToUtf8Bytes(value, typeInfo));
-		content.Headers.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" };
+		content.Headers.ContentType = new MediaTypeHeaderValue(ClientConstants.ContentTypes.ApplicationJson)
+		{
+			CharSet = ClientConstants.ContentTypes.Utf8
+		};
 		return content;
 	}
 
@@ -34,7 +37,7 @@ public sealed class FreeboxHttpTransportCore(
 		using (var envelope = await SendEnvelopeAsync(method, relativePath, content, requiresAuthentication,
 			       cancellationToken).ConfigureAwait(false))
 		{
-			if (!envelope.RootElement.TryGetProperty("result", out var result))
+			if (!envelope.RootElement.TryGetProperty(ClientConstants.JsonEnvelope.Result, out var result))
 			{
 				throw new JsonException("The Freebox response is missing its result property.");
 			}
@@ -79,7 +82,7 @@ public sealed class FreeboxHttpTransportCore(
 	}
 
 	internal void InvalidateSession(SessionResponse session) =>
-		Interlocked.CompareExchange(ref state.Session, null, session);
+		Interlocked.CompareExchange(ref state.Session, value: null, session);
 
 	private async Task<JsonDocument> SendEnvelopeAsync(HttpMethod method, string relativePath, HttpContent? content,
 		bool requiresAuthentication, CancellationToken cancellationToken, SessionResponse? explicitSession = null)
@@ -100,11 +103,12 @@ public sealed class FreeboxHttpTransportCore(
 
 		try
 		{
-			return await SendDocumentAsync(request, cancellationToken, true).ConfigureAwait(false);
+			return await SendDocumentAsync(request, cancellationToken, validateEnvelope: true).ConfigureAwait(false);
 		}
 		catch (FreeboxApiException exception) when
 			(session is not null && (exception.StatusCode is HttpStatusCode.Unauthorized ||
-			                         exception.ErrorCode is "auth_required" or "invalid_session"))
+			                         exception.ErrorCode is ClientConstants.Api.AuthRequiredError
+				                         or ClientConstants.Api.InvalidSessionError))
 		{
 			// Invalidate this session only. In particular, never replay a mutation after an authentication failure.
 			InvalidateSession(session);
@@ -138,7 +142,8 @@ public sealed class FreeboxHttpTransportCore(
 			}
 
 			using var request =
-				new HttpRequestMessage(HttpMethod.Get, new Uri(state.Options.ServerAddress, "api_version"));
+				new HttpRequestMessage(HttpMethod.Get,
+					new Uri(state.Options.ServerAddress, ClientConstants.Routes.ApiVersion));
 			using var document = await SendDocumentAsync(request, cancellationToken).ConfigureAwait(false);
 			var version = Mapper.FromWire(document.RootElement, Json.ApiVersionResponse)
 			              ?? throw new JsonException("The Freebox discovery response cannot be null.");
@@ -211,7 +216,7 @@ public sealed class FreeboxHttpTransportCore(
 			int major = GetMajorVersion(version.ApiVersion);
 			apiAddress = new Uri(result.Origin,
 				FreeboxApiPath.NormalizeBasePath(version.ApiBaseUrl).TrimStart('/') +
-				$"v{major.ToString(CultureInfo.InvariantCulture)}/");
+				$"{ClientConstants.Api.VersionPrefix}{major.ToString(CultureInfo.InvariantCulture)}/");
 		}
 		catch (Exception exception) when (exception is ArgumentException or FormatException or JsonException)
 		{
@@ -237,7 +242,7 @@ public sealed class FreeboxHttpTransportCore(
 	{
 		return new Uri(origin,
 			FreeboxApiPath.NormalizeBasePath(basePath).TrimStart('/') +
-			$"v{major.ToString(CultureInfo.InvariantCulture)}/");
+			$"{ClientConstants.Api.VersionPrefix}{major.ToString(CultureInfo.InvariantCulture)}/");
 	}
 
 	private static int GetMajorVersion(string version)
@@ -285,14 +290,14 @@ public sealed class FreeboxHttpTransportCore(
 			}
 
 			var credentials = await GetApprovedCredentialsAsync(credentialId, cancellationToken).ConfigureAwait(false);
-			var login = await SendTypedAsync<LoginResponse>(HttpMethod.Get, "login/", null, Json.LoginResponse,
-				false, cancellationToken).ConfigureAwait(false);
+			var login = await SendTypedAsync<LoginResponse>(HttpMethod.Get, ClientConstants.Routes.Login, content: null,
+				Json.LoginResponse, requiresAuthentication: false, cancellationToken).ConfigureAwait(false);
 			ArgumentException.ThrowIfNullOrWhiteSpace(login.Challenge);
 			string password = CreateSessionPassword(credentials.GetAppToken(), login.Challenge);
-			var opened = await SendTypedAsync<SessionResponse>(HttpMethod.Post, "login/session/",
+			var opened = await SendTypedAsync<SessionResponse>(HttpMethod.Post, ClientConstants.Routes.LoginSession,
 				CreateJsonContent(new SessionStartRequest(options.ApplicationId, password, options.ApplicationVersion),
 					Json.SessionStartRequest),
-				Json.SessionResponse, false, cancellationToken).ConfigureAwait(false);
+				Json.SessionResponse, requiresAuthentication: false, cancellationToken).ConfigureAwait(false);
 			if (string.IsNullOrWhiteSpace(opened.SessionToken) || opened.SessionToken.Any(char.IsControl))
 			{
 				throw new JsonException("The Freebox returned an invalid session token.");
@@ -323,7 +328,7 @@ public sealed class FreeboxHttpTransportCore(
 			await state.CredentialStore.PutAsync(credentialId, credentials, cancellationToken).ConfigureAwait(false);
 		}
 
-		if (credentials is null || credentials.Status is not FreeboxCredentialStatus.Approved)
+		if (credentials?.Status is not FreeboxCredentialStatus.Approved)
 		{
 			throw new FreeboxAuthenticationException(credentials?.Status is FreeboxCredentialStatus.Pending
 				? "Complete the physical Freebox approval before opening a session."
@@ -364,14 +369,14 @@ public sealed class FreeboxHttpTransportCore(
 		await state.SessionGate.WaitAsync(cancellationToken).ConfigureAwait(false);
 		try
 		{
-			var session = Interlocked.Exchange(ref state.Session, null);
+			var session = Interlocked.Exchange(ref state.Session, value: null);
 			if (session is null)
 			{
 				return;
 			}
 
-			using var result = await SendEnvelopeAsync(HttpMethod.Post, "login/logout/", null,
-				false, cancellationToken, session).ConfigureAwait(false);
+			using var result = await SendEnvelopeAsync(HttpMethod.Post, ClientConstants.Routes.LoginLogout, content: null,
+requiresAuthentication: false, cancellationToken, session).ConfigureAwait(false);
 		}
 		finally
 		{
@@ -435,7 +440,8 @@ public sealed class FreeboxHttpTransportCore(
 
 	private static void EnsureEnvelopeSuccess(JsonElement root, HttpStatusCode statusCode)
 	{
-		if (root.ValueKind is not JsonValueKind.Object || !root.TryGetProperty("success", out var success) ||
+		if (root.ValueKind is not JsonValueKind.Object ||
+		    !root.TryGetProperty(ClientConstants.JsonEnvelope.Success, out var success) ||
 		    success.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
 		{
 			throw new JsonException("The Freebox response must contain a boolean success property.");
@@ -454,9 +460,11 @@ public sealed class FreeboxHttpTransportCore(
 			return new FreeboxApiException(statusCode);
 		}
 
-		JsonElement? details = root.TryGetProperty("result", out var result) ? result.Clone() : null;
-		return new FreeboxApiException(statusCode, ReadString(root, "error_code"), ReadString(root, "msg"),
-			ReadString(root, "uid"), details);
+		JsonElement? details =
+			root.TryGetProperty(ClientConstants.JsonEnvelope.Result, out var result) ? result.Clone() : null;
+		return new FreeboxApiException(statusCode, ReadString(root, ClientConstants.JsonEnvelope.ErrorCode),
+			ReadString(root, ClientConstants.JsonEnvelope.Message), ReadString(root, ClientConstants.JsonEnvelope.Uid),
+			details);
 	}
 
 	private static string? ReadString(JsonElement root, string property)

@@ -19,18 +19,19 @@ public sealed class FreeboxServiceResource<TRead, TWrite> where TWrite : class, 
 		_validate = validate;
 	}
 
-	public Task<TRead> GetAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, _path, _readType, cancellationToken);
+	public async Task<TRead> GetAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, _path, _readType, cancellationToken).ConfigureAwait(false);
 
-	public Task<TRead> UpdateAsync(TWrite request, CancellationToken cancellationToken = default)
+	public async Task<TRead> UpdateAsync(TWrite request, CancellationToken cancellationToken = default)
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		_validate(request);
-		return _transport.SendAsync(HttpMethod.Put, _path, request, _writeType, _readType, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Put, _path, request, _writeType, _readType, cancellationToken)
+			.ConfigureAwait(false);
 	}
 
-	public Task DeleteAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Delete, _path, cancellationToken);
+	public async Task DeleteAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Delete, _path, cancellationToken).ConfigureAwait(false);
 
 	public FreeboxServiceCommand<TWrite, TRead> Configure() => new(new TWrite(), UpdateAsync);
 }

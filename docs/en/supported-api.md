@@ -1,21 +1,24 @@
 # Supported API and exclusions
 
-The public client intentionally exposes documented, stable Freebox Server operations through typed facades: discovery/authentication, AirMedia, cameras, notifications, network, retained services, files, system configuration, modern WebSockets, and typed transports.
+Reconciliation source: `docs/api-model.json` compared against `.Client` and `.Mapper`.
 
-The following are **not claimed as supported**:
+## Coverage matrix (exact)
 
-- RRD/statistics contracts;
-- storage, RAID, and virtual-machine administration;
-- PVR and VPN contracts;
-- download trackers, peers, and blacklist administration;
-- undocumented Home pairing/node/tile operations;
-- explicitly deprecated or unstable Wi-Fi fields;
-- legacy HTTP upload in place of the modern WebSocket upload.
+- **Operations**: **222 / 222** covered (**100%**)
+- **Schemas**: **120 / 120** covered (**100%**)
+- Evidence artifact:  
+  `C:\Users\Arius-dev\.copilot\session-state\a6a9000b-eb02-48ef-a676-4fc1cb95fc0e\files\wave2-global-matrix-docs-coverage.json`
 
-These exclusions are deliberate: the authoritative documentation does not provide sufficiently stable routes, encodings, schemas, or compatibility semantics. Excluded types, routes, and source-generated metadata must not be treated as guaranteed API.
+## Coverage policy
 
-Protocol models preserve wire semantics such as `Optional<T>`, encoded Freebox paths, object-or-array unions, and source-generated enums. A PVR permission response is not a supported compatibility promise, even if an individual response omits a field.
+- **Stable** operations/schemas are part of the normal compatibility-oriented public surface.
+- **Unstable** operations/schemas are included and flagged only in XML docs.
+- **Deprecated** operations/schemas are included and annotated with `[Obsolete]`.
 
-The SDK is not exhaustive and does not replace testing against the Freebox model and permission set used by your deployment. The official Freebox API documentation and runtime discovery remain the authorities; consult them when a firmware update changes a contract.
+## Normalized alias handling included in the matrix
 
-Official references: <https://dev.freebox.fr/sdk/os/> and the API modules published under that documentation site.
+- OpenAPI bracket aliases `/[number,address,url,email]/...` are counted via implemented concrete routes (`/number`, `/address`, `/url`, `/email`).
+- `/contact/{contact_id}/[numbers|addresses|urls|emails]/` is counted via concrete implemented collections.
+- `/parental/filter/{id}/planning` is counted via the dedicated planning sub-resource.
+- `/ws/upload` is counted via WebSocket uploads route coverage.
+- `/api_version` is counted via discovery transport coverage.

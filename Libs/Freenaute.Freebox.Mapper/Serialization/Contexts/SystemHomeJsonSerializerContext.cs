@@ -21,6 +21,7 @@ namespace Freenaute.Freebox.Mapper.Serialization.Contexts;
 [JsonSerializable(typeof(NetworkControlHosts))]
 [JsonSerializable(typeof(NetworkControlMode))]
 [JsonSerializable(typeof(NetworkControlRule))]
+[JsonSerializable(typeof(NetworkControlRuleUpdate))]
 [JsonSerializable(typeof(NetworkControlUpdate))]
 [JsonSerializable(typeof(Profile))]
 [JsonSerializable(typeof(ProfileCreateRequest))]

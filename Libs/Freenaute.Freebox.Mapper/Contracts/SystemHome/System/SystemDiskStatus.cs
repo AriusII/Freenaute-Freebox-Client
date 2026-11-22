@@ -7,12 +7,23 @@ namespace Freenaute.Freebox.Mapper.Contracts.SystemHome.System;
 [JsonConverter(typeof(SystemHomeWireTokenJsonConverter<SystemDiskStatus>))]
 public readonly record struct SystemDiskStatus(string Value) : ISystemHomeWireToken<SystemDiskStatus>
 {
-	public bool IsKnown => Value is "not_detected" or "disabled" or "initializing" or "error" or "active";
-	public static SystemDiskStatus NotDetected { get; } = new("not_detected");
-	public static SystemDiskStatus Disabled { get; } = new("disabled");
-	public static SystemDiskStatus Initializing { get; } = new("initializing");
-	public static SystemDiskStatus Error { get; } = new("error");
-	public static SystemDiskStatus Active { get; } = new("active");
+	public bool IsKnown => Value is MapperConstants.SystemHomeWireTokens.SystemDiskStatus.NotDetected
+		or MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Disabled
+		or MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Initializing
+		or MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Error
+		or MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Active;
+
+	public static SystemDiskStatus NotDetected { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemDiskStatus.NotDetected);
+
+	public static SystemDiskStatus Disabled { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Disabled);
+
+	public static SystemDiskStatus Initializing { get; } =
+		new(MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Initializing);
+
+	public static SystemDiskStatus Error { get; } = new(MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Error);
+	public static SystemDiskStatus Active { get; } = new(MapperConstants.SystemHomeWireTokens.SystemDiskStatus.Active);
 
 	public static SystemDiskStatus FromWire(string value)
 	{

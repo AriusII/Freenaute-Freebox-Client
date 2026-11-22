@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Dhcp;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -9,6 +11,7 @@ public sealed class FreeboxDhcpStaticLease
 	public FreeboxDhcpStaticLease(IFreeboxTransport transport, string id)
 	{
 		ArgumentNullException.ThrowIfNull(transport);
+		ArgumentException.ThrowIfNullOrWhiteSpace(id);
 		_transport = transport;
 		_id = FreeboxApiPath.EncodeSegment(id);
 	}
@@ -18,10 +21,10 @@ public sealed class FreeboxDhcpStaticLease
 
 	/// <summary>Get a given DHCP static lease.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v16-dhcp-static_lease-id</remarks>
-	public Task<DhcpStaticLease> GetAsync(CancellationToken cancellationToken = default)
+	public async Task<DhcpStaticLease> GetAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, $"dhcp/static_lease/{_id}", Json.DhcpStaticLease,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Dhcp.StaticLease(_id), Json.DhcpStaticLease,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Update DHCP static lease.</summary>
@@ -31,12 +34,13 @@ public sealed class FreeboxDhcpStaticLease
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, $"dhcp/static_lease/{_id}", request, Json.DhcpStaticLeasePatch,
+		return _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Dhcp.StaticLease(_id), request, Json.DhcpStaticLeasePatch,
 			Json.DhcpStaticLease, cancellationToken);
 	}
 
 	/// <summary>Delete a DHCP static lease.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#delete--api-v8-dhcp-static_lease-id</remarks>
-	public Task DeleteAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Delete, $"dhcp/static_lease/{_id}", cancellationToken);
+	public async Task DeleteAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Delete, NetworkConstants.Routes.Dhcp.StaticLease(_id), cancellationToken)
+			.ConfigureAwait(false);
 }

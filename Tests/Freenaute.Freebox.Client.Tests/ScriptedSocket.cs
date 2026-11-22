@@ -17,16 +17,16 @@ internal sealed class ScriptedSocket : WebSocket
 	public override WebSocketState State => (WebSocketState)Volatile.Read(ref _state);
 
 	public void Text(string json) =>
-		_incoming.Writer.TryWrite(new SocketFrame(Encoding.UTF8.GetBytes(json), WebSocketMessageType.Text, true));
+		_incoming.Writer.TryWrite(new SocketFrame(Encoding.UTF8.GetBytes(json), WebSocketMessageType.Text, EndOfMessage: true));
 
 	public void FragmentedText(string json, int split)
 	{
 		byte[] bytes = Encoding.UTF8.GetBytes(json);
-		_incoming.Writer.TryWrite(new SocketFrame(bytes[..split], WebSocketMessageType.Text, false));
-		_incoming.Writer.TryWrite(new SocketFrame(bytes[split..], WebSocketMessageType.Text, true));
+		_incoming.Writer.TryWrite(new SocketFrame(bytes[..split], WebSocketMessageType.Text, EndOfMessage: false));
+		_incoming.Writer.TryWrite(new SocketFrame(bytes[split..], WebSocketMessageType.Text, EndOfMessage: true));
 	}
 
-	public void NormalClose() => _incoming.Writer.TryWrite(new SocketFrame([], WebSocketMessageType.Close, true));
+	public void NormalClose() => _incoming.Writer.TryWrite(new SocketFrame([], WebSocketMessageType.Close, EndOfMessage: true));
 
 	public IEnumerable<JsonElement> Controls()
 	{
@@ -41,7 +41,7 @@ internal sealed class ScriptedSocket : WebSocket
 		CancellationToken cancellationToken)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
-		var frame = new SocketFrame(buffer.ToArray(), messageType, endOfMessage);
+		var frame = new SocketFrame([.. buffer], messageType, endOfMessage);
 		Sent.Enqueue(frame);
 		if (RespondWithCancellation is { } withCancellation)
 		{
@@ -63,7 +63,7 @@ internal sealed class ScriptedSocket : WebSocket
 			_closeStatus = WebSocketCloseStatus.NormalClosure;
 			Volatile.Write(ref _state, (int)WebSocketState.CloseReceived);
 			_pending = null;
-			return new WebSocketReceiveResult(0, WebSocketMessageType.Close, true, _closeStatus, null);
+			return new WebSocketReceiveResult(0, WebSocketMessageType.Close, endOfMessage: true, _closeStatus, closeStatusDescription: null);
 		}
 
 		int count = Math.Min(buffer.Count, frame.Bytes.Length - _pendingOffset);

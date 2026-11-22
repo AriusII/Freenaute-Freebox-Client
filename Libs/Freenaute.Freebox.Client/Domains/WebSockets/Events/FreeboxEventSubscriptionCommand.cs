@@ -11,7 +11,7 @@ public sealed class FreeboxEventSubscriptionCommand
 		ArgumentNullException.ThrowIfNull(transport);
 		ArgumentNullException.ThrowIfNull(events);
 		_transport = transport;
-		_events = events.Select(EventName).Distinct(StringComparer.Ordinal).ToArray();
+		_events = [.. events.Select(EventName).Distinct(StringComparer.Ordinal)];
 	}
 
 	public async Task<FreeboxEventSubscription> OpenAsync(CancellationToken cancellationToken = default)

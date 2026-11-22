@@ -126,7 +126,7 @@ public sealed class FreeboxUploadSession : IAsyncDisposable
 		{
 			if (buffer is not null)
 			{
-				ArrayPool<byte>.Shared.Return(buffer, true);
+				ArrayPool<byte>.Shared.Return(buffer, clearArray: true);
 			}
 
 			_writer.Release();
@@ -245,7 +245,7 @@ public sealed class FreeboxUploadSession : IAsyncDisposable
 		}
 
 		Volatile.Write(ref _state, (int)FreeboxUploadState.Completed);
-		Volatile.Read(ref _progress)?.Report(new FreeboxUploadProgress(BytesSent, totalLength, _expectedSize, true));
+		Volatile.Read(ref _progress)?.Report(new FreeboxUploadProgress(BytesSent, totalLength, _expectedSize, Complete: true));
 		return new FreeboxUploadResult(totalLength, BytesSent);
 	}
 

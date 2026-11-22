@@ -26,7 +26,7 @@ public sealed class CredentialCoordinatorTests
 	{
 		using var handler = PairingHandler(AuthorizationTrackEnum.Pending);
 		var services = CreatePairingServices(handler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 		var coordinator = provider.GetRequiredService<IFreeboxAuthorizationCoordinator>();
 
 		var first = await coordinator.BeginPairingAsync();
@@ -35,7 +35,7 @@ public sealed class CredentialCoordinatorTests
 		Assert.Equal(FreeboxCredentialStatus.Pending, first.Status);
 		Assert.Equal(first.TrackId, second.TrackId);
 		Assert.Single(handler.Requests, request => request.Method == HttpMethod.Post &&
-		                                           request.Address.AbsolutePath.EndsWith("/login/authorize/"));
+												   request.Address.AbsolutePath.EndsWith("/login/authorize/"));
 		var stored = await provider.GetRequiredService<IFreeboxCredentialStore>()
 			.GetAsync(new FreeboxCredentialId("home", "org.fixture", "fixture"));
 		Assert.Equal(FreeboxCredentialStatus.Pending, stored!.Status);
@@ -46,7 +46,7 @@ public sealed class CredentialCoordinatorTests
 	{
 		using var handler = PairingHandler(AuthorizationTrackEnum.Granted);
 		var services = CreatePairingServices(handler);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 		var coordinator = provider.GetRequiredService<IFreeboxAuthorizationCoordinator>();
 
 		await coordinator.BeginPairingAsync();
@@ -72,7 +72,7 @@ public sealed class CredentialCoordinatorTests
 			Task.FromResult(request.Address.AbsolutePath.EndsWith("/login/logout/", StringComparison.Ordinal)
 				? FixtureHandler.Json("""{"success":true}""")
 				: FixtureHandler.Json("""{"success":true,"result":{"enabled":true}}"""))), store);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 
 		var client = provider.GetRequiredService<IFreeboxClient>();
 		await client.AirMedia.GetConfigurationAsync();
@@ -94,7 +94,7 @@ public sealed class CredentialCoordinatorTests
 		store.ResetWrites();
 		using var handler = FixtureHandler.AuthenticatedConstant("""{"success":true,"result":{"enabled":true}}""");
 		var services = CreatePairingServices(handler, store);
-		using var provider = services.BuildServiceProvider();
+		await using var provider = services.BuildServiceProvider();
 
 		await provider.GetRequiredService<IFreeboxClient>().AirMedia.GetConfigurationAsync();
 
@@ -153,22 +153,22 @@ public sealed class CredentialCoordinatorTests
 		public bool IsAvailable => true;
 		public string Kind => "recording-memory";
 
-		public ValueTask<FreeboxAppCredentials?> GetAsync(FreeboxCredentialId id,
+		public async ValueTask<FreeboxAppCredentials?> GetAsync(FreeboxCredentialId id,
 			CancellationToken cancellationToken = default)
 		{
 			Reads.Add(id);
-			return _inner.GetAsync(id, cancellationToken);
+			return await _inner.GetAsync(id, cancellationToken);
 		}
 
-		public ValueTask PutAsync(FreeboxCredentialId id, FreeboxAppCredentials credentials,
+		public async ValueTask PutAsync(FreeboxCredentialId id, FreeboxAppCredentials credentials,
 			CancellationToken cancellationToken = default)
 		{
 			PutCount++;
-			return _inner.PutAsync(id, credentials, cancellationToken);
+			await _inner.PutAsync(id, credentials, cancellationToken);
 		}
 
-		public ValueTask DeleteAsync(FreeboxCredentialId id, CancellationToken cancellationToken = default) =>
-			_inner.DeleteAsync(id, cancellationToken);
+		public async ValueTask DeleteAsync(FreeboxCredentialId id, CancellationToken cancellationToken = default) =>
+			await _inner.DeleteAsync(id, cancellationToken);
 
 		public void ResetWrites() => PutCount = 0;
 	}

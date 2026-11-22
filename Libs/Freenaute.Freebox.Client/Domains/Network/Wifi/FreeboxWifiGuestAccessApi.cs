@@ -1,3 +1,5 @@
+using Freenaute.Freebox.Client.Domains.Network.Support;
+
 namespace Freenaute.Freebox.Client.Domains.Network.Wifi;
 
 /// <summary>Typed network operations using the currently discovered outer API major.</summary>
@@ -17,10 +19,10 @@ public sealed class FreeboxWifiGuestAccessApi
 
 	/// <summary>Get or change the dedicated ap config.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v14-wifi-custom_keys-config-</remarks>
-	public Task<WifiCustomKeyConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
+	public async Task<WifiCustomKeyConfig> GetConfigurationAsync(CancellationToken cancellationToken = default)
 	{
-		return _transport.SendAsync(HttpMethod.Get, "wifi/custom_keys/config/", Json.WifiCustomKeyConfig,
-			cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.CustomKeysConfiguration, Json.WifiCustomKeyConfig,
+			cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>Get or change the dedicated ap config.</summary>
@@ -30,14 +32,15 @@ public sealed class FreeboxWifiGuestAccessApi
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Put, "wifi/custom_keys/config/", request,
+		return _transport.SendAsync(HttpMethod.Put, NetworkConstants.Routes.Wifi.CustomKeysConfiguration, request,
 			Json.WifiCustomKeyConfigurationPatch, Json.WifiCustomKeyConfig, cancellationToken);
 	}
 
 	/// <summary>Get the list of wifi custom key.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#get--api-v9-wifi-custom_key-</remarks>
-	public Task<WifiCustomKey[]> GetKeysAsync(CancellationToken cancellationToken = default) =>
-		_transport.SendAsync(HttpMethod.Get, "wifi/custom_key/", Json.WifiCustomKeyArray, cancellationToken);
+	public async Task<WifiCustomKey[]> GetKeysAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, NetworkConstants.Routes.Wifi.CustomKeys, Json.WifiCustomKeyArray, cancellationToken)
+			.ConfigureAwait(false);
 
 	/// <summary>Create a new wifi custom key.</summary>
 	/// <remarks>http://mafreebox.freebox.fr/doc/index.html#post--api-v9-wifi-custom_key-</remarks>
@@ -46,7 +49,7 @@ public sealed class FreeboxWifiGuestAccessApi
 	{
 		ArgumentNullException.ThrowIfNull(request);
 		NetworkWriteValidation.Validate(request);
-		return _transport.SendAsync(HttpMethod.Post, "wifi/custom_key/", request, Json.CreateWifiCustomKeyRequest,
+		return _transport.SendAsync(HttpMethod.Post, NetworkConstants.Routes.Wifi.CustomKeys, request, Json.CreateWifiCustomKeyRequest,
 			Json.WifiCustomKey, cancellationToken);
 	}
 }

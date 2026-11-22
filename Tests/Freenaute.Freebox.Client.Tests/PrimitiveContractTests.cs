@@ -10,9 +10,9 @@ public sealed class PrimitiveContractTests
 		Assert.True(Optional<bool>.Null.IsSet);
 		Assert.True(Optional<bool>.Null.IsNull);
 		Assert.NotEqual(default, Optional<bool>.Null);
-		Assert.NotEqual(default, Optional<bool>.FromValue(false));
-		Assert.NotEqual(Optional<bool>.Null, Optional<bool>.FromValue(false));
-		Assert.False(Optional<bool>.FromValue(false).Value);
+		Assert.NotEqual(default, Optional<bool>.FromValue(value: false));
+		Assert.NotEqual(Optional<bool>.Null, Optional<bool>.FromValue(value: false));
+		Assert.False(Optional<bool>.FromValue(value: false).Value);
 		Assert.Equal(0, Optional<int>.Set(0).Value);
 		Assert.Throws<InvalidOperationException>(() => Optional<int>.Unset.Value);
 		Assert.Throws<InvalidOperationException>(() => Optional<bool>.Null.Value);
@@ -77,7 +77,7 @@ public sealed class PrimitiveContractTests
 	{
 		Assert.Throws<JsonException>(() => JsonSerializer.Serialize(default,
 			SharedJsonSerializerContext.Default.OptionalBoolean));
-		Assert.Equal("false", JsonSerializer.Serialize(Optional<bool>.Set(false),
+		Assert.Equal("false", JsonSerializer.Serialize(Optional<bool>.Set(value: false),
 			SharedJsonSerializerContext.Default.OptionalBoolean));
 		Assert.Equal("null", JsonSerializer.Serialize(Optional<bool>.Null,
 			SharedJsonSerializerContext.Default.OptionalBoolean));

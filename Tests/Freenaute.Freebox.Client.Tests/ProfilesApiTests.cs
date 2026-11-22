@@ -95,7 +95,7 @@ public sealed class ProfilesApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var command = new FreeboxSystemHomeApi(client.Transport).Profiles.Create(null!);
 
-		await Assert.ThrowsAsync<ArgumentNullException>(() => command.SendAsync());
+		await Assert.ThrowsAsync<ArgumentNullException>(async () => await command.SendAsync());
 
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -108,8 +108,8 @@ public sealed class ProfilesApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxSystemHomeApi(client.Transport).Profiles.ListAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxSystemHomeApi(client.Transport).Profiles.ListAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -132,9 +132,9 @@ public sealed class ProfilesApiTests
 
 		var pending = new FreeboxSystemHomeApi(client.Transport).Profiles.ListAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

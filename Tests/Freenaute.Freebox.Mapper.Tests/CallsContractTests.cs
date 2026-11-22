@@ -31,4 +31,14 @@ public sealed class CallsContractTests
 		AssertRoundTrip(
 			"""{"new":true}""",
 			ServicesJsonSerializerContext.Default.CallEntryPatch);
+
+	[Fact]
+	public void CallEntryPatch_ExplicitNullIsRejectedAndUnsetIsOmitted()
+	{
+		Assert.Throws<ArgumentException>(() => new CallEntryPatch { New = Optional<bool>.Null }.Validate());
+		Assert.Equal("{}", JsonSerializer.Serialize(new CallEntryPatch(),
+			ServicesJsonSerializerContext.Default.CallEntryPatch));
+		Assert.Equal("{\"new\":false}", JsonSerializer.Serialize(new CallEntryPatch { New = false },
+			ServicesJsonSerializerContext.Default.CallEntryPatch));
+	}
 }

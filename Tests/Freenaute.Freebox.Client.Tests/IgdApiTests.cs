@@ -61,7 +61,7 @@ public sealed class IgdApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => new FreeboxIgdApi(client.Transport)
+		await Assert.ThrowsAsync<ArgumentException>(async () => await new FreeboxIgdApi(client.Transport)
 			.UpdateConfigurationAsync(new IgdConfigurationPatch { Version = Optional<long>.Null }));
 
 		Assert.Empty(ResourceRequests(handler));
@@ -75,8 +75,8 @@ public sealed class IgdApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxIgdApi(client.Transport).GetRedirectionsAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxIgdApi(client.Transport).GetRedirectionsAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -99,9 +99,9 @@ public sealed class IgdApiTests
 
 		var pending = new FreeboxIgdApi(client.Transport).GetConfigurationAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

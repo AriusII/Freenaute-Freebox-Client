@@ -46,7 +46,7 @@ public sealed class AuthenticationTests
 		using var http = new HttpClient(handler);
 		var client = HttpClientTests.CreateClient(http);
 
-		var calls = Enumerable.Range(0, 20).Select(_ => client.AirMedia.GetConfigurationAsync()).ToArray();
+		var calls = Enumerable.Range(0, 20).Select(async _ => await client.AirMedia.GetConfigurationAsync()).ToArray();
 		await loginEntered.Task.WaitAsync(TimeSpan.FromSeconds(10));
 		releaseLogin.SetResult();
 		var results = await Task.WhenAll(calls).WaitAsync(TimeSpan.FromSeconds(10));
@@ -83,10 +83,10 @@ public sealed class AuthenticationTests
 		var owner = client.AirMedia.GetConfigurationAsync();
 		await loginEntered.Task.WaitAsync(TimeSpan.FromSeconds(10));
 		var waiter = client.AirMedia.GetConfigurationAsync(cancellation.Token);
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 		try
 		{
-			await Assert.ThrowsAnyAsync<OperationCanceledException>(() => waiter.WaitAsync(TimeSpan.FromSeconds(10)));
+			await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await waiter.WaitAsync(TimeSpan.FromSeconds(10)));
 		}
 		finally
 		{
@@ -108,7 +108,7 @@ public sealed class AuthenticationTests
 		using var http = new HttpClient(handler);
 		var client = HttpClientTests.CreateClient(http);
 
-		await Assert.ThrowsAsync<FreeboxApiException>(() => client.AirMedia.SendToReceiverAsync("TV",
+		await Assert.ThrowsAsync<FreeboxApiException>(async () => await client.AirMedia.SendToReceiverAsync("TV",
 			new AirMediaReceiverRequest(AirMediaAction.Start, AirMediaMediaType.Video,
 				"https://media.example/video.mp4")));
 		Assert.Single(handler.Requests,
@@ -155,7 +155,9 @@ public sealed class AuthenticationTests
 			return new FreeboxClient(http,
 				new FreeboxClientOptions
 				{
-					ServerAddress = new Uri("https://fixture.example/"), ApiVersion = 16, ApplicationId = appId
+					ServerAddress = new Uri("https://fixture.example/"),
+					ApiVersion = 16,
+					ApplicationId = appId
 				}, HttpClientTests.ApprovedCredentials(appId));
 		}
 	}
@@ -168,7 +170,7 @@ public sealed class AuthenticationTests
 		var client = new FreeboxClient(http,
 			new FreeboxClientOptions { ServerAddress = new Uri("https://fixture.example/"), ApiVersion = 16 });
 
-		await Assert.ThrowsAsync<FreeboxAuthenticationException>(() => client.AirMedia.GetConfigurationAsync());
+		await Assert.ThrowsAsync<FreeboxAuthenticationException>(async () => await client.AirMedia.GetConfigurationAsync());
 
 		Assert.Empty(handler.Requests);
 	}
@@ -228,6 +230,40 @@ public sealed class AuthenticationTests
 		Assert.Equal("fixture-session", logout.SessionToken);
 		Assert.Equal(2,
 			handler.Requests.Count(x => x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal)));
+	}
+
+	[Fact]
+	public async Task GetSessionsListsActiveSessionsWithSessionHeader()
+	{
+		using var handler = new FixtureHandler((request, _) =>
+		{
+			if (request.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal))
+			{
+				if (request.Method == HttpMethod.Get)
+				{
+					return Task.FromResult(FixtureHandler.Json(
+						"""{"success":true,"result":[{"session_token":"fixture-session","permissions":{"settings":true}}]}"""));
+				}
+
+				return Task.FromResult(FixtureHandler.Json(
+					"""{"success":true,"result":{"session_token":"fixture-session","challenge":"fixture","permissions":{"settings":true}}}"""));
+			}
+
+			return Task.FromResult(Respond(request));
+		});
+		using var http = new HttpClient(handler);
+		var client = HttpClientTests.CreateClient(http);
+
+		await client.AirMedia.GetConfigurationAsync();
+		var sessions = await client.Authentication.GetSessionsAsync();
+
+		var session = Assert.Single(sessions);
+		Assert.Equal("fixture-session", session.GetProperty("session_token").GetString());
+		var request = Assert.Single(handler.Requests,
+			x => x.Method == HttpMethod.Get &&
+				 x.Address.AbsolutePath.EndsWith("/login/session/", StringComparison.Ordinal));
+		Assert.Equal(HttpMethod.Get, request.Method);
+		Assert.Null(request.SessionToken);
 	}
 
 	private static HttpResponseMessage Respond(CapturedRequest request)

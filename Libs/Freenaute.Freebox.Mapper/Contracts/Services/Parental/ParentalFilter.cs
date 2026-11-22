@@ -10,7 +10,10 @@ public sealed record ParentalFilter
 
 	[JsonPropertyName("hosts")] public string[]? Hosts { get; init; }
 
-	[JsonPropertyName("ip")] public string? Ip { get; init; }
+	/// <summary>Deprecated IP field retained only for compatibility with old rules.</summary>
+	[Obsolete("Deprecated by Freebox API documentation.")]
+	[JsonPropertyName("ip")]
+	public string? Ip { get; init; }
 
 	[JsonPropertyName("desc")] public string? Desc { get; init; }
 

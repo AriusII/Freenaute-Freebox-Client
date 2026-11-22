@@ -14,6 +14,12 @@ public sealed class WebSocketContractTests
 			WebSocketJsonSerializerContext.Default.RegisterEventsRequest);
 
 	[Fact]
+	public void RegisterEventsRequest_OmitsOptionalRequestId() =>
+		AssertRoundTrip(
+			"""{"action":"register","events":["downloads"]}""",
+			WebSocketJsonSerializerContext.Default.RegisterEventsRequest);
+
+	[Fact]
 	public void FreeboxWebSocketMessage_Notification_RoundTripsByteIdentical() =>
 		AssertRoundTrip(
 			"""{"action":"notification","success":true,"source":"wifi","event":"state_changed","result":{"state":"enabled"}}""",
@@ -32,15 +38,33 @@ public sealed class WebSocketContractTests
 			WebSocketJsonSerializerContext.Default.FileUploadStartRequest);
 
 	[Fact]
+	public void FileUploadStartRequest_OmitsOptionalRequestId() =>
+		AssertRoundTrip(
+			"""{"action":"upload_start","size":1024,"dirname":"RGlzcXVlIGR1cg==","filename":"a.bin","force":"overwrite"}""",
+			WebSocketJsonSerializerContext.Default.FileUploadStartRequest);
+
+	[Fact]
 	public void FileUploadFinalizeRequest_RoundTripsByteIdentical() =>
 		AssertRoundTrip(
 			"""{"request_id":7,"action":"upload_finalize"}""",
 			WebSocketJsonSerializerContext.Default.FileUploadFinalizeRequest);
 
 	[Fact]
+	public void FileUploadFinalizeRequest_OmitsOptionalRequestId() =>
+		AssertRoundTrip(
+			"""{"action":"upload_finalize"}""",
+			WebSocketJsonSerializerContext.Default.FileUploadFinalizeRequest);
+
+	[Fact]
 	public void FileUploadCancelRequest_RoundTripsByteIdentical() =>
 		AssertRoundTrip(
 			"""{"request_id":7,"action":"upload_cancel"}""",
+			WebSocketJsonSerializerContext.Default.FileUploadCancelRequest);
+
+	[Fact]
+	public void FileUploadCancelRequest_OmitsOptionalRequestId() =>
+		AssertRoundTrip(
+			"""{"action":"upload_cancel"}""",
 			WebSocketJsonSerializerContext.Default.FileUploadCancelRequest);
 
 	[Fact]
@@ -59,6 +83,11 @@ public sealed class WebSocketContractTests
 	public void WebSocketRequest_RoundTripsByteIdentical() =>
 		WireRoundTrip.AssertByteIdentical<WebSocketRequest>(_mapper,
 			"""{"request_id":1,"action":"register"}""");
+
+	[Fact]
+	public void WebSocketRequest_SupportsLargeRequestId() =>
+		WireRoundTrip.AssertByteIdentical<WebSocketRequest>(_mapper,
+			"""{"request_id":5000000000,"action":"register"}""");
 
 	[Fact]
 	public void WebSocketResponse_RoundTripsByteIdentical() =>

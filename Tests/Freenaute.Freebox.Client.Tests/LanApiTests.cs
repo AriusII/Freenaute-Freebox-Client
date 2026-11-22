@@ -16,7 +16,8 @@ public sealed class LanApiTests
 		var config = await lan.GetConfigurationAsync();
 		var updated = await lan.UpdateConfigurationAsync(new LanConfigurationPatch
 		{
-			Ip = "192.168.1.254", Name = "fixture-box"
+			Ip = "192.168.1.254",
+			Name = "fixture-box"
 		});
 
 		Assert.Equal("router", config.Mode);
@@ -101,11 +102,11 @@ public sealed class LanApiTests
 		using var client = HttpClientTests.CreateClient(http);
 		var lan = new FreeboxLanApi(client.Transport);
 
-		await Assert.ThrowsAsync<ArgumentException>(() => lan.UpdateConfigurationAsync(
+		await Assert.ThrowsAsync<ArgumentException>(async () => await lan.UpdateConfigurationAsync(
 			new LanConfigurationPatch { Ip = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => lan.Interface("main")
+		await Assert.ThrowsAsync<ArgumentException>(async () => await lan.Interface("main")
 			.WakeAsync(new WakeOnLanRequest { Mac = Optional<string>.Null }));
-		await Assert.ThrowsAsync<ArgumentException>(() => lan.Interface("main").Host("host-1")
+		await Assert.ThrowsAsync<ArgumentException>(async () => await lan.Interface("main").Host("host-1")
 			.UpdateAsync(new LanHostPatch { HostType = Optional<string>.Null }));
 		Assert.Empty(ResourceRequests(handler));
 	}
@@ -118,8 +119,8 @@ public sealed class LanApiTests
 		using var http = new HttpClient(handler);
 		using var client = HttpClientTests.CreateClient(http);
 
-		var error = await Assert.ThrowsAsync<FreeboxApiException>(() =>
-			new FreeboxLanApi(client.Transport).GetConfigurationAsync());
+		var error = await Assert.ThrowsAsync<FreeboxApiException>(async () =>
+			await new FreeboxLanApi(client.Transport).GetConfigurationAsync());
 
 		Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
 		Assert.Equal("invalid_request", error.ErrorCode);
@@ -142,9 +143,9 @@ public sealed class LanApiTests
 
 		var pending = new FreeboxLanApi(client.Transport).GetInterfacesAsync(cancellation.Token);
 		await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-		cancellation.Cancel();
+		await cancellation.CancelAsync();
 
-		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
 	}
 
 	private static IEnumerable<CapturedRequest> ResourceRequests(FixtureHandler handler)

@@ -6,5 +6,8 @@ namespace Freenaute.Freebox.Mapper.Contracts.Files.Feeds;
 /// </summary>
 public sealed record UpdateDownloadFeedRequest
 {
-	[JsonPropertyName("auto_download")] public required bool AutoDownload { get; init; }
+	[JsonPropertyName("auto_download")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
+	public Optional<bool> AutoDownload { get; init; }
 }

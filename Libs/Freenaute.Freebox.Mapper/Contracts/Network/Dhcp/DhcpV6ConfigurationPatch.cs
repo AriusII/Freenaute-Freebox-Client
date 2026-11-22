@@ -23,4 +23,10 @@ public sealed class DhcpV6ConfigurationPatch
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 	[JsonConverter(typeof(OptionalJsonConverter<bool>))]
 	public Optional<bool> UseCustomDns { get; init; }
+
+	/// <summary>List of IPv6 DNS servers to use when custom DNS is enabled.</summary>
+	[JsonPropertyName("dns")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	[JsonConverter(typeof(OptionalJsonConverter<string[]>))]
+	public Optional<string[]> Dns { get; init; }
 }

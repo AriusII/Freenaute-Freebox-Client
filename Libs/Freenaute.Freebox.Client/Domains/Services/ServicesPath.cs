@@ -2,6 +2,8 @@ namespace Freenaute.Freebox.Client.Domains.Services;
 
 internal static class ServicesPath
 {
+	private const string RelativeSegmentError = "A resource identifier cannot be a relative path segment.";
+
 	internal static string Id(long id)
 	{
 		return id >= 0
@@ -14,7 +16,7 @@ internal static class ServicesPath
 		ArgumentException.ThrowIfNullOrWhiteSpace(value);
 		if (value is "." or "..")
 		{
-			throw new ArgumentException("A resource identifier cannot be a relative path segment.", nameof(value));
+			throw new ArgumentException(RelativeSegmentError, nameof(value));
 		}
 
 		return Uri.EscapeDataString(value);

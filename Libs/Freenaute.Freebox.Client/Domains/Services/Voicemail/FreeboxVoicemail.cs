@@ -15,20 +15,23 @@ public sealed class FreeboxVoicemail
 			ServicesJsonSerializerContext.Default.VoicemailPatch, request => request.Validate());
 	}
 
-	public Task<VoicemailEntry> GetAsync(CancellationToken cancellationToken = default) =>
-		_resource.GetAsync(cancellationToken);
+	public async Task<VoicemailEntry> GetAsync(CancellationToken cancellationToken = default) =>
+		await _resource.GetAsync(cancellationToken).ConfigureAwait(false);
 
-	public Task<VoicemailEntry> UpdateAsync(VoicemailPatch request, CancellationToken cancellationToken = default) =>
-		_resource.UpdateAsync(request, cancellationToken);
+	public async Task<VoicemailEntry>
+		UpdateAsync(VoicemailPatch request, CancellationToken cancellationToken = default) =>
+		await _resource.UpdateAsync(request, cancellationToken).ConfigureAwait(false);
 
-	public Task DeleteAsync(CancellationToken cancellationToken = default) => _resource.DeleteAsync(cancellationToken);
+	public async Task DeleteAsync(CancellationToken cancellationToken = default) =>
+		await _resource.DeleteAsync(cancellationToken).ConfigureAwait(false);
 
 	public FreeboxServiceCommand<VoicemailPatch, VoicemailEntry> Configure() => _resource.Configure();
 
 	/// <summary>Downloads the documented WAV response; the caller owns and disposes the download.</summary>
-	public Task<FreeboxDownload> DownloadAudioAsync(CancellationToken cancellationToken = default)
+	public async Task<FreeboxDownload> DownloadAudioAsync(CancellationToken cancellationToken = default)
 	{
-		return (_binary ?? throw new NotSupportedException("The supplied transport does not support binary downloads."))
-			.DownloadAsync(HttpMethod.Get, _path + "/audio_file", cancellationToken);
+		return await (_binary ??
+		              throw new NotSupportedException("The supplied transport does not support binary downloads."))
+			.DownloadAsync(HttpMethod.Get, _path + "/audio_file", cancellationToken).ConfigureAwait(false);
 	}
 }

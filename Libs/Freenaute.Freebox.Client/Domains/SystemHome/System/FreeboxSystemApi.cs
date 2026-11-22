@@ -1,20 +1,23 @@
+using Freenaute.Freebox.Client.Domains.SystemHome.Support;
+
 namespace Freenaute.Freebox.Client.Domains.SystemHome.System;
 
 public sealed class FreeboxSystemApi
 {
-	private readonly IFreeboxTransport transport;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxSystemApi(IFreeboxTransport transport)
 	{
-		this.transport = transport;
+		_transport = transport;
 	}
 
-	public Task<SystemConfig> GetAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Get, "system/", SystemHomeWire.Json.SystemConfig, cancellationToken);
+	public async Task<SystemConfig> GetAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.System, SystemHomeWire.Json.SystemConfig, cancellationToken)
+			.ConfigureAwait(false);
 
-	public Task RebootAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Post, "system/reboot/", cancellationToken);
+	public async Task RebootAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Post, SystemHomeConstants.Routes.SystemReboot, cancellationToken).ConfigureAwait(false);
 
-	public Task ShutdownAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Post, "system/shutdown/", cancellationToken);
+	public async Task ShutdownAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Post, SystemHomeConstants.Routes.SystemShutdown, cancellationToken).ConfigureAwait(false);
 }

@@ -1,35 +1,38 @@
+using Freenaute.Freebox.Client.Domains.SystemHome.Support;
+
 namespace Freenaute.Freebox.Client.Domains.SystemHome.Profiles;
 
 public sealed class FreeboxProfilesApi
 {
-	private readonly IFreeboxTransport transport;
+	private readonly IFreeboxTransport _transport;
 
 	internal FreeboxProfilesApi(IFreeboxTransport transport)
 	{
-		this.transport = transport;
+		_transport = transport;
 	}
 
-	public Task<ImmutableArray<Profile>> ListAsync(CancellationToken cancellationToken = default) =>
-		transport.SendAsync(HttpMethod.Get, "profile", SystemHomeWire.Json.Profiles, cancellationToken);
+	public async Task<ImmutableArray<Profile>> ListAsync(CancellationToken cancellationToken = default) =>
+		await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.Profile, SystemHomeWire.Json.Profiles, cancellationToken)
+			.ConfigureAwait(false);
 
-	public FreeboxProfileResource For(long id) => new(transport, id);
+	public FreeboxProfileResource For(long id) => new(_transport, id);
 
 	public FreeboxSystemHomeCommand<ProfileCreateRequest, ProfileCreated> Create(string name)
 	{
-		return new FreeboxSystemHomeCommand<ProfileCreateRequest, ProfileCreated>(transport, HttpMethod.Post,
+		return new FreeboxSystemHomeCommand<ProfileCreateRequest, ProfileCreated>(_transport, HttpMethod.Post,
 			"profile/", new ProfileCreateRequest(name), SystemHomeWire.Json.ProfileCreateRequest,
 			SystemHomeWire.Json.ProfileCreated);
 	}
 
-	public Task<DefaultModeMigrationStatus> GetMigrationStatusAsync(CancellationToken cancellationToken = default)
+	public async Task<DefaultModeMigrationStatus> GetMigrationStatusAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Get, "network_control/migrate",
-			SystemHomeWire.Json.DefaultModeMigrationStatus, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Get, SystemHomeConstants.Routes.NetworkControlMigrate,
+			SystemHomeWire.Json.DefaultModeMigrationStatus, cancellationToken).ConfigureAwait(false);
 	}
 
-	public Task<DefaultModeMigrationStatus> MigrateDefaultModeAsync(CancellationToken cancellationToken = default)
+	public async Task<DefaultModeMigrationStatus> MigrateDefaultModeAsync(CancellationToken cancellationToken = default)
 	{
-		return transport.SendAsync(HttpMethod.Post, "network_control/migrate",
-			SystemHomeWire.Json.DefaultModeMigrationStatus, cancellationToken);
+		return await _transport.SendAsync(HttpMethod.Post, SystemHomeConstants.Routes.NetworkControlMigrate,
+			SystemHomeWire.Json.DefaultModeMigrationStatus, cancellationToken).ConfigureAwait(false);
 	}
 }

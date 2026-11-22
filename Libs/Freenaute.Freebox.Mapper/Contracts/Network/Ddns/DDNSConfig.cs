@@ -4,7 +4,7 @@ namespace Freenaute.Freebox.Mapper.Contracts.Network.Ddns;
 ///     Wire contract documented at http://mafreebox.freebox.fr/doc/index.html#DDNSConfig.
 ///     Missing read values are represented by nullable properties; this does not assert server acceptance of JSON null.
 /// </summary>
-public sealed class DDNSConfig
+public sealed class DdnsConfig
 {
 	[JsonPropertyName("enabled")] public bool? Enabled { get; init; }
 

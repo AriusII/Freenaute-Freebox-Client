@@ -5,9 +5,9 @@ namespace Freenaute.Freebox.Mapper.Contracts.Services.Parental;
 [JsonConverter(typeof(ParentalFilterStateJsonConverter))]
 public readonly record struct ParentalFilterState(string Value)
 {
-	public static ParentalFilterState Allowed => new("allowed");
-	public static ParentalFilterState Denied => new("denied");
-	public static ParentalFilterState Webonly => new("webonly");
+	public static ParentalFilterState Allowed => new(MapperConstants.ServiceWireTokens.Parental.Allowed);
+	public static ParentalFilterState Denied => new(MapperConstants.ServiceWireTokens.Parental.Denied);
+	public static ParentalFilterState Webonly => new(MapperConstants.ServiceWireTokens.Parental.Webonly);
 
 	public override string ToString() => Value ?? string.Empty;
 }
