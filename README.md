@@ -55,7 +55,7 @@ dotnet add package Freenaute.Freebox.Client
 or in your `.csproj`:
 
 ```xml
-<PackageReference Include="Freenaute.Freebox.Client" Version="1.0.0" />
+<PackageReference Include="Freenaute.Freebox.Client" Version="1.1.0" />
 ```
 
 ## 🚀 Quick start

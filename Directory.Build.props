@@ -16,7 +16,7 @@
         <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
         <RepositoryUrl>https://github.com/AriusII/Freenaute-Freebox-Api</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <VersionPrefix>1.0.0</VersionPrefix>
+        <VersionPrefix>1.1.0</VersionPrefix>
         <Authors>AriusII</Authors>
         <Company>Freenaute</Company>
         <Copyright>Copyright (c) $([System.DateTime]::Now.Year) Freenaute</Copyright>
