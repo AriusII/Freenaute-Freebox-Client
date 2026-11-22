@@ -35,17 +35,6 @@ AirMedia, parental control, system… — all through standard `Microsoft.Extens
 | 🧩 One package           | `Freenaute.Freebox.Client` embeds the Mapper contracts — nothing else to install                          |
 | 🎯 Policy-aware coverage | stable APIs plus XML-documented unstable APIs and `[Obsolete]`-marked deprecated APIs                     |
 
-## ✅ API model reconciliation (wave2)
-
-From `docs/api-model.json` against `.Client` + `.Mapper`:
-
-- **Operations**: **222 / 222** documented operations covered (**100%**)
-- **Schemas**: **120 / 120** component schemas covered (**100%**)
-- Coverage includes 7 documented alias mappings (contact bracket aliases + parental planning resource indirection).
-
-Machine-readable evidence:  
-`C:\Users\Arius-dev\.copilot\session-state\a6a9000b-eb02-48ef-a676-4fc1cb95fc0e\files\wave2-global-matrix-docs-coverage.json`
-
 ## 📦 Install
 
 ```bash
