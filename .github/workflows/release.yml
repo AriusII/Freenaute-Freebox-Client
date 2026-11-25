@@ -48,7 +48,7 @@ jobs:
           global-json-file: global.json
       # Artifact `nuget-candidates` lands in .artifacts/nuget (PackageOutputPath of the repo).
       - name: Download NuGet candidates
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nuget-candidates
           path: .artifacts/nuget
