@@ -37,7 +37,7 @@ jobs:
           (cd .artifacts/aot/run && env -u DOTNET_ROOT ../linux-x64/Freenaute.Freebox.AotSmoke)
           sha256sum .artifacts/aot/linux-x64/Freenaute.Freebox.AotSmoke | tee .artifacts/aot/linux-x64/SHA256SUMS.txt
       - name: Upload Linux native artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: aot-linux-x64
           path: .artifacts/aot/linux-x64
@@ -78,7 +78,7 @@ jobs:
           finally { Pop-Location }
           Get-FileHash $binary -Algorithm SHA256 | Format-List | Out-File .artifacts/aot/win-x64/SHA256SUMS.txt
       - name: Upload Windows native artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: aot-win-x64
           path: .artifacts/aot/win-x64
